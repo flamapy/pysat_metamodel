@@ -15,7 +15,6 @@ class Fm_to_pysat(ModelToModel):
         if not feature.name in self.model2.variables.keys():
             self.model2.variables[feature.name] = self.counter
             self.model2.features[self.counter] = feature.name
-
             self.counter += 1
 
     def add_root(self, feature):
@@ -44,7 +43,7 @@ class Fm_to_pysat(ModelToModel):
             for child in relation.children:
                 self.cnf.append([-1*self.model2.variables.get(child.name),self.model2.variables.get(relation.parent.name)])
 
-        elif (relation.is_alternate()): #this is a 1 to 1 relatinship with multiple childs
+        elif (relation.is_alternative()): #this is a 1 to 1 relatinship with multiple childs
 
             #add the first cnf 	child1 or child2 or ... or childN or no parent)        
             alt_cnf=[-1*self.model2.variables.get(relation.parent.name)] #first elem of the constraint
