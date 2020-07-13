@@ -1,7 +1,8 @@
 from pysat.formula import CNF
 from pysat.solvers import Glucose3
 
-from core.models.VariabilityModel import VariabilityModel
+from famapy.core.models.VariabilityModel import VariabilityModel
+
 
 class PySATModel(VariabilityModel):
 
@@ -9,6 +10,6 @@ class PySATModel(VariabilityModel):
         self.cnf = CNF()
         self.variables = {}
         self.features = {}
-        
+
     def add_constraint(self, constraint):
         self.cnf.append(constraint)

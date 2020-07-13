@@ -1,7 +1,8 @@
-from core.operations.Products import ProductsOperation
-from pysat_metamodel.model.PySATModel import PySATModel
-from fm_metamodel.model.FeatureModel import Feature
 from pysat.solvers import Glucose3
+from pysat_metamodel.model.PySATModel import PySATModel
+
+from famapy.core.operations.Products import ProductsOperation
+
 
 class Glucose3Products(ProductsOperation):
     def __init__(self):
@@ -18,7 +19,6 @@ class Glucose3Products(ProductsOperation):
                 if (variable > 0) : #This feature should appear in the product
                     product.append(model.features.get(variable))
             self.products.append(product)
-                    
+
     def getProducts(self):
         return self.products
-        

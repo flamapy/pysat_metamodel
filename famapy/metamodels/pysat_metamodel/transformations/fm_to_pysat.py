@@ -1,8 +1,8 @@
 import sys
 
-from core.models.VariabilityModel import VariabilityModel
-from core.transformations.ModelToModel import ModelToModel
-from fm_metamodel.model.FeatureModel import Feature, FeatureModel, Relation
+from famapy.core.models.VariabilityModel import VariabilityModel
+from famapy.core.transformations.ModelToModel import ModelToModel
+
 
 class Fm_to_pysat(ModelToModel):
     def __init__(self, model1: VariabilityModel, model2: VariabilityModel): # TODO: Here we should type this properly fm and sat
@@ -33,8 +33,8 @@ class Fm_to_pysat(ModelToModel):
 
 
         elif (relation.is_or()):#this is a 1 to n relatinship with multiple childs
-            
-             #add the first cnf 	child1 or child2 or ... or childN or no parent)        
+
+             #add the first cnf 	child1 or child2 or ... or childN or no parent)
             alt_cnf=[-1*self.model2.variables.get(relation.parent.name)] #first elem of the constraint
             for child in relation.children :
                 alt_cnf.append(self.model2.variables.get(child.name))
@@ -45,7 +45,7 @@ class Fm_to_pysat(ModelToModel):
 
         elif (relation.is_alternative()): #this is a 1 to 1 relatinship with multiple childs
 
-            #add the first cnf 	child1 or child2 or ... or childN or no parent)        
+            #add the first cnf 	child1 or child2 or ... or childN or no parent)
             alt_cnf=[-1*self.model2.variables.get(relation.parent.name)] #first elem of the constraint
             for child in relation.children :
                 alt_cnf.append(self.model2.variables.get(child.name))
@@ -56,11 +56,11 @@ class Fm_to_pysat(ModelToModel):
                     if i!=j:
                         self.cnf.append([-1*self.model2.variables.get(relation.children[i].name),-1*self.model2.variables.get(relation.children[j].name)])
                 self.cnf.append([-1*self.model2.variables.get(relation.children[i].name),self.model2.variables.get(relation.parent.name)])
-                
+
 
         else: #This is a m to n relationship
             print("fatal error. N to M relationships are not yet supported in PySAT", file=sys.stderr)
-        
+
     def transform(self):
         for feature in self.model1.get_features():
             self.add_feature(feature)
