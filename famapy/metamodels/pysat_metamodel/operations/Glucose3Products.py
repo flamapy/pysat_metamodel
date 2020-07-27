@@ -1,7 +1,7 @@
 from pysat.solvers import Glucose3
-from pysat_metamodel.model.PySATModel import PySATModel
 
 from famapy.core.operations.Products import ProductsOperation
+from famapy.metamodels.pysat_metamodel.models.PySATModel import PySATModel
 
 
 class Glucose3Products(ProductsOperation):

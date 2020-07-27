@@ -5,6 +5,9 @@ from famapy.core.transformations.ModelToModel import ModelToModel
 
 
 class Fm_to_pysat(ModelToModel):
+    EXT_SRC = 'fm'
+    EXT_DST = 'pysat'
+
     def __init__(self, model1: VariabilityModel, model2: VariabilityModel): # TODO: Here we should type this properly fm and sat
         self.counter = 1
         self.model1 = model1
