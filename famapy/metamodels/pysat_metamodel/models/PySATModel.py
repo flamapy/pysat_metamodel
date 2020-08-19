@@ -5,6 +5,7 @@ from famapy.core.models.VariabilityModel import VariabilityModel
 
 
 class PySATModel(VariabilityModel):
+    EXT = 'pysat'
 
     def __init__(self):
         self.cnf = CNF()

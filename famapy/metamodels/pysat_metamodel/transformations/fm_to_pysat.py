@@ -2,17 +2,18 @@ import sys
 
 from famapy.core.models.VariabilityModel import VariabilityModel
 from famapy.core.transformations.ModelToModel import ModelToModel
+from famapy.metamodels.pysat_metamodel.models.PySATModel import PySATModel
 
 
 class Fm_to_pysat(ModelToModel):
     EXT_SRC = 'fm'
     EXT_DST = 'pysat'
 
-    def __init__(self, model1: VariabilityModel, model2: VariabilityModel): # TODO: Here we should type this properly fm and sat
+    def __init__(self, model1: VariabilityModel):
         self.counter = 1
         self.model1 = model1
-        self.model2 = model2
-        self.cnf = model2.cnf
+        self.model2 = PySATModel()
+        self.cnf = self.model2.cnf
 
     def add_feature(self, feature):
         if not feature.name in self.model2.variables.keys():
@@ -72,3 +73,4 @@ class Fm_to_pysat(ModelToModel):
 
         for relation in self.model1.get_relations():
             self.add_relation(relation)
+        return self.model2
