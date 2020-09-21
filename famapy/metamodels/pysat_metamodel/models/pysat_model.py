@@ -1,11 +1,13 @@
 from pysat.formula import CNF
-from pysat.solvers import Glucose3
 
-from famapy.core.models.VariabilityModel import VariabilityModel
+from famapy.core.models import VariabilityModel
 
 
 class PySATModel(VariabilityModel):
-    EXT = 'pysat'
+
+    @staticmethod
+    def get_extension():
+        return 'pysat'
 
     def __init__(self):
         self.cnf = CNF()

@@ -1,14 +1,20 @@
 from pysat.solvers import Glucose3
 
-from famapy.core.operations.Valid import Valid
-from famapy.metamodels.pysat_metamodel.models.PySATModel import PySATModel
+from famapy.core.operations import Valid
+from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
 class Glucose3Valid(Valid):
+
+    def __init__(self):
+        self.result = False
+
+    def is_valid(self):
+        return self.result
 
     def execute(self, model: PySATModel) -> 'Glucose3Valid':
         g = Glucose3()
         for clause in model.cnf:  # AC es conjunto de conjuntos
             g.add_clause(clause)  # añadimos la constraint
-        self.res = g.solve()
-        return super().execute(model)
+        self.result = g.solve()
+        return self
