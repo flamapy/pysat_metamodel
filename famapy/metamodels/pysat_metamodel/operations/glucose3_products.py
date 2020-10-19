@@ -12,6 +12,9 @@ class Glucose3Products(Products):
     def get_products(self):
         return self.products
 
+    def get_result(self):
+        return self.get_products()
+
     def execute(self, model: PySATModel) -> 'Glucose3Products':
         g = Glucose3()
         for clause in model.cnf:  # AC es conjunto de conjuntos
