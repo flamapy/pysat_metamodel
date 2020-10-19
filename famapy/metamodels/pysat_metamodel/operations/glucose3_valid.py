@@ -12,6 +12,9 @@ class Glucose3Valid(Valid):
     def is_valid(self):
         return self.result
 
+    def get_result(self):
+        return self.is_valid()
+
     def execute(self, model: PySATModel) -> 'Glucose3Valid':
         g = Glucose3()
         for clause in model.cnf:  # AC es conjunto de conjuntos
