@@ -6,11 +6,11 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(
-    name="pysat_metamodel",
+    name="famapy-sat",
     version="0.0.1",
-    author="Example Author",
-    author_email="author@example.com",
-    description="famapy short description",
+    author="Víctor Ramírez de la Corte",
+    author_email="me@virako.es",
+    description="famapy-sat is a plugin to FaMaPy module",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/FaMaPy/pysat_metamodel",
@@ -22,9 +22,10 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
-       'python-sat>=0.1.5.dev16'
+        'famapy==0.0.1',
+        'python-sat==0.1.5.dev16'
     ],
     dependency_links=[
-        'https://github.com/FaMaPy/core/tarball/master#egg=package-1.0'
+        'famapy==0.0.1'
     ]
 )
