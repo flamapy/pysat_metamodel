@@ -5,6 +5,12 @@ This repository will host the pysat metamode and its operation implementation
 
 ## Install for development
 
-```
+``` bash
 pip install -e .
+```
+
+## Make sure that you have installed python-dev 
+
+``` bash
+sudo apt install python-dev #python3-dev in Ubuntu derivatives
 ```
