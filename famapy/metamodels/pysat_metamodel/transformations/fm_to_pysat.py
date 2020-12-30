@@ -71,7 +71,20 @@ class FmToPysat(ModelToModel):
                 self.cnf.append([-1*self.destination_model.variables.get(relation.children[i].name),self.destination_model.variables.get(relation.parent.name)])
 
         else:  # This is a m to n relationship
+            from itertools import combinations
+            index = relation.card_min
+            _dnf=[]
+            while index <= relation.card_max:
+                _combinations=list(combinations(relation.children,index))
+                for _combination in _combinations:
+                    clause=[]
+                    for feature in _combination:
+                        clause.append(self.destination_model.variables.get(feature.name))
+                    _dnf.append(clause)
+            index += 1
+            #print(_dnf)
             print("fatal error. N to M relationships are not yet supported in PySAT", file=sys.stderr)
+            raise NotImplementedError
 
     def add_constraint(self, ctc):
         dest = self.destination_model.variables.get(ctc.destination.name)
@@ -95,3 +108,5 @@ class FmToPysat(ModelToModel):
             self.add_constraint(constraint)
 
         return self.destination_model
+
+    
