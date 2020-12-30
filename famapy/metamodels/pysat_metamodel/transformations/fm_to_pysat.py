@@ -73,6 +73,15 @@ class FmToPysat(ModelToModel):
         else:  # This is a m to n relationship
             print("fatal error. N to M relationships are not yet supported in PySAT", file=sys.stderr)
 
+    def add_constraint(self, ctc):
+        dest = self.destiny_model.variables.get(ctc.destination.name)
+        orig = self.destiny_model.variables.get(ctc.origin.name)
+        if ctc.ctc_type == 'requires':
+            self.cnf.append([orig, dest])
+
+        elif ctc.ctc_type == 'excludes':
+            self.cnf.append([orig, -1*dest])
+
     def transform(self):
         for feature in self.source_model.get_features():
             self.add_feature(feature)
@@ -81,4 +90,8 @@ class FmToPysat(ModelToModel):
 
         for relation in self.source_model.get_relations():
             self.add_relation(relation)
+        
+        for constraint in self.source_model.get_constraints():
+            self.add_constraint(constraint)
+
         return self.destiny_model
