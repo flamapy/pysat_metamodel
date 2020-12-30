@@ -11,71 +11,71 @@ class FmToPysat(ModelToModel):
         return 'fm'
 
     @staticmethod
-    def get_destiny_extension():
+    def get_destination_extension():
         return 'pysat'
 
     def __init__(self, source_model: VariabilityModel):
         self.source_model = source_model
         self.counter = 1
-        self.destiny_model = PySATModel()
-        self.cnf = self.destiny_model.cnf
+        self.destination_model = PySATModel()
+        self.cnf = self.destination_model.cnf
 
     def add_feature(self, feature):
-        if feature.name not in self.destiny_model.variables.keys():
-            self.destiny_model.variables[feature.name] = self.counter
-            self.destiny_model.features[self.counter] = feature.name
+        if feature.name not in self.destination_model.variables.keys():
+            self.destination_model.variables[feature.name] = self.counter
+            self.destination_model.features[self.counter] = feature.name
             self.counter += 1
 
     def add_root(self, feature):
-        self.cnf.append([self.destiny_model.variables.get(feature.name)])
+        self.cnf.append([self.destination_model.variables.get(feature.name)])
 
     def add_relation(self, relation):
         if (relation.is_mandatory()):
             self.cnf.append([
-                -1 * self.destiny_model.variables.get(relation.parent.name),
-                self.destiny_model.variables.get(relation.children[0].name)])
+                -1 * self.destination_model.variables.get(relation.parent.name),
+                self.destination_model.variables.get(relation.children[0].name)])
             self.cnf.append([
-                -1 * self.destiny_model.variables.get(relation.children[0].name),
-                self.destiny_model.variables.get(relation.parent.name)])
+                -1 * self.destination_model.variables.get(relation.children[0].name),
+                self.destination_model.variables.get(relation.parent.name)])
 
         elif (relation.is_optional()):
             self.cnf.append([
-                -1 * self.destiny_model.variables.get(relation.children[0].name),
-                self.destiny_model.variables.get(relation.parent.name)])
+                -1 * self.destination_model.variables.get(relation.children[0].name),
+                self.destination_model.variables.get(relation.parent.name)])
 
         elif (relation.is_or()):  # this is a 1 to n relatinship with multiple childs
             # add the first cnf child1 or child2 or ... or childN or no parent)
-            alt_cnf = [-1 * self.destiny_model.variables.get(relation.parent.name)]  # first elem of the constraint
+            alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]  # first elem of the constraint
             for child in relation.children:
-                alt_cnf.append(self.destiny_model.variables.get(child.name))
+                alt_cnf.append(self.destination_model.variables.get(child.name))
             self.cnf.append(alt_cnf)
 
             for child in relation.children:
                 self.cnf.append([
-                    -1 * self.destiny_model.variables.get(child.name),
-                    self.destiny_model.variables.get(relation.parent.name)])
+                    -1 * self.destination_model.variables.get(child.name),
+                    self.destination_model.variables.get(relation.parent.name)])
 
         elif (relation.is_alternative()):  # this is a 1 to 1 relatinship with multiple childs
             # add the first cnf child1 or child2 or ... or childN or no parent)
-            alt_cnf = [-1 * self.destiny_model.variables.get(relation.parent.name)]  # first elem of the constraint
+            alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]  # first elem of the constraint
             for child in relation.children:
-                alt_cnf.append(self.destiny_model.variables.get(child.name))
+                alt_cnf.append(self.destination_model.variables.get(child.name))
             self.cnf.append(alt_cnf)
 
             for i in range(len(relation.children)):
                 for j in range(i+1, len(relation.children)):
                     if i != j:
                         self.cnf.append([
-                            -1 * self.destiny_model.variables.get(relation.children[i].name),
-                            -1*self.destiny_model.variables.get(relation.children[j].name)])
-                self.cnf.append([-1*self.destiny_model.variables.get(relation.children[i].name),self.destiny_model.variables.get(relation.parent.name)])
+                            -1 * self.destination_model.variables.get(relation.children[i].name),
+                            -1*self.destination_model.variables.get(relation.children[j].name)])
+                self.cnf.append([-1*self.destination_model.variables.get(relation.children[i].name),self.destination_model.variables.get(relation.parent.name)])
 
         else:  # This is a m to n relationship
             print("fatal error. N to M relationships are not yet supported in PySAT", file=sys.stderr)
 
     def add_constraint(self, ctc):
-        dest = self.destiny_model.variables.get(ctc.destination.name)
-        orig = self.destiny_model.variables.get(ctc.origin.name)
+        dest = self.destination_model.variables.get(ctc.destination.name)
+        orig = self.destination_model.variables.get(ctc.origin.name)
         if ctc.ctc_type == 'requires':
             self.cnf.append([orig, dest])
 
@@ -94,4 +94,4 @@ class FmToPysat(ModelToModel):
         for constraint in self.source_model.get_constraints():
             self.add_constraint(constraint)
 
-        return self.destiny_model
+        return self.destination_model
