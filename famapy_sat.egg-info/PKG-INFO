@@ -1,0 +1,31 @@
+Metadata-Version: 2.1
+Name: famapy-sat
+Version: 0.0.1
+Summary: famapy-sat is a plugin to FaMaPy module
+Home-page: https://github.com/FaMaPy/pysat_metamodel
+Author: Víctor Ramírez de la Corte
+Author-email: me@virako.es
+License: UNKNOWN
+Description: # pysat_metamodel
+        
+        This repository will host the pysat metamode and its operation implementation
+        
+        
+        ## Install for development
+        
+        ``` bash
+        pip install -e .
+        ```
+        
+        ## Make sure that you have installed python-dev 
+        
+        ``` bash
+        sudo apt install python-dev #python3-dev in Ubuntu derivatives
+        ```
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

@@ -81,8 +81,8 @@ class FmToPysat(ModelToModel):
                     for feature in _combination:
                         clause.append(self.destination_model.variables.get(feature.name))
                     _dnf.append(clause)
-            index += 1
-            #print(_dnf)
+                index += 1
+            print(_dnf)
             print("fatal error. N to M relationships are not yet supported in PySAT", file=sys.stderr)
             raise NotImplementedError
 
