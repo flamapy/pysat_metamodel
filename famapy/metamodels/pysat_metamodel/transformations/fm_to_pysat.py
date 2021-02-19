@@ -90,10 +90,10 @@ class FmToPysat(ModelToModel):
         dest = self.destination_model.variables.get(ctc.destination.name)
         orig = self.destination_model.variables.get(ctc.origin.name)
         if ctc.ctc_type == 'requires':
-            self.cnf.append([orig, dest])
+            self.cnf.append([-1*orig, dest])
 
         elif ctc.ctc_type == 'excludes':
-            self.cnf.append([orig, -1*dest])
+            self.cnf.append([-1*orig, -1*dest])
 
     def transform(self):
         for feature in self.source_model.get_features():
