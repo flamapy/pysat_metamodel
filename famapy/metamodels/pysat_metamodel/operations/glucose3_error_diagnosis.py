@@ -1,5 +1,3 @@
-from pysat.solvers import Glucose3
-
 from famapy.core.operations import ErrorDiagnosis
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from famapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
@@ -25,7 +23,7 @@ class Glucose3ErrorDiagnosis(ErrorDiagnosis):
 
     def set_false_optional_features(self, false_optional_features: list):
         self.false_optional_features = false_optional_features
-        
+
     def set_up(self, pysat_model: PySATModel, fm_model: FeatureModel, have_dead, have_false_optionals):
         if not have_dead:
             dead_features = Glucose3DeadFeatures()
@@ -39,7 +37,7 @@ class Glucose3ErrorDiagnosis(ErrorDiagnosis):
             self.false_optional_features=false_optional_features
 
     def execute(self, pysat_model: PySATModel, fm_model: FeatureModel) -> 'Glucose3ErrorDiagnosis':
-        self.set_up(pysat_model, fm_model, self.dead_features!=None, self.false_optional_features!=None)
+        self.set_up(pysat_model, fm_model, self.dead_features is not None, self.false_optional_features is not None)
 
         if self.dead_features:
             for feat in fm_model.get_features():

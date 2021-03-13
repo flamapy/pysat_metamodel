@@ -1,5 +1,3 @@
-from pysat.solvers import Glucose3
-
 from famapy.core.operations import FalseOptionalFeatures
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from famapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
@@ -29,7 +27,7 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
             self.core_features=core_features
 
     def execute(self, pysat_model: PySATModel, fm_model: FeatureModel) -> 'Glucose3FalseOptionalFeatures':
-        self.set_up(pysat_model,self.core_features!=None)
+        self.set_up(pysat_model, self.core_features is not None)
 
         false_optional = []
         for feat in self.core_features:
@@ -38,6 +36,6 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
                 if relation.is_optional() and feat in children_names:
                     false_optional.append(feat)
                     break
-            
+
         self.false_optional_features=false_optional
         return self

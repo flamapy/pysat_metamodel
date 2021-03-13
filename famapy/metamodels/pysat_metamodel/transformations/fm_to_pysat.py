@@ -1,4 +1,5 @@
 import sys
+from itertools import combinations
 
 from famapy.core.models import VariabilityModel
 from famapy.core.transformations import ModelToModel
@@ -68,10 +69,12 @@ class FmToPysat(ModelToModel):
                         self.cnf.append([
                             -1 * self.destination_model.variables.get(relation.children[i].name),
                             -1*self.destination_model.variables.get(relation.children[j].name)])
-                self.cnf.append([-1*self.destination_model.variables.get(relation.children[i].name),self.destination_model.variables.get(relation.parent.name)])
+                self.cnf.append([
+                    -1 * self.destination_model.variables.get(relation.children[i].name),
+                    self.destination_model.variables.get(relation.parent.name)
+                ])
 
         else:  # This is a m to n relationship
-            from itertools import combinations
             index = relation.card_min
             _dnf=[]
             while index <= relation.card_max:
@@ -103,10 +106,8 @@ class FmToPysat(ModelToModel):
 
         for relation in self.source_model.get_relations():
             self.add_relation(relation)
-        
+
         for constraint in self.source_model.get_constraints():
             self.add_constraint(constraint)
 
         return self.destination_model
-
-    
