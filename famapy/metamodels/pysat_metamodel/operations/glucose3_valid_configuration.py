@@ -33,4 +33,5 @@ class Glucose3ValidConfiguration(ValidConfiguration):
                 assumptions.append(-model.variables[feat[0].name])
 
         self.result = g.solve(assumptions=assumptions)
+        g.delete()
         return self

@@ -20,4 +20,5 @@ class Glucose3Valid(Valid):
         for clause in model.cnf:  # AC es conjunto de conjuntos
             g.add_clause(clause)  # añadimos la constraint
         self.result = g.solve()
+        g.delete()
         return self

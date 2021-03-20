@@ -11,6 +11,7 @@ class PySATModel(VariabilityModel):
 
     def __init__(self):
         self.cnf = CNF()
+        self.partial_cnf = CNF()
         self.variables = {}
         self.features = {}
 

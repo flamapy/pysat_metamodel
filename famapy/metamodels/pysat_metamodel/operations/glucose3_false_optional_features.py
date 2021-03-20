@@ -1,8 +1,8 @@
 from pysat.solvers import Glucose3
 
 from famapy.core.operations import FalseOptionalFeatures
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from famapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
+from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from famapy.metamodels.pysat_metamodel.operations.glucose3_core_features import Glucose3CoreFeatures
 
 
@@ -10,7 +10,6 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
 
     def __init__(self):
         self.false_optional_features = []
-        self.core_features = None
 
     def get_false_optional_features(self):
         return self.false_optional_features
@@ -18,26 +17,33 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
     def get_result(self):
         return self.get_false_optional_features()
 
-    def set_core_features(self, core_features: list):
-        self.core_features = core_features
+    def execute(self, pysat_model: PySATModel) -> 'Glucose3FalseOptionalFeatures':
+        g_complete = Glucose3()
+        for clause in pysat_model.cnf:  # AC es conjunto de conjuntos
+            g_complete.add_clause(clause)  # añadimos la constraint
 
-    def set_up(self, pysat_model: PySATModel, have_core):
-        if not have_core:
-            core_features = Glucose3CoreFeatures()
-            core_features.execute(pysat_model)
-            core_features = core_features.get_core_features()
-            self.core_features=core_features
+        g_partial = Glucose3()
+        for clause in pysat_model.partial_cnf:  # AC es conjunto de conjuntos
+            g_partial.add_clause(clause)  # añadimos la constraint
 
-    def execute(self, pysat_model: PySATModel, fm_model: FeatureModel) -> 'Glucose3FalseOptionalFeatures':
-        self.set_up(pysat_model,self.core_features!=None)
+        core_features = []
+        if g_complete.solve():
+            for variable in pysat_model.variables.items():
+                if not g_complete.solve(assumptions=[-variable[1]]):
+                    core_features.append(variable[0])
+
+        partial_core_features = []
+        if g_partial.solve():
+            for variable in pysat_model.variables.items():
+                if not g_partial.solve(assumptions=[-variable[1]]):
+                    partial_core_features.append(variable[0])
 
         false_optional = []
-        for feat in self.core_features:
-            for relation in fm_model.relations:
-                children_names = [feat.name for feat in relation.children]
-                if relation.is_optional() and feat in children_names:
-                    false_optional.append(feat)
-                    break
+        for feat in core_features:
+            if feat not in partial_core_features:
+                false_optional.append(feat)
             
         self.false_optional_features=false_optional
+        g_complete.delete()
+        g_partial.delete()
         return self
