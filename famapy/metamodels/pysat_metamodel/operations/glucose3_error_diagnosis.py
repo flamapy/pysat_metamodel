@@ -55,8 +55,7 @@ class Glucose3ErrorDiagnosis(ErrorDiagnosis):
                                     " " + ctc.destination.name + ", or simply delete the constraint")
                                 for relation in fm_model.get_relations():
                                     if relation.is_alternative() and feat in relation.children:
-                                        self.diagnosis_messages.append("Convert the alternative feature, of " + feat.name +
-                                            " to mandatory or optional modifying the alternative relation")
+                                        self.diagnosis_messages.append("Delete or convert the relationship of the alternative feature, of " + feat.name)
 
             if self.false_optional_features:
                 for feat in fm_model.get_features():
@@ -68,8 +67,7 @@ class Glucose3ErrorDiagnosis(ErrorDiagnosis):
                                     " " + ctc.ctc_type + " " + ctc.destination.name)
                                 for relation in fm_model.get_relations():
                                     if relation.is_alternative() and feat in relation.children:
-                                        self.diagnosis_messages.append("Convert the alternative feature, of " + feat.name +
-                                            " to mandatory or optional modifying the alternative relation")
+                                        self.diagnosis_messages.append("Delete or convert the relationship of the alternative feature, of " + feat.name)
         else:
             for ctc in fm_model.get_constraints():
                 self.diagnosis_messages.append("Delete the constraint: " + ctc.origin.name +
