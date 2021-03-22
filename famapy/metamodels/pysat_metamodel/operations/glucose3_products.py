@@ -26,4 +26,5 @@ class Glucose3Products(Products):
                 if variable > 0:  # This feature should appear in the product
                     product.append(model.features.get(variable))
             self.products.append(product)
+        g.delete()
         return self

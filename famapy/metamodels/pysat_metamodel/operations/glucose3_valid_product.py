@@ -34,4 +34,5 @@ class Glucose3ValidProduct(ValidProduct):
                 assumptions.append(-model.variables[feat])
 
         self.result = g.solve(assumptions=assumptions)
+        g.delete()
         return self

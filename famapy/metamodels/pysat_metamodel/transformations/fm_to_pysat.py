@@ -19,6 +19,7 @@ class FmToPysat(ModelToModel):
         self.counter = 1
         self.destination_model = PySATModel()
         self.cnf = self.destination_model.cnf
+        self.partial_cnf = self.destination_model.partial_cnf
 
     def add_feature(self, feature):
         if feature.name not in self.destination_model.variables.keys():
@@ -28,18 +29,28 @@ class FmToPysat(ModelToModel):
 
     def add_root(self, feature):
         self.cnf.append([self.destination_model.variables.get(feature.name)])
+        self.partial_cnf.append([self.destination_model.variables.get(feature.name)])
 
     def add_relation(self, relation):
         if (relation.is_mandatory()):
             self.cnf.append([
                 -1 * self.destination_model.variables.get(relation.parent.name),
                 self.destination_model.variables.get(relation.children[0].name)])
+            self.partial_cnf.append([
+                -1 * self.destination_model.variables.get(relation.parent.name),
+                self.destination_model.variables.get(relation.children[0].name)])
             self.cnf.append([
+                -1 * self.destination_model.variables.get(relation.children[0].name),
+                self.destination_model.variables.get(relation.parent.name)])
+            self.partial_cnf.append([
                 -1 * self.destination_model.variables.get(relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)])
 
         elif (relation.is_optional()):
             self.cnf.append([
+                -1 * self.destination_model.variables.get(relation.children[0].name),
+                self.destination_model.variables.get(relation.parent.name)])
+            self.partial_cnf.append([
                 -1 * self.destination_model.variables.get(relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)])
 
@@ -49,9 +60,13 @@ class FmToPysat(ModelToModel):
             for child in relation.children:
                 alt_cnf.append(self.destination_model.variables.get(child.name))
             self.cnf.append(alt_cnf)
+            self.partial_cnf.append(alt_cnf)
 
             for child in relation.children:
                 self.cnf.append([
+                    -1 * self.destination_model.variables.get(child.name),
+                    self.destination_model.variables.get(relation.parent.name)])
+                self.partial_cnf.append([
                     -1 * self.destination_model.variables.get(child.name),
                     self.destination_model.variables.get(relation.parent.name)])
 
@@ -61,6 +76,7 @@ class FmToPysat(ModelToModel):
             for child in relation.children:
                 alt_cnf.append(self.destination_model.variables.get(child.name))
             self.cnf.append(alt_cnf)
+            self.partial_cnf.append(alt_cnf)
 
             for i in range(len(relation.children)):
                 for j in range(i+1, len(relation.children)):
@@ -68,7 +84,11 @@ class FmToPysat(ModelToModel):
                         self.cnf.append([
                             -1 * self.destination_model.variables.get(relation.children[i].name),
                             -1*self.destination_model.variables.get(relation.children[j].name)])
+                        self.partial_cnf.append([
+                            -1 * self.destination_model.variables.get(relation.children[i].name),
+                            -1*self.destination_model.variables.get(relation.children[j].name)])
                 self.cnf.append([-1*self.destination_model.variables.get(relation.children[i].name),self.destination_model.variables.get(relation.parent.name)])
+                self.partial_cnf.append([-1*self.destination_model.variables.get(relation.children[i].name),self.destination_model.variables.get(relation.parent.name)])
 
         else:  # This is a m to n relationship
             from itertools import combinations
@@ -108,5 +128,3 @@ class FmToPysat(ModelToModel):
             self.add_constraint(constraint)
 
         return self.destination_model
-
-    
