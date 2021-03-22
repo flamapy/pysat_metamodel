@@ -76,13 +76,13 @@ class FmToPysat(ModelToModel):
             raise NotImplementedError
 
     def add_constraint(self, ctc):
-        dest = self.destination_model.variables.get(ctc.destination.name)
-        orig = self.destination_model.variables.get(ctc.origin.name)
+        dest = self.destination_model.variables.get(ctc.ast.get_childs(ctc.ast.get_root())[1].get_name())
+        orig = self.destination_model.variables.get(ctc.ast.get_childs(ctc.ast.get_root())[0].get_name())
 
-        if ctc.ctc_type == 'requires':
+        if ctc.ast.get_root().get_name() == 'requires':
             self.cnf.append([-1*orig, dest])
 
-        elif ctc.ctc_type == 'excludes':
+        elif ctc.ast.get_root().get_name() == 'excludes':
             self.cnf.append([-1*orig, -1*dest])
 
     def transform(self):
