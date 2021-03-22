@@ -2,7 +2,6 @@ from pysat.solvers import Glucose3
 
 from famapy.core.operations import CoreFeatures
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from famapy.metamodels.pysat_metamodel.operations.glucose3_products import Glucose3Products
 
 
 class Glucose3CoreFeatures(CoreFeatures):
