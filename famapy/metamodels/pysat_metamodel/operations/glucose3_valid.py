@@ -3,7 +3,6 @@ from pysat.solvers import Glucose3
 from famapy.core.operations import Valid
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
-
 class Glucose3Valid(Valid):
 
     def __init__(self):
@@ -17,8 +16,10 @@ class Glucose3Valid(Valid):
 
     def execute(self, model: PySATModel) -> 'Glucose3Valid':
         g = Glucose3()
-        for clause in model.cnf:  # AC es conjunto de conjuntos
-            g.add_clause(clause)  # añadimos la constraint
+        for clause in model.r_cnf:
+            g.add_clause(clause)
+        for clause in model.ctc_cnf:
+            g.add_clause(clause)
         self.result = g.solve()
         g.delete()
         return self

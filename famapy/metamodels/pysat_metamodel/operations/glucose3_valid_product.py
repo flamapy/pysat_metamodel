@@ -4,7 +4,6 @@ from famapy.core.operations import ValidProduct
 from famapy.metamodels.pysat_metamodel.models.configuration import PySATConfiguration
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
-
 class Glucose3ValidProduct(ValidProduct):
 
     def __init__(self):
@@ -22,8 +21,10 @@ class Glucose3ValidProduct(ValidProduct):
 
     def execute(self, model: PySATModel) -> 'Glucose3ValidProduct':
         g = Glucose3()
-        for clause in model.cnf:  # AC es conjunto de conjuntos
-            g.add_clause(clause)  # añadimos la constraint
+        for clause in model.r_cnf:
+            g.add_clause(clause)
+        for clause in model.ctc_cnf:
+            g.add_clause(clause)
 
         assumptions = []
         config = [feat.name for feat in self.configuration.elements]

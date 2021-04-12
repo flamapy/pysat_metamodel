@@ -10,9 +10,10 @@ class PySATModel(VariabilityModel):
         return 'pysat'
 
     def __init__(self):
-        self.cnf = CNF()
+        self.r_cnf = CNF()
+        self.ctc_cnf = CNF()
         self.variables = {}
         self.features = {}
 
     def add_constraint(self, constraint):
-        self.cnf.append(constraint)
+        self.ctc_cnf.append(constraint)
