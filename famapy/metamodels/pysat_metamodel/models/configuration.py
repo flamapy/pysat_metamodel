@@ -6,5 +6,5 @@ from typing import Dict
 
 class PySATConfiguration(Configuration):
 
-    def __init__(self, elements: Dict[Feature, bool]) -> bool:  # make elements to be a dict of feature, boolean
+    def __init__(self, elements: Dict[Feature, bool]) -> None:  # make elements to be a dict of feature, boolean
         self.elements = elements

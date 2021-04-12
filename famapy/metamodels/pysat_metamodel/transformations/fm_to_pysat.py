@@ -19,7 +19,6 @@ class FmToPysat(ModelToModel):
         self.counter = 1
         self.destination_model = PySATModel()
         self.cnf = self.destination_model.cnf
-        self.partial_cnf = self.destination_model.partial_cnf
 
     def add_feature(self, feature):
         if feature.name not in self.destination_model.variables.keys():
@@ -29,20 +28,13 @@ class FmToPysat(ModelToModel):
 
     def add_root(self, feature):
         self.cnf.append([self.destination_model.variables.get(feature.name)])
-        self.partial_cnf.append([self.destination_model.variables.get(feature.name)])
 
     def add_relation(self, relation):
         if (relation.is_mandatory()):
             self.cnf.append([
                 -1 * self.destination_model.variables.get(relation.parent.name),
                 self.destination_model.variables.get(relation.children[0].name)])
-            self.partial_cnf.append([
-                -1 * self.destination_model.variables.get(relation.parent.name),
-                self.destination_model.variables.get(relation.children[0].name)])
             self.cnf.append([
-                -1 * self.destination_model.variables.get(relation.children[0].name),
-                self.destination_model.variables.get(relation.parent.name)])
-            self.partial_cnf.append([
                 -1 * self.destination_model.variables.get(relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)])
 
@@ -50,33 +42,25 @@ class FmToPysat(ModelToModel):
             self.cnf.append([
                 -1 * self.destination_model.variables.get(relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)])
-            self.partial_cnf.append([
-                -1 * self.destination_model.variables.get(relation.children[0].name),
-                self.destination_model.variables.get(relation.parent.name)])
-
+ 
         elif (relation.is_or()):  # this is a 1 to n relatinship with multiple childs
             # add the first cnf child1 or child2 or ... or childN or no parent)
             alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]  # first elem of the constraint
             for child in relation.children:
                 alt_cnf.append(self.destination_model.variables.get(child.name))
             self.cnf.append(alt_cnf)
-            self.partial_cnf.append(alt_cnf)
 
             for child in relation.children:
                 self.cnf.append([
                     -1 * self.destination_model.variables.get(child.name),
                     self.destination_model.variables.get(relation.parent.name)])
-                self.partial_cnf.append([
-                    -1 * self.destination_model.variables.get(child.name),
-                    self.destination_model.variables.get(relation.parent.name)])
-
+ 
         elif (relation.is_alternative()):  # this is a 1 to 1 relatinship with multiple childs
             # add the first cnf child1 or child2 or ... or childN or no parent)
             alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]  # first elem of the constraint
             for child in relation.children:
                 alt_cnf.append(self.destination_model.variables.get(child.name))
             self.cnf.append(alt_cnf)
-            self.partial_cnf.append(alt_cnf)
 
             for i in range(len(relation.children)):
                 for j in range(i+1, len(relation.children)):
@@ -84,35 +68,21 @@ class FmToPysat(ModelToModel):
                         self.cnf.append([
                             -1 * self.destination_model.variables.get(relation.children[i].name),
                             -1*self.destination_model.variables.get(relation.children[j].name)])
-                        self.partial_cnf.append([
-                            -1 * self.destination_model.variables.get(relation.children[i].name),
-                            -1*self.destination_model.variables.get(relation.children[j].name)])
-                self.cnf.append([-1*self.destination_model.variables.get(relation.children[i].name),self.destination_model.variables.get(relation.parent.name)])
-                self.partial_cnf.append([-1*self.destination_model.variables.get(relation.children[i].name),self.destination_model.variables.get(relation.parent.name)])
+                self.cnf.append([-1*self.destination_model.variables.get(relation.children[i].name),
+                    self.destination_model.variables.get(relation.parent.name)])
 
         else:  # This is a m to n relationship
-            from itertools import combinations
-            index = relation.card_min
-            _dnf=[]
-            while index <= relation.card_max:
-                _combinations=list(combinations(relation.children,index))
-                for _combination in _combinations:
-                    clause=[]
-                    for feature in _combination:
-                        clause.append(self.destination_model.variables.get(feature.name))
-                    _dnf.append(clause)
-                index += 1
-            print(_dnf)
-            print("fatal error. N to M relationships are not yet supported in PySAT", file=sys.stderr)
+            print("Fatal error. N to M relationships are not yet supported in PySAT", file=sys.stderr)
             raise NotImplementedError
 
     def add_constraint(self, ctc):
-        dest = self.destination_model.variables.get(ctc.destination.name)
-        orig = self.destination_model.variables.get(ctc.origin.name)
-        if ctc.ctc_type == 'requires':
+        dest = self.destination_model.variables.get(ctc.ast.get_childs(ctc.ast.get_root())[1].get_name())
+        orig = self.destination_model.variables.get(ctc.ast.get_childs(ctc.ast.get_root())[0].get_name())
+
+        if ctc.ast.get_root().get_name() == 'requires':
             self.cnf.append([-1*orig, dest])
 
-        elif ctc.ctc_type == 'excludes':
+        elif ctc.ast.get_root().get_name() == 'excludes':
             self.cnf.append([-1*orig, -1*dest])
 
     def transform(self):
