@@ -1,5 +1,6 @@
 import sys
 
+from famapy.core.exceptions import ElementNotFound
 from famapy.core.models import VariabilityModel
 from famapy.core.transformations import ModelToModel
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
@@ -79,6 +80,8 @@ class FmToPysat(ModelToModel):
         dest = self.destination_model.variables.get(ctc.ast.get_childs(ctc.ast.get_root())[1].get_name())
         orig = self.destination_model.variables.get(ctc.ast.get_childs(ctc.ast.get_root())[0].get_name())
 
+        if (dest is None) or (orig is None):
+            raise ElementNotFound
         if ctc.ast.get_root().get_name() == 'requires':
             self.cnf.append([-1*orig, dest])
 
