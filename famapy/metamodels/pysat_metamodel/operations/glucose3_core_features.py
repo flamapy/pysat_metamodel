@@ -26,6 +26,6 @@ class Glucose3CoreFeatures(CoreFeatures):
                 if not g.solve(assumptions=[-variable[1]]):
                     core_features.append(variable[0])
             
-        self.core_features=core_features
+        self.core_features = core_features
         g.delete()
         return self

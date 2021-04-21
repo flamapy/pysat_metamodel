@@ -24,7 +24,6 @@ class Glucose3DeadFeatures(DeadFeatures):
         for variable in model.variables.items():
             if not g.solve(assumptions=[variable[1]]):
                 dead_features.append(variable[0])
-            
-        self.dead_features=dead_features
+        self.dead_features = dead_features
         g.delete()
         return self
