@@ -16,16 +16,16 @@ class Glucose3CoreFeatures(CoreFeatures):
         return self.get_core_features()
 
     def execute(self, model: PySATModel) -> 'Glucose3CoreFeatures':
-        g = Glucose3()
+        glucose = Glucose3()
         for clause in model.cnf:  # AC es conjunto de conjuntos
-            g.add_clause(clause)  # añadimos la constraint
+            glucose.add_clause(clause)  # añadimos la constraint
 
         core_features = []
-        if g.solve():
+        if glucose.solve():
             for variable in model.variables.items():
-                if not g.solve(assumptions=[-variable[1]]):
+                if not glucose.solve(assumptions=[-variable[1]]):
                     core_features.append(variable[0])
-            
+
         self.core_features = core_features
-        g.delete()
+        glucose.delete()
         return self

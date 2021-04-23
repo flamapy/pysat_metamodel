@@ -21,9 +21,9 @@ class Glucose3ValidConfiguration(ValidConfiguration):
         self.configuration = configuration
 
     def execute(self, model: PySATModel) -> 'Glucose3ValidConfiguration':
-        g = Glucose3()
+        glucose = Glucose3()
         for clause in model.cnf:  # AC es conjunto de conjuntos
-            g.add_clause(clause)  # añadimos la constraint
+            glucose.add_clause(clause)  # añadimos la constraint
 
         assumptions = []
         for feat in self.configuration.elements.items():
@@ -32,6 +32,6 @@ class Glucose3ValidConfiguration(ValidConfiguration):
             elif not feat[1]:
                 assumptions.append(-model.variables[feat[0].name])
 
-        self.result = g.solve(assumptions=assumptions)
-        g.delete()
+        self.result = glucose.solve(assumptions=assumptions)
+        glucose.delete()
         return self

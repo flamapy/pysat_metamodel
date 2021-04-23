@@ -16,9 +16,9 @@ class Glucose3Valid(Valid):
         return self.is_valid()
 
     def execute(self, model: PySATModel) -> 'Glucose3Valid':
-        g = Glucose3()
+        glucose = Glucose3()
         for clause in model.cnf:  # AC es conjunto de conjuntos
-            g.add_clause(clause)  # añadimos la constraint
-        self.result = g.solve()
-        g.delete()
+            glucose.add_clause(clause)  # añadimos la constraint
+        self.result = glucose.solve()
+        glucose.delete()
         return self
