@@ -102,4 +102,4 @@ class CNFReader(TextToModel):
                         cnf_clause.append(self.destination_model.variables[feature])
                     logic_not = False
             self.destination_model.add_constraint(cnf_clause)
-            
+
