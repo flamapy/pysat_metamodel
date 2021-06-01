@@ -1,7 +1,7 @@
-from pysat.solvers import Glucose3
-
 from famapy.core.operations import CoreFeatures
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from pysat.solvers import Glucose3
+
 
 class Glucose3CoreFeatures(CoreFeatures):
 
@@ -15,16 +15,16 @@ class Glucose3CoreFeatures(CoreFeatures):
         return self.get_core_features()
 
     def execute(self, model: PySATModel) -> 'Glucose3CoreFeatures':
-        g = Glucose3()
+        glucose = Glucose3()
         for clause in model.r_cnf:
-            g.add_clause(clause)
+            glucose.add_clause(clause)
         for clause in model.ctc_cnf:
-            g.add_clause(clause)
+            glucose.add_clause(clause)
 
-        if g.solve():
+        if glucose.solve():
             for feat in model.features:
-                if not g.solve(assumptions=[-feat]):
+                if not glucose.solve(assumptions = [-feat]):
                     self.core_features.append(model.features.get(feat))
 
-        g.delete()
+        glucose.delete()
         return self

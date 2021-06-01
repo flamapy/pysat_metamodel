@@ -1,5 +1,6 @@
 import sys
 
+from famapy.core.exceptions import ElementNotFound
 from famapy.core.models import VariabilityModel
 from famapy.core.transformations import ModelToModel
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
@@ -31,7 +32,7 @@ class FmToPysat(ModelToModel):
         self.r_cnf.append([self.destination_model.variables.get(feature.name)])
 
     def add_relation(self, relation):
-        if (relation.is_mandatory()):
+        if relation.is_mandatory():
             self.r_cnf.append([
                 -1 * self.destination_model.variables.get(relation.parent.name),
                 self.destination_model.variables.get(relation.children[0].name)])
@@ -39,14 +40,16 @@ class FmToPysat(ModelToModel):
                 -1 * self.destination_model.variables.get(relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)])
 
-        elif (relation.is_optional()):
+        elif relation.is_optional():
             self.r_cnf.append([
                 -1 * self.destination_model.variables.get(relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)])
  
-        elif (relation.is_or()):  # this is a 1 to n relatinship with multiple childs
+        elif relation.is_or():  # this is a 1 to n relatinship with multiple childs
             # add the first cnf child1 or child2 or ... or childN or no parent)
-            alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]  # first elem of the constraint
+
+            # first elem of the constraint
+            alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]
             for child in relation.children:
                 alt_cnf.append(self.destination_model.variables.get(child.name))
             self.r_cnf.append(alt_cnf)
@@ -56,35 +59,49 @@ class FmToPysat(ModelToModel):
                     -1 * self.destination_model.variables.get(child.name),
                     self.destination_model.variables.get(relation.parent.name)])
  
-        elif (relation.is_alternative()):  # this is a 1 to 1 relatinship with multiple childs
+        elif relation.is_alternative():  # this is a 1 to 1 relatinship with multiple childs
             # add the first cnf child1 or child2 or ... or childN or no parent)
-            alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]  # first elem of the constraint
+
+            # first elem of the constraint
+            alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]
             for child in relation.children:
                 alt_cnf.append(self.destination_model.variables.get(child.name))
             self.r_cnf.append(alt_cnf)
 
             for i in range(len(relation.children)):
-                for j in range(i+1, len(relation.children)):
+                for j in range(i + 1, len(relation.children)):
                     if i != j:
                         self.r_cnf.append([
                             -1 * self.destination_model.variables.get(relation.children[i].name),
-                            -1*self.destination_model.variables.get(relation.children[j].name)])
-                self.r_cnf.append([-1*self.destination_model.variables.get(relation.children[i].name),
-                    self.destination_model.variables.get(relation.parent.name)])
+                            -1*self.destination_model.variables.get(relation.children[j].name)
+                        ])
+                self.r_cnf.append([
+                    -1*self.destination_model.variables.get(relation.children[i].name),
+                    self.destination_model.variables.get(relation.parent.name)
+                ])
 
         else:  # This is a m to n relationship
-            print("Fatal error. N to M relationships are not yet supported in PySAT", file=sys.stderr)
+            print(
+                "Fatal error. N to M relationships are not yet supported in PySAT", 
+                file=sys.stderr
+            )
             raise NotImplementedError
 
     def add_constraint(self, ctc):
-        dest = self.destination_model.variables.get(ctc.ast.get_childs(ctc.ast.get_root())[1].get_name())
-        orig = self.destination_model.variables.get(ctc.ast.get_childs(ctc.ast.get_root())[0].get_name())
+        dest = self.destination_model.variables.get(
+            ctc.ast.get_childs(ctc.ast.get_root())[1].get_name()
+        )
+        orig = self.destination_model.variables.get(
+            ctc.ast.get_childs(ctc.ast.get_root())[0].get_name()
+        )
 
+        if dest is None or orig is None:
+            raise ElementNotFound
         if ctc.ast.get_root().get_name() == 'requires':
-            self.ctc_cnf.append([-1*orig, dest])
+            self.ctc_cnf.append([-1 * orig, dest])
 
         elif ctc.ast.get_root().get_name() == 'excludes':
-            self.ctc_cnf.append([-1*orig, -1*dest])
+            self.ctc_cnf.append([-1 * orig, -1 * dest])
 
     def transform(self):
         for feature in self.source_model.get_features():
