@@ -16,10 +16,9 @@ class Glucose3Products(Products):
 
     def execute(self, model: PySATModel) -> 'Glucose3Products':
         glucose = Glucose3()
-        for clause in model.r_cnf:
-            glucose.add_clause(clause)
-        for clause in model.ctc_cnf:
-            glucose.add_clause(clause)
+
+        for clause in model.cnf:  # AC es conjunto de conjuntos
+            glucose.add_clause(clause)  # añadimos la constraint
 
         for solutions in glucose.enum_models():
             product = list()
