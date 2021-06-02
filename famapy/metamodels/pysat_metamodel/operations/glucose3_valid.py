@@ -1,7 +1,6 @@
-from pysat.solvers import Glucose3
-
 from famapy.core.operations import Valid
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from pysat.solvers import Glucose3
 
 
 class Glucose3Valid(Valid):

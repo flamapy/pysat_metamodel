@@ -1,7 +1,6 @@
-from pysat.solvers import Glucose3
-
 from famapy.core.operations import Products
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from pysat.solvers import Glucose3
 
 
 class Glucose3Products(Products):
@@ -17,13 +16,14 @@ class Glucose3Products(Products):
 
     def execute(self, model: PySATModel) -> 'Glucose3Products':
         glucose = Glucose3()
+
         for clause in model.cnf:  # AC es conjunto de conjuntos
             glucose.add_clause(clause)  # añadimos la constraint
 
         for solutions in glucose.enum_models():
             product = list()
             for variable in solutions:
-                if variable > 0:  # This feature should appear in the product
+                if variable > 0:
                     product.append(model.features.get(variable))
             self.products.append(product)
         glucose.delete()

@@ -19,7 +19,8 @@ class FmToPysat(ModelToModel):
         self.source_model = source_model
         self.counter = 1
         self.destination_model = PySATModel()
-        self.cnf = self.destination_model.cnf
+        self.r_cnf = self.destination_model.r_cnf
+        self.ctc_cnf = self.destination_model.ctc_cnf
 
     def add_feature(self, feature):
         if feature.name not in self.destination_model.variables.keys():
@@ -28,14 +29,14 @@ class FmToPysat(ModelToModel):
             self.counter += 1
 
     def add_root(self, feature):
-        self.cnf.append([self.destination_model.variables.get(feature.name)])
+        self.r_cnf.append([self.destination_model.variables.get(feature.name)])
 
     def add_relation(self, relation):  # noqa: MC0001
         if relation.is_mandatory():
             self.cnf.append([
                 -1 * self.destination_model.variables.get(relation.parent.name),
                 self.destination_model.variables.get(relation.children[0].name)])
-            self.cnf.append([
+            self.r_cnf.append([
                 -1 * self.destination_model.variables.get(relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)])
 
@@ -51,10 +52,10 @@ class FmToPysat(ModelToModel):
             alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]
             for child in relation.children:
                 alt_cnf.append(self.destination_model.variables.get(child.name))
-            self.cnf.append(alt_cnf)
+            self.r_cnf.append(alt_cnf)
 
             for child in relation.children:
-                self.cnf.append([
+                self.r_cnf.append([
                     -1 * self.destination_model.variables.get(child.name),
                     self.destination_model.variables.get(relation.parent.name)])
 
@@ -65,12 +66,12 @@ class FmToPysat(ModelToModel):
             alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]
             for child in relation.children:
                 alt_cnf.append(self.destination_model.variables.get(child.name))
-            self.cnf.append(alt_cnf)
+            self.r_cnf.append(alt_cnf)
 
             for i in range(len(relation.children)):
                 for j in range(i + 1, len(relation.children)):
                     if i != j:
-                        self.cnf.append([
+                        self.r_cnf.append([
                             -1 * self.destination_model.variables.get(relation.children[i].name),
                             -1 * self.destination_model.variables.get(relation.children[j].name)
                         ])

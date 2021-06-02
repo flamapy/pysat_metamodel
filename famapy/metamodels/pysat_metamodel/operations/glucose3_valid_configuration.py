@@ -1,8 +1,8 @@
-from pysat.solvers import Glucose3
-
+from famapy.core.models.configuration import Configuration
 from famapy.core.operations import ValidConfiguration
 from famapy.core.models import Configuration
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from pysat.solvers import Glucose3
 
 
 class Glucose3ValidConfiguration(ValidConfiguration):
@@ -22,6 +22,7 @@ class Glucose3ValidConfiguration(ValidConfiguration):
 
     def execute(self, model: PySATModel) -> 'Glucose3ValidConfiguration':
         glucose = Glucose3()
+
         for clause in model.cnf:  # AC es conjunto de conjuntos
             glucose.add_clause(clause)  # añadimos la constraint
 
