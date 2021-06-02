@@ -1,6 +1,5 @@
-from pysat.formula import CNF
-
 from famapy.core.models import VariabilityModel
+from pysat.formula import CNF
 
 
 class PySATModel(VariabilityModel):

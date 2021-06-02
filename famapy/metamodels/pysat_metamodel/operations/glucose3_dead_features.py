@@ -17,8 +17,10 @@ class Glucose3DeadFeatures(DeadFeatures):
     def execute(self, model: PySATModel) -> 'Glucose3DeadFeatures':
         glucose = Glucose3()
 
-        for clause in model.cnf:  # AC es conjunto de conjuntos
-            glucose.add_clause(clause)  # añadimos la constraint
+        for clause in model.r_cnf:
+            glucose.add_clause(clause)
+        for clause in model.ctc_cnf:
+            glucose.add_clause(clause)
 
         dead_features = []
         for variable in model.variables.items():
