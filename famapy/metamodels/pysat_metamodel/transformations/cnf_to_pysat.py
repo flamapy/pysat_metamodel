@@ -103,3 +103,44 @@ class CNFReader(TextToModel):
                     logic_not = False
             self.destination_model.add_constraint(cnf_clause)
 
+    def get_cnf_formula(self, cnf_output_syntax: CNFNotation=CNFNotation.JAVA) -> str:
+        cnf_formula = self._read_cnf_formula()
+        cnf_notation = identify_notation(cnf_formula)
+
+        if cnf_output_syntax == cnf_notation:
+            return cnf_formula
+        
+        # Translate AND operators
+        symbol_pattern = ' ' + cnf_notation.value[LogicOperator.AND] + ' '
+        new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.AND] + ' '
+        cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+
+        # Translate OR operators
+        symbol_pattern = ' ' + cnf_notation.value[LogicOperator.OR] + ' '
+        new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.OR] + ' '
+        cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+
+        # Translate NOT operators (this is more complex because the symbol may be part of a feature's name)
+        if cnf_notation == CNFNotation.TEXTUAL:
+            symbol_pattern = cnf_notation.value[LogicOperator.NOT] + ' '
+            new_symbol = cnf_output_syntax.value[LogicOperator.NOT]
+            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+        elif cnf_output_syntax == CNFNotation.TEXTUAL:
+            symbol_pattern = ' ' + cnf_notation.value[LogicOperator.NOT]
+            new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.NOT] + ' '
+            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+
+            symbol_pattern = '(' + cnf_notation.value[LogicOperator.NOT]
+            new_symbol = '(' + cnf_output_syntax.value[LogicOperator.NOT] + ' '
+            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+        else:
+            symbol_pattern = ' ' + cnf_notation.value[LogicOperator.NOT]
+            new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.NOT]
+            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+
+            symbol_pattern = '(' + cnf_notation.value[LogicOperator.NOT]
+            new_symbol = '(' + cnf_output_syntax.value[LogicOperator.NOT]
+            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+        return cnf_formula
+
+
