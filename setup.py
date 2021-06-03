@@ -23,7 +23,7 @@ setuptools.setup(
     python_requires='>=3.9',
     install_requires=[
         'famapy>=0.1.0',
-        'python-sat==0.1.5.dev16'
+        'python-sat>=0.1.7.dev3'
     ],
     dependency_links=[
         'famapy>=0.1.0'
