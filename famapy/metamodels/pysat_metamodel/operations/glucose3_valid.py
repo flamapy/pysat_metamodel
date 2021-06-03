@@ -23,5 +23,6 @@ class Glucose3Valid(Valid):
             glucose.add_clause(clause)
 
         self.result = glucose.solve()
+
         glucose.delete()
         return self

@@ -1,7 +1,6 @@
 from enum import Enum, auto
 
 from famapy.core.transformations import TextToModel
-
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
@@ -53,7 +52,7 @@ class CNFReader(TextToModel):
         self._path = path
         self.counter = 1
         self.destination_model = PySATModel()
-        self.cnf = self.destination_model.cnf
+        self.ctc_cnf = self.destination_model.ctc_cnf
 
     def transform(self) -> PySATModel:
         self._read_clauses()

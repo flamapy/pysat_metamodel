@@ -22,10 +22,9 @@ class Glucose3DeadFeatures(DeadFeatures):
         for clause in model.ctc_cnf:
             glucose.add_clause(clause)
 
-        dead_features = []
-        for variable in model.variables.items():
-            if not glucose.solve(assumptions=[variable[1]]):
-                dead_features.append(variable[0])
-        self.dead_features = dead_features
+        for feat in model.features:
+            if not glucose.solve(assumptions=[feat]):
+                self.dead_features.append(model.features.get(feat))
+                
         glucose.delete()
         return self

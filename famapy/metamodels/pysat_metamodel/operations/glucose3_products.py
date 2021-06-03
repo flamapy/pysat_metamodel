@@ -28,5 +28,6 @@ class Glucose3Products(Products):
                 if variable > 0:
                     product.append(model.features.get(variable))
             self.products.append(product)
+
         glucose.delete()
         return self

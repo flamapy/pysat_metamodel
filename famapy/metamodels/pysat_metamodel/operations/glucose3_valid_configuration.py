@@ -34,7 +34,7 @@ class Glucose3ValidConfiguration(ValidConfiguration):
                 assumptions.append(model.variables[feat[0].name])
             elif not feat[1]:
                 assumptions.append(-model.variables[feat[0].name])
-
         self.result = glucose.solve(assumptions=assumptions)
+
         glucose.delete()
         return self

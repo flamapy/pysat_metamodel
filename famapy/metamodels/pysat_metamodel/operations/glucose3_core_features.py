@@ -22,12 +22,10 @@ class Glucose3CoreFeatures(CoreFeatures):
         for clause in model.ctc_cnf:
             glucose.add_clause(clause)
 
-        core_features = []
         if glucose.solve():
-            for variable in model.variables.items():
-                if not glucose.solve(assumptions=[-variable[1]]):
-                    core_features.append(variable[0])
+            for feat in model.features:
+                if not glucose.solve(assumptions=[-feat]):
+                    self.core_features.append(model.features.get(feat))
 
-        self.core_features = core_features
         glucose.delete()
         return self
