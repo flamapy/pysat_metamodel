@@ -67,7 +67,7 @@ class CNFReader(TextToModel):
 
     def _read_cnf_formula(self) -> str:
         """It assumes the CNF formula is defined in one line in the file."""
-        with open(self._path) as file:
+        with open(self._path, encoding='utf-8') as file:
             cnf_formula = file.readline()
         return cnf_formula
 
@@ -142,5 +142,4 @@ class CNFReader(TextToModel):
             new_symbol = '(' + cnf_output_syntax.value[LogicOperator.NOT]
             cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
         return cnf_formula
-
 
