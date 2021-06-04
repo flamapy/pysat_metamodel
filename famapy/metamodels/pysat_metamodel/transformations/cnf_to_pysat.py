@@ -24,6 +24,7 @@ def identify_notation(cnf_formula: str) -> CNFNotation:
             symbol_pattern = ' ' + symbol + ' '
             if symbol_pattern in cnf_formula:
                 return notation
+    return ''
 
 
 class CNFReader(TextToModel):
@@ -76,14 +77,16 @@ class CNFReader(TextToModel):
         cnf_notation = identify_notation(cnf_formula)
 
         and_symbol_pattern = ' ' + cnf_notation.value[LogicOperator.AND] + ' '
-        clauses = list(map(lambda c: c[1:len(c)-1], cnf_formula.split(and_symbol_pattern)))  # Remove initial and final parenthesis
+        clauses = list(map(lambda c: c[1:len(c) - 1], 
+                        cnf_formula.split(and_symbol_pattern)))  
+                        # Remove initial and final parenthesis
 
         # Remove final parenthesis of last clause (because of the possible end of line: '\n')
-        if ')' in clauses[len(clauses)-1]:
-            clauses[len(clauses)-1] = clauses[len(clauses)-1][:-1]  
+        if ')' in clauses[len(clauses) - 1]:
+            clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]  
 
-        for c in clauses:
-            tokens = c.split(' ')
+        for _c in clauses:
+            tokens = _c.split(' ')
             tokens = list(filter(lambda t: t != cnf_notation.value[LogicOperator.OR], tokens))
             logic_not = False
             cnf_clause = []
@@ -93,23 +96,22 @@ class CNFReader(TextToModel):
                 elif feature.startswith(cnf_notation.value[LogicOperator.NOT]):
                     feature = feature.replace(cnf_notation.value[LogicOperator.NOT], '', 1)
                     self._add_feature(feature)
-                    cnf_clause.append(-1*self.destination_model.variables[feature])
+                    cnf_clause.append(-1 * self.destination_model.variables[feature])
                 else:
                     self._add_feature(feature)
                     if logic_not:
-                        cnf_clause.append(-1*self.destination_model.variables[feature])
+                        cnf_clause.append(-1 * self.destination_model.variables[feature])
                     else:
                         cnf_clause.append(self.destination_model.variables[feature])
                     logic_not = False
             self.destination_model.add_constraint(cnf_clause)
 
-    def get_cnf_formula(self, cnf_output_syntax: CNFNotation=CNFNotation.JAVA) -> str:
+    def get_cnf_formula(self, cnf_output_syntax: CNFNotation = CNFNotation.JAVA) -> str:
         cnf_formula = self._read_cnf_formula()
         cnf_notation = identify_notation(cnf_formula)
 
         if cnf_output_syntax == cnf_notation:
             return cnf_formula
-        
         # Translate AND operators
         symbol_pattern = ' ' + cnf_notation.value[LogicOperator.AND] + ' '
         new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.AND] + ' '
@@ -120,7 +122,8 @@ class CNFReader(TextToModel):
         new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.OR] + ' '
         cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
 
-        # Translate NOT operators (this is more complex because the symbol may be part of a feature's name)
+        # Translate NOT operators (this is more complex because 
+        # the symbol may be part of a feature's name)
         if cnf_notation == CNFNotation.TEXTUAL:
             symbol_pattern = cnf_notation.value[LogicOperator.NOT] + ' '
             new_symbol = cnf_output_syntax.value[LogicOperator.NOT]
@@ -142,4 +145,3 @@ class CNFReader(TextToModel):
             new_symbol = '(' + cnf_output_syntax.value[LogicOperator.NOT]
             cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
         return cnf_formula
-

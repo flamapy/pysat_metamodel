@@ -1,6 +1,7 @@
+from pysat.solvers import Glucose3
+
 from famapy.core.operations import ErrorDiagnosis
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from pysat.solvers import Glucose3
 
 
 class Glucose3ErrorDiagnosis(ErrorDiagnosis):
@@ -43,15 +44,15 @@ class Glucose3ErrorDiagnosis(ErrorDiagnosis):
                 for clause in model.ctc_cnf:
                     if clause[1] == -dead:
                         if clause[0] < 0:
-                            diagnosis.append('For dead feature ' +  name + ': ' + model.features.get(-clause[0]) + ' excludes ' + name)
+                            diagnosis.append('For dead feature ' + name + ': ' + model.features.get(-clause[0]) + ' excludes ' + name)
                         else:
-                            diagnosis.append('For dead feature ' +  name + ': ' + model.features.get(clause[0]) + ' requires ' + name)
+                            diagnosis.append('For dead feature ' + name + ': ' + model.features.get(clause[0]) + ' requires ' + name)
                     if clause[0] == -dead:
 
                         if clause[1]<0:
-                            diagnosis.append('For dead feature ' +  name + ': ' + name + ' excludes ' + model.features.get(-clause[1]))
+                            diagnosis.append('For dead feature ' + name + ': ' + name + ' excludes ' + model.features.get(-clause[1]))
                         else:
-                            diagnosis.append('For dead feature ' +  name + ': ' + name + ' requires ' + model.features.get(clause[1]))
+                            diagnosis.append('For dead feature ' + name + ': ' + name + ' requires ' + model.features.get(clause[1]))
 
             for false in false_optional_features:
                 name = model.features.get(false)

@@ -1,6 +1,7 @@
+from pysat.solvers import Glucose3
+
 from famapy.core.operations import ErrorDetection
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from pysat.solvers import Glucose3
 
 
 class Glucose3ErrorDetection(ErrorDetection):
@@ -34,7 +35,8 @@ class Glucose3ErrorDetection(ErrorDetection):
             false_optional_features = []
             assumption = 1
             for feat in model.features:
-                if not glucose_r_ctc.solve(assumptions = [-feat]) and glucose_r.solve(assumptions = [-feat]):
+                if (not glucose_r_ctc.solve(assumptions = [-feat]) and 
+                        glucose_r.solve(assumptions = [-feat])):
                     if glucose_r.solve(assumptions = [assumption, -feat]):
                         false_optional_features.append(model.features.get(feat))
                     assumption = feat

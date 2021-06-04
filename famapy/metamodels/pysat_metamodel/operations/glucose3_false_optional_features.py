@@ -1,6 +1,7 @@
+from pysat.solvers import Glucose3
+
 from famapy.core.operations import FalseOptionalFeatures
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from pysat.solvers import Glucose3
 
 
 class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
