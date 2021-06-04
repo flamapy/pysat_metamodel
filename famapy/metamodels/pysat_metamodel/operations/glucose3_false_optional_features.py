@@ -27,8 +27,9 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
         if glucose_r_ctc.solve():
             assumption = 1
             for feat in model.features:
-                if not glucose_r_ctc.solve(assumptions = [-feat]) and glucose_r.solve(assumptions = [-feat]):
-                    if glucose_r.solve(assumptions = [assumption, -feat]):
+                if (not glucose_r_ctc.solve(assumptions=[-feat]) and 
+                        glucose_r.solve(assumptions=[-feat])):
+                    if glucose_r.solve(assumptions=[assumption, -feat]):
                         self.false_optional_features.append(model.features.get(feat))
                     assumption = feat
 

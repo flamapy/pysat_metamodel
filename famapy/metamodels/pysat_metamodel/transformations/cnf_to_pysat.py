@@ -24,7 +24,8 @@ def identify_notation(cnf_formula: str) -> CNFNotation:
             symbol_pattern = ' ' + symbol + ' '
             if symbol_pattern in cnf_formula:
                 return notation
-    return ''
+    raise Exception("This should have happend. \
+            The CNF file is corrupted or does not adhere to the format") 
 
 
 class CNFReader(TextToModel):
@@ -41,9 +42,9 @@ class CNFReader(TextToModel):
             (A) && (!B || C) && ...
         Short Symbols:
             (A) & (-B | C) & ...
-    
     This class is able to read any of these notations, but only one notation,
-    so the .txt file should be modified to include only one of those notations by removing the others.
+    so the .txt file should be modified to include only 
+    one of those notations by removing the others.
     """
 
     @staticmethod
@@ -77,9 +78,8 @@ class CNFReader(TextToModel):
         cnf_notation = identify_notation(cnf_formula)
 
         and_symbol_pattern = ' ' + cnf_notation.value[LogicOperator.AND] + ' '
-        clauses = list(map(lambda c: c[1:len(c) - 1], 
-                        cnf_formula.split(and_symbol_pattern)))  
-                        # Remove initial and final parenthesis
+        clauses = list(map(lambda c: c[1:len(c) - 1], cnf_formula.split(and_symbol_pattern)))  
+        # Remove initial and final parenthesis
 
         # Remove final parenthesis of last clause (because of the possible end of line: '\n')
         if ')' in clauses[len(clauses) - 1]:
