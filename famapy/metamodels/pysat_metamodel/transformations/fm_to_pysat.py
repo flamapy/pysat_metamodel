@@ -33,7 +33,7 @@ class FmToPysat(ModelToModel):
 
     def add_relation(self, relation):  # noqa: MC0001
         if relation.is_mandatory():
-            self.cnf.append([
+            self.r_cnf.append([
                 -1 * self.destination_model.variables.get(relation.parent.name),
                 self.destination_model.variables.get(relation.children[0].name)])
             self.r_cnf.append([
@@ -41,7 +41,7 @@ class FmToPysat(ModelToModel):
                 self.destination_model.variables.get(relation.parent.name)])
 
         elif relation.is_optional():
-            self.cnf.append([
+            self.r_cnf.append([
                 -1 * self.destination_model.variables.get(relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)])
 
@@ -75,7 +75,7 @@ class FmToPysat(ModelToModel):
                             -1 * self.destination_model.variables.get(relation.children[i].name),
                             -1 * self.destination_model.variables.get(relation.children[j].name)
                         ])
-                self.cnf.append([
+                self.r_cnf.append([
                     -1 * self.destination_model.variables.get(relation.children[i].name),
                     self.destination_model.variables.get(relation.parent.name)
                 ])
@@ -98,10 +98,10 @@ class FmToPysat(ModelToModel):
         if dest is None or orig is None:
             raise ElementNotFound
         if ctc.ast.get_root().get_name() == 'requires':
-            self.cnf.append([-1 * orig, dest])
+            self.r_cnf.append([-1 * orig, dest])
 
         elif ctc.ast.get_root().get_name() == 'excludes':
-            self.cnf.append([-1 * orig, -1 * dest])
+            self.r_cnf.append([-1 * orig, -1 * dest])
 
     def transform(self):
         for feature in self.source_model.get_features():

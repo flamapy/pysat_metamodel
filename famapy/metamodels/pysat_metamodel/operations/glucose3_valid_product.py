@@ -23,7 +23,7 @@ class Glucose3ValidProduct(ValidProduct):
 
     def execute(self, model: PySATModel) -> 'Glucose3ValidProduct':
         glucose = Glucose3()
-        for clause in model.cnf:  # AC es conjunto de conjuntos
+        for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             glucose.add_clause(clause)  # añadimos la constraint
 
         assumptions = []

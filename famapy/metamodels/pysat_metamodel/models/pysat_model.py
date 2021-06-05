@@ -17,3 +17,9 @@ class PySATModel(VariabilityModel):
 
     def add_constraint(self, constraint):
         self.ctc_cnf.append(constraint)
+
+    def get_all_clauses(self):
+        clauses = CNF()
+        clauses.extend(self.r_cnf.clauses)
+        clauses.extend(self.ctc_cnf.clauses)
+        return clauses
