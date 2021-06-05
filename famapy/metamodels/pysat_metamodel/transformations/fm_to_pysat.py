@@ -94,7 +94,7 @@ class FmToPysat(ModelToModel):
         orig = self.destination_model.variables.get(
             ctc.ast.get_childs(ctc.ast.get_root())[0].get_name()
         )
-
+        print(dest,orig)
         if dest is None or orig is None:
             raise ElementNotFound
         if ctc.ast.get_root().get_name() == 'requires':
