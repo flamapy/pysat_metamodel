@@ -29,9 +29,9 @@ class Glucose3Filter(Filter):
             model.variables.get(feat[0].name) if feat[1]
             else -model.variables.get(feat[0].name)
             for feat in self.configuration.elements.items()
-            ]
+        ]
 
-        for solution in glucose.enum_models(assumptions = assumptions):
+        for solution in glucose.enum_models(assumptions=assumptions):
             product = list()
             for variable in solution:
                 if variable > 0:
