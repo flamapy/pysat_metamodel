@@ -118,7 +118,7 @@ class FmToPysat(ModelToModel):
                 ctc.ast.get_childs(node)[0].get_name()
             )
             if var:
-                result =  [[-var * number]]
+                result = [[-var * number]]
             else:
                 cnfs = self.ast_iterator(ctc, childs[0], number * -1)
                 result = cnfs
@@ -174,7 +174,7 @@ class FmToPysat(ModelToModel):
         else:
             print('This FM contains non supported elements', file=sys.stderr)
 
-        self.cnf.extend(cnfs)
+        self.ctc_cnf.extend(cnfs)
 
     def transform(self):
         for feature in self.source_model.get_features():
