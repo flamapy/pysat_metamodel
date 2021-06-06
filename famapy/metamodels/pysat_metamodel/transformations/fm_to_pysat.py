@@ -112,6 +112,10 @@ class FmToPysat(ModelToModel):
         return result
 
     def get_var(self, ctc, node, name, number):
+        '''
+        Este metodo se encarga de retornar la variable numerica asignada a una caracteristica, en caso
+        de que el not niegue un conjunto de clausulas vuelve al iterador.
+        '''
         childs = ctc.ast.get_childs(node)
         if name == 'not':
             var = self.destination_model.variables.get(
