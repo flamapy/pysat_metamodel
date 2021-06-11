@@ -91,8 +91,8 @@ class FmToPysat(ModelToModel):
     @staticmethod
     def and_combinator(cnfs_left: Any, cnfs_rigth: Any):
         '''
-        Este metodo se encarga de la combinatoria de literales y clausulas concatenados por un
-        operador and. Este operador trabaja por union de las variables.
+        This method takes care of the combinatorial of literals and clauses concatenated by a
+        and operator. This operator works by union of variables.
         '''
         cnfs_left.extend(cnfs_rigth)
         return cnfs_left
@@ -100,8 +100,8 @@ class FmToPysat(ModelToModel):
     @staticmethod
     def or_combinator(cnfs_left: Any, cnfs_rigth: Any):
         '''
-        Este metodo se encarga de la combinatoria de literales y clausulas concatenados por un 
-        operador or. Este operador trabaja por combinancion de las variables.
+        This method takes care of the combinatorial of literals and clauses concatenated by a
+        or operator. This operator works by combining variables.
         '''
         result = []
         for result1 in cnfs_left:
@@ -112,6 +112,9 @@ class FmToPysat(ModelToModel):
         return result
 
     def combinate(self, number, name, cnfs_left, cnfs_rigth):
+        '''
+        This method takes care of the combinatorics between literals and clauses.
+        '''
         if number > 0 and name == 'and':
             result = self.and_combinator(cnfs_left, cnfs_rigth)
         elif number > 0 and name in ('or', 'requires', 'excludes', 'implies'):
@@ -123,6 +126,10 @@ class FmToPysat(ModelToModel):
         return result
 
     def get_var(self, ctc, node, name, number):
+        '''
+        This method is in charge of returning the numerical variable assigned to a feature,
+        in case the not negates a set of clauses it returns to the iterator.
+        '''
         childs = ctc.ast.get_childs(node)
         if name == 'not':
             var = self.destination_model.variables.get(
@@ -140,8 +147,8 @@ class FmToPysat(ModelToModel):
 
     def ast_iterator(self, ctc, node, number: int):
         '''
-        La variable number se utiliza para seguir las leyes de Morgan expuestas a continuación.
-        Reglas de las leyes de Morgan:
+        The variable number is used to follow Morgan's laws listed below.
+        Rules of Morgan's Laws:
             A <=> B      = (A => B) AND (B => A)
             A  => B      = NOT(A) OR  B
             NOT(A AND B) = NOT(A) OR  NOT(B) 
