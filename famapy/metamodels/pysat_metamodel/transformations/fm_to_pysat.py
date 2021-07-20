@@ -1,4 +1,5 @@
 import sys
+import itertools
 
 from famapy.core.exceptions import ElementNotFound
 from famapy.core.models import VariabilityModel
@@ -80,27 +81,50 @@ class FmToPysat(ModelToModel):
                     self.destination_model.variables.get(relation.parent.name)
                 ])
 
-        else:  # This is a m to n relationship
-            print(
-                "Fatal error. N to M relationships are not yet supported in PySAT",
-                file=sys.stderr
-            )
-            raise NotImplementedError
-
+        else:  
+            # This is a m to n relationship
+            n = relation.card_min
+            m = relation.card_max
+			
+            for x in range(len(relation.children)+1):
+                if x<n or x>m :
+                    #These sets are the combinations that shouldn't be in the res
+                    #Let ¬A, B, C be one of your 0-paths. The relative clause will be (A ∨ ¬B ∨ ¬C).
+                    #This first for loop is to combine when the parent is and the childs led to a 0-pathself.
+                    for res in itertools.combinations(relation.children, x):
+                        cnf=[-1*self.destination_model.variables.get(relation.parent.name)]
+                        for feat in relation.children:
+                            if not(feat in res):
+                                cnf.append(self.destination_model.variables.get(feat.name))
+                            else:
+                                cnf.append(-1*self.destination_model.variables.get(feat.name))
+                        self.r_cnf.append(cnf)            
+                else:
+                    #This first for loop is to combine when the parent is not and the childs led to a 1-pathself 
+                    #which is actually 0-path considering the parent.
+                    for res in itertools.combinations(relation.children, x):
+                        cnf=[self.destination_model.variables.get(relation.parent.name)]
+                        for feat in relation.children:
+                            if not(feat in res):
+                                cnf.append(self.destination_model.variables.get(feat.name))
+                            else:
+                                cnf.append(-1*self.destination_model.variables.get(feat.name))
+                        self.r_cnf.append(cnf)
+                
     def add_constraint(self, ctc):
         dest = self.destination_model.variables.get(
-            ctc.ast.get_childs(ctc.ast.get_root())[1].get_name()
+            ctc.ast.root.right.data
         )
         orig = self.destination_model.variables.get(
-            ctc.ast.get_childs(ctc.ast.get_root())[0].get_name()
+            ctc.ast.root.left.data
         )
         if dest is None or orig is None:
             print(self.source_model)
             raise ElementNotFound
-        if ctc.ast.get_root().get_name() == 'requires':
+        if ctc.ast.root.data == 'requires':
             self.r_cnf.append([-1 * orig, dest])
 
-        elif ctc.ast.get_root().get_name() == 'excludes':
+        elif ctc.ast.root.data == 'excludes':
             self.r_cnf.append([-1 * orig, -1 * dest])
 
     def transform(self):
