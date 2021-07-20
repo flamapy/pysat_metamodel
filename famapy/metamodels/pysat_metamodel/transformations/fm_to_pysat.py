@@ -112,19 +112,30 @@ class FmToPysat(ModelToModel):
                         self.r_cnf.append(cnf)
                 
     def add_constraint(self, ctc):
-        dest = self.destination_model.variables.get(
-            ctc.ast.root.right.data
-        )
-        orig = self.destination_model.variables.get(
-            ctc.ast.root.left.data
-        )
-        if dest is None or orig is None:
-            print(self.source_model)
-            raise ElementNotFound
-        if ctc.ast.root.data == 'requires':
+        #We are only supporting requires or excludes
+        
+        if ctc.ast.root.data.upper() == 'REQUIRES' or ctc.ast.root.data.upper() == 'IMPLIES':
+            dest = self.destination_model.variables.get(
+                ctc.ast.root.right.data
+            )
+            orig = self.destination_model.variables.get(
+                ctc.ast.root.left.data
+            )
+            if dest is None or orig is None:
+                print(self.source_model)
+                raise ElementNotFound
             self.r_cnf.append([-1 * orig, dest])
 
-        elif ctc.ast.root.data == 'excludes':
+        elif ctc.ast.root.data.upper() == 'EXCLUDES':
+            dest = self.destination_model.variables.get(
+                ctc.ast.root.right.data
+            )
+            orig = self.destination_model.variables.get(
+                ctc.ast.root.left.data
+            )
+            if dest is None or orig is None:
+                print(self.source_model)
+                raise ElementNotFound
             self.r_cnf.append([-1 * orig, -1 * dest])
 
     def transform(self):
