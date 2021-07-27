@@ -7,13 +7,13 @@ from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 class Glucose3Valid(Valid):
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.result = False
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return self.result
 
-    def get_result(self):
+    def get_result(self) -> bool:
         return self.is_valid()
 
     def execute(self, model: PySATModel) -> 'Glucose3Valid':

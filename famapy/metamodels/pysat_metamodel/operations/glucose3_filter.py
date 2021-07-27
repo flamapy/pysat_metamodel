@@ -1,3 +1,5 @@
+from typing import Any
+
 from pysat.solvers import Glucose3
 
 from famapy.core.models import Configuration
@@ -7,17 +9,17 @@ from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 class Glucose3Filter(Filter):
 
-    def __init__(self):
-        self.filter_products = []
-        self.configuration = None
+    def __init__(self) -> None:
+        self.filter_products: list[list[Any]] = []
+        self.configuration = Configuration({})
 
-    def get_filter_products(self):
+    def get_filter_products(self) -> list[list[Any]]:
         return self.filter_products
 
-    def get_result(self):
+    def get_result(self) -> list[list[Any]]:
         return self.get_filter_products()
 
-    def set_configuration(self, configuration: Configuration):
+    def set_configuration(self, configuration: Configuration) -> None:
         self.configuration = configuration
 
     def execute(self, model: PySATModel) -> 'Glucose3Filter':

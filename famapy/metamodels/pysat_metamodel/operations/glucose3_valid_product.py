@@ -8,17 +8,17 @@ from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 class Glucose3ValidProduct(ValidProduct):
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.result = False
-        self.configuration = None
+        self.configuration = Configuration({})
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return self.result
 
-    def get_result(self):
+    def get_result(self) -> bool:
         return self.is_valid()
 
-    def set_configuration(self, configuration: Configuration):
+    def set_configuration(self, configuration: Configuration) -> None:
         self.configuration = configuration
 
     def execute(self, model: PySATModel) -> 'Glucose3ValidProduct':
@@ -27,7 +27,11 @@ class Glucose3ValidProduct(ValidProduct):
             glucose.add_clause(clause)  # añadimos la constraint
 
         assumptions = []
-        config = [feat.name for feat in self.configuration.elements]
+
+        config: list[str] = []
+        if self.configuration is not None:
+            config = [feat.name for feat in self.configuration.elements]
+
         for feat in model.features.values():
             if feat in config:
                 assumptions.append(model.variables[feat])

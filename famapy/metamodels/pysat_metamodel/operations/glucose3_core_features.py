@@ -1,3 +1,5 @@
+from typing import Any
+
 from pysat.solvers import Glucose3
 
 from famapy.core.operations import CoreFeatures
@@ -6,13 +8,13 @@ from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 class Glucose3CoreFeatures(CoreFeatures):
 
-    def __init__(self):
-        self.core_features = []
+    def __init__(self) -> None:
+        self.core_features: list[list[Any]] = []
 
-    def get_core_features(self):
+    def get_core_features(self) -> list[list[Any]]:
         return self.core_features
 
-    def get_result(self):
+    def get_result(self) -> list[list[Any]]:
         return self.get_core_features()
 
     def execute(self, model: PySATModel) -> 'Glucose3CoreFeatures':

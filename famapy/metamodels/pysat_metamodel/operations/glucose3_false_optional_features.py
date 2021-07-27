@@ -1,3 +1,5 @@
+from typing import Any
+
 from pysat.solvers import Glucose3
 
 from famapy.core.operations import FalseOptionalFeatures
@@ -6,13 +8,13 @@ from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
 
-    def __init__(self):
-        self.false_optional_features = []
+    def __init__(self) -> None:
+        self.false_optional_features: list[list[Any]] = []
 
-    def get_false_optional_features(self):
+    def get_false_optional_features(self) -> list[list[Any]]:
         return self.false_optional_features
 
-    def get_result(self):
+    def get_result(self) -> list[list[Any]]:
         return self.get_false_optional_features()
 
     def execute(self, model: PySATModel) -> 'Glucose3FalseOptionalFeatures':
@@ -27,8 +29,10 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
         if glucose_r_ctc.solve():
             assumption = 1
             for feat in model.features:
-                if (not glucose_r_ctc.solve(assumptions=[-feat]) and 
-                        glucose_r.solve(assumptions=[-feat])):
+                if (
+                    not glucose_r_ctc.solve(assumptions=[-feat]) and
+                    glucose_r.solve(assumptions=[-feat])
+                ):
                     if glucose_r.solve(assumptions=[assumption, -feat]):
                         self.false_optional_features.append(model.features.get(feat))
                     assumption = feat

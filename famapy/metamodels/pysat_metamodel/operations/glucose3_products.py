@@ -1,3 +1,5 @@
+from typing import Any
+
 from pysat.solvers import Glucose3
 
 from famapy.core.operations import Products
@@ -6,13 +8,13 @@ from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 class Glucose3Products(Products):
 
-    def __init__(self):
-        self.products = []
+    def __init__(self) -> None:
+        self.products: list[list[Any]] = []
 
-    def get_products(self):
+    def get_products(self) -> list[list[Any]]:
         return self.products
 
-    def get_result(self):
+    def get_result(self) -> list[list[Any]]:
         return self.get_products()
 
     def execute(self, model: PySATModel) -> 'Glucose3Products':
