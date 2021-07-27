@@ -25,7 +25,7 @@ def identify_notation(cnf_formula: str) -> CNFNotation:
             if symbol_pattern in cnf_formula:
                 return notation
     raise Exception("This should have happend. \
-            The CNF file is corrupted or does not adhere to the format") 
+            The CNF file is corrupted or does not adhere to the format")
 
 
 class CNFReader(TextToModel):
@@ -43,7 +43,7 @@ class CNFReader(TextToModel):
         Short Symbols:
             (A) & (-B | C) & ...
     This class is able to read any of these notations, but only one notation,
-    so the .txt file should be modified to include only 
+    so the .txt file should be modified to include only
     one of those notations by removing the others.
     """
 
@@ -61,7 +61,7 @@ class CNFReader(TextToModel):
         self._read_clauses()
         return self.destination_model
 
-    def _add_feature(self, feature_name):
+    def _add_feature(self, feature_name: str) -> None:
         if feature_name not in self.destination_model.variables.keys():
             self.destination_model.variables[feature_name] = self.counter
             self.destination_model.features[self.counter] = feature_name
@@ -73,17 +73,17 @@ class CNFReader(TextToModel):
             cnf_formula = file.readline()
         return cnf_formula
 
-    def _read_clauses(self):
+    def _read_clauses(self) -> None:
         cnf_formula = self._read_cnf_formula()
         cnf_notation = identify_notation(cnf_formula)
 
         and_symbol_pattern = ' ' + cnf_notation.value[LogicOperator.AND] + ' '
-        clauses = list(map(lambda c: c[1:len(c) - 1], cnf_formula.split(and_symbol_pattern)))  
+        clauses = list(map(lambda c: c[1:len(c) - 1], cnf_formula.split(and_symbol_pattern)))
         # Remove initial and final parenthesis
 
         # Remove final parenthesis of last clause (because of the possible end of line: '\n')
         if ')' in clauses[len(clauses) - 1]:
-            clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]  
+            clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]
 
         for _c in clauses:
             tokens = _c.split(' ')
@@ -122,7 +122,7 @@ class CNFReader(TextToModel):
         new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.OR] + ' '
         cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
 
-        # Translate NOT operators (this is more complex because 
+        # Translate NOT operators (this is more complex because
         # the symbol may be part of a feature's name)
         if cnf_notation == CNFNotation.TEXTUAL:
             symbol_pattern = cnf_notation.value[LogicOperator.NOT] + ' '

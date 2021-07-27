@@ -6,13 +6,13 @@ from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 class Glucose3ErrorDetection(ErrorDetection):
 
-    def __init__(self):
-        self.errors_messages = []
+    def __init__(self) -> None:
+        self.errors_messages: list[str] = []
 
-    def get_errors_messages(self):
+    def get_errors_messages(self) -> list[str]:
         return self.errors_messages
 
-    def get_result(self):
+    def get_result(self) -> list[str]:
         return self.get_errors_messages()
 
     def execute(self, model: PySATModel) -> 'Glucose3ErrorDetection': # noqa: MC0001
@@ -35,7 +35,7 @@ class Glucose3ErrorDetection(ErrorDetection):
             false_optional_features = []
             assumption = 1
             for feat in model.features:
-                if (not glucose_r_ctc.solve(assumptions=[-feat]) and 
+                if (not glucose_r_ctc.solve(assumptions=[-feat]) and
                         glucose_r.solve(assumptions=[-feat])):
                     if glucose_r.solve(assumptions=[assumption, -feat]):
                         false_optional_features.append(model.features.get(feat))
@@ -51,15 +51,15 @@ class Glucose3ErrorDetection(ErrorDetection):
                         if clause[1] == feat:
                             if clause[0] < 0:
                                 redundancies.append(
-                                    model.features.get(-clause[0]) + 
-                                    ' requires ' + 
+                                    model.features.get(-clause[0]) +
+                                    ' requires ' +
                                     model.features.get(feat)
                                 )
                         if clause[0] == feat:
                             if clause[1] < 0:
                                 redundancies.append(
-                                    model.features.get(feat) + 
-                                    ' requires ' + 
+                                    model.features.get(feat) +
+                                    ' requires ' +
                                     model.features.get(-clause[1])
                                 )
 
@@ -68,14 +68,14 @@ class Glucose3ErrorDetection(ErrorDetection):
                 if clause[1] in variables:
                     if clause[1] > 0:
                         redundancies.append(
-                            model.features.get(abs(clause[0])) + 
-                            ' requires ' + 
+                            model.features.get(abs(clause[0])) +
+                            ' requires ' +
                             model.features.get(abs(clause[1]))
                         )
                     else:
                         redundancies.append(
-                            model.features.get(abs(clause[0])) + 
-                            ' excludes ' + 
+                            model.features.get(abs(clause[0])) +
+                            ' excludes ' +
                             model.features.get(abs(clause[1]))
                         )
                 variables.append(clause[1])

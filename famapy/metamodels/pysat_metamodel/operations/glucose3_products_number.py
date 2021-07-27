@@ -6,13 +6,13 @@ from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 class Glucose3ProductsNumber(ProductsNumber):
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.products_number = 0
 
-    def get_products_number(self):
+    def get_products_number(self) -> int:
         return self.products_number
 
-    def get_result(self):
+    def get_result(self) -> int:
         return self.get_products_number()
 
     def execute(self, model: PySATModel) -> 'Glucose3ProductsNumber':
