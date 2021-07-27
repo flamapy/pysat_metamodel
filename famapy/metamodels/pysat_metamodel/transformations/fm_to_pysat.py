@@ -3,7 +3,7 @@ import itertools
 from famapy.core.exceptions import ElementNotFound
 from famapy.core.models import VariabilityModel
 from famapy.core.transformations import ModelToModel
-from famapy.metamodels.fm_metamodel.models.feature_model import (
+from famapy.metamodels.fm_metamodel.models.feature_model import (  # pylint: disable=import-error
     Constraint,
     Feature,
     Relation,
