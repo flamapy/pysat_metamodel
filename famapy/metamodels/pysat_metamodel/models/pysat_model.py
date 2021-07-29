@@ -2,7 +2,7 @@ from typing import Any
 
 from pysat.formula import CNF
 
-from famapy.core.models import Constraint, VariabilityModel
+from famapy.core.models import VariabilityModel
 
 
 class PySATModel(VariabilityModel):
@@ -17,8 +17,8 @@ class PySATModel(VariabilityModel):
         self.variables: dict[str, Any] = {}
         self.features: dict[str, Any] = {}
 
-    def add_constraint(self, constraint: Constraint) -> None:
-        self.ctc_cnf.append(constraint)
+    def add_clause(self, clause: list[int]) -> None:
+        self.ctc_cnf.append(clause)
 
     def get_all_clauses(self) -> CNF:
         clauses = CNF()

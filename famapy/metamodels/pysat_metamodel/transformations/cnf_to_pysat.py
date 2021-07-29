@@ -104,7 +104,7 @@ class CNFReader(TextToModel):
                     else:
                         cnf_clause.append(self.destination_model.variables[feature])
                     logic_not = False
-            self.destination_model.add_constraint(cnf_clause)
+            self.destination_model.add_clause(cnf_clause)
 
     def get_cnf_formula(self, cnf_output_syntax: CNFNotation = CNFNotation.JAVA) -> str:
         cnf_formula = self._read_cnf_formula()
