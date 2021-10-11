@@ -79,7 +79,9 @@ def test_error_guessing_core_features_case_1() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1], [-3, 2]]
+    model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-3, 2]]
 
     expected_core_features = ['A', 'B']
     expected_dead_features = None
@@ -102,7 +104,9 @@ def test_error_guessing_core_features_case_2() -> None:
 
     model.features = {1: 'A', 2: 'B'}
     model.variables = {'A': 1, 'B': 2}
-    model.r_cnf.clauses = [[1], [-2, 1], [-1, 2]]
+    model.r_cnf.clauses = [[1], [-2, 1]]
+
+    model.ctc_cnf.clauses = [[-1, 2]]
 
     expected_core_features = ['A', 'B']
     expected_dead_features = None
@@ -125,7 +129,9 @@ def test_error_guessing_core_features_case_3() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-3, 1], [-2, 3]]
+    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, 3]]
 
     expected_core_features = ['A', 'B', 'C']
     expected_dead_features = None
@@ -149,7 +155,9 @@ def test_error_guessing_core_features_case_4() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3],
-                           [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3], [-2, -4]]
+                           [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3]]
+
+    model.ctc_cnf.clauses = [[-2, -4]]
 
     expected_core_features = ['A', 'B', 'C', 'E']
     expected_dead_features = None
@@ -173,7 +181,9 @@ def test_error_guessing_core_features_case_5() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3],
-                           [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3], [-2, 4]]
+                           [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3]]
+
+    model.ctc_cnf.clauses = [[-2, 4]]
 
     expected_core_features = ['A', 'B', 'C', 'D']
     expected_dead_features = None
@@ -196,7 +206,9 @@ def test_error_guessing_core_features_case_6() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3], [-3, 1], [-2, -3]]
+    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, -3]]
 
     expected_core_features = []
     expected_dead_features = None
@@ -220,11 +232,14 @@ def test_error_guessing_dead_features_1() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3],
-                           [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3], [-4, -2]]
+                           [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3]]
+
+    model.ctc_cnf.clauses = [[-4, -2]]
 
     expected_core_features = None
     expected_dead_features = ['D']
-    expected_error_detection = ["Dead features: ['D']"]
+    expected_error_detection = ["Dead features: ['D']",
+                                "False optional features: ['E']"]
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = None
@@ -244,11 +259,14 @@ def test_error_guessing_dead_features_2() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3],
-                           [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3], [-2, 4]]
+                           [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3]]
+
+    model.ctc_cnf.clauses = [[-2, 4]]
 
     expected_core_features = None
     expected_dead_features = ['E']
-    expected_error_detection = ["Dead features: ['E']"]
+    expected_error_detection = ["Dead features: ['E']",
+                                "False optional features: ['D']"]
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = None
@@ -268,11 +286,14 @@ def test_error_guessing_dead_features_3() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3],
-                           [-3, 1], [-3, 4, 5], [-4, 3], [-5, 3], [-4, -2]]
+                           [-3, 1], [-3, 4, 5], [-4, 3], [-5, 3]]
+
+    model.ctc_cnf.clauses = [[-4, -2]]
 
     expected_core_features = None
     expected_dead_features = ['D']
-    expected_error_detection = ["Dead features: ['D']"]
+    expected_error_detection = ["Dead features: ['D']",
+                                "False optional features: ['E']"]
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = None
@@ -291,7 +312,9 @@ def test_error_guessing_dead_features_4() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-3, 1], [-2, -3]]
+    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, -3]]
 
     expected_core_features = None
     expected_dead_features = ["C"]
@@ -314,7 +337,9 @@ def test_error_guessing_dead_features_5() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3], [-3, 1], [-2, -3]]
+    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, -3]]
 
     expected_core_features = None
     expected_dead_features = ['A', 'B', 'C']
@@ -338,11 +363,14 @@ def test_error_guessing_dead_features_6() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
     model.r_cnf.clauses = [[1], [-1, 2, 3],
-                           [-2, -3], [-2, 1], [-3, 1], [-2, 3]]
+                           [-2, -3], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, 3]]
 
     expected_core_features = None
     expected_dead_features = ['B']
-    expected_error_detection = ["Dead features: ['B']"]
+    expected_error_detection = ["Dead features: ['B']",
+                                "False optional features: ['C']"]
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = None
@@ -361,7 +389,9 @@ def test_error_guessing_dead_features_7() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-2, 3], [-3, 2], [-2, -3]]
+    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-2, 3], [-3, 2]]
+
+    model.ctc_cnf.clauses = [[-2, -3]]
 
     expected_core_features = None
     expected_dead_features = ['A', 'B', 'C']
@@ -384,7 +414,9 @@ def test_error_guessing_dead_features_8() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-2, 1], [-3, 1], [-2, -3], [-2, 3]]
+    model.r_cnf.clauses = [[1], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, -3], [-2, 3]]
 
     expected_core_features = None
     expected_dead_features = ['B']
@@ -407,12 +439,15 @@ def test_error_guessing_false_optional_features_1() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-3, 1], [-2, 3]]
+    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, 3]]
 
     expected_core_features = None
     expected_dead_features = None
     # TODO: False optional features are not detected by error detection operation
-    expected_error_detection = ["False optional features: ['C']"]
+    expected_error_detection = [
+        "False optional features: ['C']"]
     expected_error_diagnosis = None
     # TODO: False optional features are not detected by optional features operation
     expected_false_optional_features = ['C']
@@ -433,11 +468,14 @@ def test_error_guessing_false_optional_features_2() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-3, 1],
-                           [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3], [-2, 4]]
+                           [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3]]
+
+    model.ctc_cnf.clauses = [[-2, 4]]
 
     expected_core_features = None
     expected_dead_features = None
-    expected_error_detection = ["False optional features: ['C', 'D']"]
+    expected_error_detection = ["Dead features: ['E']",
+                                "False optional features: ['C', 'D']"]
     expected_error_diagnosis = None
     expected_false_optional_features = ['C', 'D']
     expected_products_number = None
@@ -457,11 +495,14 @@ def test_error_guessing_false_optional_features_3() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1],
-                           [-3, 1], [-3, 4, 5], [-4, 3], [-5, 3], [-2, 4]]
+                           [-3, 1], [-3, 4, 5], [-4, 3], [-5, 3]]
+
+    model.ctc_cnf.clauses = [[-2, 4]]
 
     expected_core_features = None
     expected_dead_features = None
-    expected_error_detection = ["False optional features: ['C', 'D']"]
+    expected_error_detection = [
+        "False optional features: ['C', 'D']"]
     expected_error_diagnosis = None
     expected_false_optional_features = ['C', 'D']
     expected_products_number = None
@@ -481,11 +522,14 @@ def test_error_guessing_false_optional_features_4() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
     model.r_cnf.clauses = [[1], [-1, 2, 3],
-                           [-2, -3], [-2, 1], [-3, 1], [-2, 3]]
+                           [-2, -3], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, 3]]
 
     expected_core_features = None
     expected_dead_features = None
-    expected_error_detection = ["False optional features: ['C']"]
+    expected_error_detection = ["Dead features: ['B']",
+                                "False optional features: ['C']"]
     expected_error_diagnosis = None
     expected_false_optional_features = ['C']
     expected_products_number = None
@@ -504,11 +548,14 @@ def test_error_guessing_false_optional_features_5() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1], [-2, 3]]
+    model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, 3]]
 
     expected_core_features = None
     expected_dead_features = None
-    expected_error_detection = ["False optional features: ['C']"]
+    expected_error_detection = [
+        "False optional features: ['C']"]
     expected_error_diagnosis = None
     expected_false_optional_features = ['C']
     expected_products_number = None
@@ -528,11 +575,14 @@ def test_error_guessing_false_optional_features_6() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'E', 5: 'F', 6: 'D'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'E': 4, 'F': 5, 'D': 6}
     model.r_cnf.clauses = [[1], [-2, 1], [-1, 3], [-3, 1], [-3, 4, 5],
-                           [-4, -5], [-4, 3], [-5, 3], [-1, 6], [-6, 1], [-4, 2], [-6, -5]]
+                           [-4, -5], [-4, 3], [-5, 3], [-1, 6], [-6, 1]]
+
+    model.ctc_cnf.clauses = [[-4, 2], [-6, -5]]
 
     expected_core_features = None
     expected_dead_features = None
-    expected_error_detection = ["False optional features: ['B', 'E']"]
+    expected_error_detection = ["Dead features: ['F']",
+                                "False optional features: ['B', 'E']"]
     expected_error_diagnosis = None
     expected_false_optional_features = ['B', 'E']
     expected_products_number = None
@@ -551,12 +601,14 @@ def test_error_guessing_redundancies_case_1() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-2, 1], [-1, 3], [-3, 1], [-2, 3]]
+    model.r_cnf.clauses = [[1], [-2, 1], [-1, 3], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, 3]]
 
     expected_core_features = None
     expected_dead_features = None
     # TODO: Redundancies not detected by error detection operation
-    expected_error_detection = ["Redundancies: [B implies C]"]
+    expected_error_detection = ["Redundancies: ['B requires C']"]
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = None
@@ -575,12 +627,14 @@ def test_error_guessing_redundancies_case_2() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4}
-    model.r_cnf.clauses = [[1], [-2, 1], [-1, 3],
-                           [-3, 1], [-1, 4], [-4, 1], [-3, 2], [-4, 2]]
+    model.r_cnf.clauses = [[1], [-2, 1], [-1, 3], [-3, 1], [-1, 4], [-4, 1]]
+
+    model.ctc_cnf.clauses = [[-3, 2], [-4, 2]]
 
     expected_core_features = None
     expected_dead_features = None
-    expected_error_detection = ["Redundancies: [D implies C]"]
+    expected_error_detection = ["False optional features: ['B']",
+                                "Redundancies: ['D requires B']"]
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = None
@@ -600,7 +654,9 @@ def test_refinement_alternative_no_or() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-2, 3, 4],
-                           [-3, -4], [-3, 2], [-4, 2], [-1, 5], [-5, 1], [-5, 3], [-5, 4]]
+                           [-3, -4], [-3, 2], [-4, 2], [-1, 5], [-5, 1]]
+
+    model.ctc_cnf.clauses = [[-5, 3], [-5, 4]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -624,7 +680,9 @@ def test_refinement_alternative_no_parent_last_child() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-2, 1], [-2, 3, 4], [-3, -4],
-                           [-3, 2], [-4, 2], [-1, 5], [-5, 1], [-5, -2], [-5, 4]]
+                           [-3, 2], [-4, 2], [-1, 5], [-5, 1]]
+
+    model.ctc_cnf.clauses = [[-5, -2], [-5, 4]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -651,7 +709,9 @@ def test_refinement_alternative_odd_children() -> None:
     model.variables = {'A': 1, 'B': 2, 'C': 3,
                        'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-2, 3, 4, 5, 6, 7], [-3, -4], [-3, -5], [-3, -6], [-3, -7], [-3, 2], [-4, -5],
-                           [-4, -6], [-4, -7], [-4, 2], [-5, -6], [-5, -7], [-5, 2], [-6, -7], [-6, 2], [-7, 2], [-1, 8], [-8, 1], [-8, 7], [-8, 5]]
+                           [-4, -6], [-4, -7], [-4, 2], [-5, -6], [-5, -7], [-5, 2], [-6, -7], [-6, 2], [-7, 2], [-1, 8], [-8, 1]]
+
+    model.ctc_cnf.clauses = [[-8, 7], [-8, 5]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -678,6 +738,8 @@ def test_refinement_df_alternative_excludes() -> None:
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-3, 1],
                            [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3], [-2, 4]]
 
+    model.ctc_cnf.clauses = [[-2, 4]]
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -702,6 +764,8 @@ def test_refinement_optional_alternative_valid_p() -> None:
     model.r_cnf.clauses = [[1], [-2, 1],
                            [-2, 3, 4], [-3, -4], [-3, 2], [-4, 2]]
 
+    model.ctc_cnf.clauses = []
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -722,10 +786,12 @@ def test_refinement_or_no_alternative() -> None:
 
     model = PySATModel()
 
-    model.features = {1: 'A', 2: 'B', 3: 'D', 4: 'E', 5: 'C', 6: 'F', 7: 'G'}
-    model.variables = {'A': 1, 'B': 2, 'D': 3, 'E': 4, 'C': 5, 'F': 6, 'G': 7}
-    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-2, 3, 4], [-3, -4], [-3,
-                                                                         2], [-4, 2], [-5, 1], [-5, 6, 7], [-6, 5], [-7, 5], [-4, 6], [-3, -7]]
+    model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
+    model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
+    model.r_cnf.clauses = [[1], [-1, 2], [-2, 1],
+                           [-2, 3, 4], [-3, 2], [-4, 2], [-1, 5], [-5, 1]]
+
+    model.ctc_cnf.clauses = [[-5, 3], [-5, 4]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -749,7 +815,9 @@ def test_relationships_allrelationships() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'D', 4: 'E', 5: 'C', 6: 'F', 7: 'G'}
     model.variables = {'A': 1, 'B': 2, 'D': 3, 'E': 4, 'C': 5, 'F': 6, 'G': 7}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-2, 3, 4], [-3, -4], [-3,
-                                                                         2], [-4, 2], [-5, 1], [-5, 6, 7], [-6, 5], [-7, 5], [-4, 6], [-3, -7]]
+                                                                         2], [-4, 2], [-5, 1], [-5, 6, 7], [-6, 5], [-7, 5]]
+
+    model.ctc_cnf.clauses = [[-4, 6], [-3, -7]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -779,6 +847,8 @@ def test_relationships_alternative() -> None:
     model.variables = {'A': 1, 'B': 2, 'C': 3}
     model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, -3], [-2, 1], [-3, 1]]
 
+    model.ctc_cnf.clauses = []
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -803,7 +873,9 @@ def test_relationships_alternative_excludes() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
     model.r_cnf.clauses = [[1], [-1, 2, 3],
-                           [-2, -3], [-2, 1], [-3, 1], [-2, -3]]
+                           [-2, -3], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, -3]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -827,10 +899,11 @@ def test_relationships_alternative_requires() -> None:
 
     model = PySATModel()
 
-    model.features = {1: 'A', 2: 'B', 3: 'C'}
-    model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2, 3],
-                           [-2, -3], [-2, 1], [-3, 1], [-2, 3]]
+    model.features = {1: 'A', 2: 'C', 3: 'B'}
+    model.variables = {'A': 1, 'C': 2, 'B': 3}
+    model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, -3], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-3, 2]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -856,7 +929,9 @@ def test_relationships_excludes() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-2, 1], [-3, 1], [-2, -3]]
+    model.r_cnf.clauses = [[1], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, -3]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -883,6 +958,8 @@ def test_relationships_mandatory() -> None:
     model.variables = {'A': 1, 'B': 2}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1]]
 
+    model.ctc_cnf.clauses = []
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -908,6 +985,8 @@ def test_relationships_mandatory_alternative() -> None:
     model.variables = {'A': 1, 'B': 2, 'E': 3, 'F': 4, 'C': 5, 'D': 6, 'G': 7}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-2, 3, 4], [-3, -4], [-3,
                                                                          2], [-4, 2], [-1, 5, 6], [-5, -6], [-5, 1], [-6, 1], [-5, 7], [-7, 5]]
+
+    model.ctc_cnf.clauses = []
 
     expected_core_features = None
     expected_dead_features = None
@@ -937,6 +1016,8 @@ def test_relationships_mandatory_excludes() -> None:
     model.variables = {'A': 1, 'B': 2, 'C': 3}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3], [-3, 1], [-2, -3]]
 
+    model.ctc_cnf.clauses = []
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -960,6 +1041,8 @@ def test_relationships_mandatory_optional() -> None:
     model.variables = {'A': 1, 'B': 2, 'D': 3, 'C': 4, 'E': 5}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1],
                            [-3, 2], [-4, 1], [-4, 5], [-5, 4]]
+
+    model.ctc_cnf.clauses = []
 
     expected_core_features = None
     expected_dead_features = None
@@ -988,6 +1071,8 @@ def test_relationships_mandatory_or() -> None:
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-2, 3, 4], [-3,
                                                                2], [-4, 2], [-1, 5, 6], [-5, 1], [-6, 1], [-6, 7], [-7, 6]]
 
+    model.ctc_cnf.clauses = []
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -1015,6 +1100,8 @@ def test_relationships_mandatory_requires() -> None:
     model.variables = {'A': 1, 'B': 2, 'C': 3}
     model.r_cnf.clauses = [[1], [-1, 2], [-2, 1], [-1, 3], [-3, 1], [-2, 3]]
 
+    model.ctc_cnf.clauses = []
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -1039,6 +1126,8 @@ def test_relationships_optional() -> None:
     model.features = {1: 'A', 2: 'B'}
     model.variables = {'A': 1, 'B': 2}
     model.r_cnf.clauses = [[1], [-2, 1]]
+
+    model.ctc_cnf.clauses = []
 
     expected_core_features = None
     expected_dead_features = None
@@ -1067,6 +1156,8 @@ def test_relationships_optional_alternative() -> None:
     model.variables = {'A': 1, 'B': 2, 'E': 3, 'F': 4, 'C': 5, 'D': 6, 'G': 7}
     model.r_cnf.clauses = [[1], [-2, 1], [-2, 3, 4], [-3, -4], [-3,
                                                                 2], [-4, 2], [-1, 5, 6], [-5, -6], [-5, 1], [-6, 1], [-7, 6]]
+    model.ctc_cnf.clauses = []
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -1096,6 +1187,8 @@ def test_relationships_optional_or() -> None:
     model.r_cnf.clauses = [[1], [-2, 1], [-2, 3, 4], [-3,
                                                       2], [-4, 2], [-1, 5, 6], [-5, 1], [-6, 1], [-7, 5]]
 
+    model.ctc_cnf.clauses = []
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -1122,6 +1215,8 @@ def test_relationships_or() -> None:
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
     model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = []
 
     expected_core_features = None
     expected_dead_features = None
@@ -1151,6 +1246,8 @@ def test_relationships_or_alternative() -> None:
     model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, -3], [-2, 1], [-3, 1], [-2, 4, 5], [-4,
                                                                                      2], [-5, 2], [-1, 6, 7], [-6, 1], [-7, 1], [-7, 8, 9], [-8, -9], [-8, 7], [-9, 7]]
 
+    model.ctc_cnf.clauses = []
+
     expected_core_features = None
     expected_dead_features = None
     expected_error_detection = None
@@ -1177,7 +1274,9 @@ def test_relationships_or_excludes() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1], [-2, -3]]
+    model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, -3]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -1203,7 +1302,9 @@ def test_relationships_or_requires() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1], [-2, 3]]
+    model.r_cnf.clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, 3]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -1228,7 +1329,9 @@ def test_relationships_requires() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-2, 1], [-3, 1], [-2, 3]]
+    model.r_cnf.clauses = [[1], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, 3]]
 
     expected_core_features = None
     expected_dead_features = None
@@ -1253,7 +1356,9 @@ def test_relationships_requires_excludes() -> None:
 
     model.features = {1: 'A', 2: 'B', 3: 'C'}
     model.variables = {'A': 1, 'B': 2, 'C': 3}
-    model.r_cnf.clauses = [[1], [-2, 1], [-3, 1], [-2, 3], [-2, -3]]
+    model.r_cnf.clauses = [[1], [-2, 1], [-3, 1]]
+
+    model.ctc_cnf.clauses = [[-2, 3], [-2, -3]]
 
     expected_core_features = None
     expected_dead_features = None
