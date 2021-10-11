@@ -445,11 +445,9 @@ def test_error_guessing_false_optional_features_1() -> None:
 
     expected_core_features = None
     expected_dead_features = None
-    # TODO: False optional features are not detected by error detection operation
     expected_error_detection = [
         "False optional features: ['C']"]
     expected_error_diagnosis = None
-    # TODO: False optional features are not detected by optional features operation
     expected_false_optional_features = ['C']
     expected_products_number = None
     expected_products = None
@@ -607,7 +605,6 @@ def test_error_guessing_redundancies_case_1() -> None:
 
     expected_core_features = None
     expected_dead_features = None
-    # TODO: Redundancies not detected by error detection operation
     expected_error_detection = ["Redundancies: ['B requires C']"]
     expected_error_diagnosis = None
     expected_false_optional_features = None
