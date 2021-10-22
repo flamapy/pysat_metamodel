@@ -1,9 +1,8 @@
 import itertools
 
-from famapy.core.exceptions import ElementNotFound
-from famapy.core.models import VariabilityModel
 from famapy.core.transformations import ModelToModel
 from famapy.metamodels.fm_metamodel.models.feature_model import (  # pylint: disable=import-error
+    FeatureModel,
     Constraint,
     Feature,
     Relation,
@@ -20,7 +19,7 @@ class FmToPysat(ModelToModel):
     def get_destination_extension() -> str:
         return 'pysat'
 
-    def __init__(self, source_model: VariabilityModel) -> None:
+    def __init__(self, source_model: FeatureModel) -> None:
         self.source_model = source_model
         self.counter = 1
         self.destination_model = PySATModel()
@@ -125,43 +124,14 @@ class FmToPysat(ModelToModel):
                         self.r_cnf.append(cnf)
 
     def add_constraint(self, ctc: Constraint) -> None:
-        #We are only supporting requires or excludes
-        if ctc.ast.root.data.upper() == 'REQUIRES' or ctc.ast.root.data.upper() == 'IMPLIES':
-            dest = self.destination_model.variables.get(
-                ctc.ast.root.right.data
-            )
-            orig = self.destination_model.variables.get(
-                ctc.ast.root.left.data
-            )
-            if dest is None or orig is None:
-                print(self.source_model)
-                raise ElementNotFound
-            self.r_cnf.append([-1 * orig, dest])
-        elif ctc.ast.root.data.upper() == 'EQUIVALENCE':
-            dest = self.destination_model.variables.get(
-                ctc.ast.root.right.data
-            )
-            orig = self.destination_model.variables.get(
-                ctc.ast.root.left.data
-            )
-            if dest is None or orig is None:
-                print(self.source_model)
-                raise ElementNotFound
-            self.r_cnf.append([-1 * orig, dest])
-            self.r_cnf.append([-1 * dest, orig])
-        elif ctc.ast.root.data.upper() == 'EXCLUDES':
-            dest = self.destination_model.variables.get(
-                ctc.ast.root.right.data
-            )
-            orig = self.destination_model.variables.get(
-                ctc.ast.root.left.data
-            )
-            if dest is None or orig is None:
-                print(self.source_model)
-                raise ElementNotFound
-            self.r_cnf.append([-1 * orig, -1 * dest])
+        clauses = ctc.ast.get_clauses()
+        for clause in clauses:
+            c = list(map(lambda term: (-self.destination_model.variables.get(term[1:]) 
+                                         if term.startswith('-') 
+                                         else self.destination_model.variables.get(term)), clause))
+            self.r_cnf.append(c)
 
-    def transform(self) -> VariabilityModel:
+    def transform(self) -> PySATModel:
         for feature in self.source_model.get_features():
             self.add_feature(feature)
 
