@@ -32,6 +32,11 @@ class Glucose3ValidProduct(ValidProduct):
         if self.configuration is not None:
             config = [feat.name for feat in self.configuration.elements]
 
+        for feat in config:
+            if feat not in model.variables.keys():
+                self.result = False
+                return self
+
         for feat in model.features.values():
             if feat in config:
                 assumptions.append(model.variables[feat])

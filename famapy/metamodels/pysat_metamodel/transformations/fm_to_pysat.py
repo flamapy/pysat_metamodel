@@ -39,17 +39,22 @@ class FmToPysat(ModelToModel):
     def add_relation(self, relation: Relation) -> None:  # noqa: MC0001
         if relation.is_mandatory():
             self.r_cnf.append([
-                -1 * self.destination_model.variables.get(relation.parent.name),
+                -1 *
+                self.destination_model.variables.get(relation.parent.name),
                 self.destination_model.variables.get(relation.children[0].name)
             ])
             self.r_cnf.append([
-                -1 * self.destination_model.variables.get(relation.children[0].name),
+                -1 *
+                self.destination_model.variables.get(
+                    relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)
             ])
 
         elif relation.is_optional():
             self.r_cnf.append([
-                -1 * self.destination_model.variables.get(relation.children[0].name),
+                -1 *
+                self.destination_model.variables.get(
+                    relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)
             ])
 
@@ -57,9 +62,11 @@ class FmToPysat(ModelToModel):
             # add the first cnf child1 or child2 or ... or childN or no parent)
 
             # first elem of the constraint
-            alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]
+            alt_cnf = [-1 *
+                       self.destination_model.variables.get(relation.parent.name)]
             for child in relation.children:
-                alt_cnf.append(self.destination_model.variables.get(child.name))
+                alt_cnf.append(
+                    self.destination_model.variables.get(child.name))
             self.r_cnf.append(alt_cnf)
 
             for child in relation.children:
@@ -74,20 +81,28 @@ class FmToPysat(ModelToModel):
             # add the first cnf child1 or child2 or ... or childN or no parent)
 
             # first elem of the constraint
-            alt_cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]
+            alt_cnf = [-1 *
+                       self.destination_model.variables.get(relation.parent.name)]
             for child in relation.children:
-                alt_cnf.append(self.destination_model.variables.get(child.name))
+                alt_cnf.append(
+                    self.destination_model.variables.get(child.name))
             self.r_cnf.append(alt_cnf)
 
             for i in range(len(relation.children)):
                 for j in range(i + 1, len(relation.children)):
                     if i != j:
                         self.r_cnf.append([
-                            -1 * self.destination_model.variables.get(relation.children[i].name),
-                            -1 * self.destination_model.variables.get(relation.children[j].name)
+                            -1 *
+                            self.destination_model.variables.get(
+                                relation.children[i].name),
+                            -1 *
+                            self.destination_model.variables.get(
+                                relation.children[j].name)
                         ])
                 self.r_cnf.append([
-                    -1 * self.destination_model.variables.get(relation.children[i].name),
+                    -1 *
+                    self.destination_model.variables.get(
+                        relation.children[i].name),
                     self.destination_model.variables.get(relation.parent.name)
                 ])
 
@@ -104,28 +119,34 @@ class FmToPysat(ModelToModel):
                     # This first for loop is to combine when the parent is and
                     # the childs led to a 0-pathself.
                     for res in itertools.combinations(relation.children, val):
-                        cnf = [-1 * self.destination_model.variables.get(relation.parent.name)]
+                        cnf = [-1 *
+                               self.destination_model.variables.get(relation.parent.name)]
                         for feat in relation.children:
                             if feat in res:
-                                cnf.append(-1 * self.destination_model.variables.get(feat.name))
+                                cnf.append(-1 *
+                                           self.destination_model.variables.get(feat.name))
                             else:
-                                cnf.append(self.destination_model.variables.get(feat.name))
+                                cnf.append(
+                                    self.destination_model.variables.get(feat.name))
                         self.r_cnf.append(cnf)
                 else:
                     # This first for loop is to combine when the parent is not
                     # and the childs led to a 1-pathself which is actually
                     # 0-path considering the parent.
                     for res in itertools.combinations(relation.children, val):
-                        cnf = [self.destination_model.variables.get(relation.parent.name)]
+                        cnf = [self.destination_model.variables.get(
+                            relation.parent.name)]
                         for feat in relation.children:
                             if feat in res:
-                                cnf.append(-1 * self.destination_model.variables.get(feat.name))
+                                cnf.append(-1 *
+                                           self.destination_model.variables.get(feat.name))
                             else:
-                                cnf.append(self.destination_model.variables.get(feat.name))
+                                cnf.append(
+                                    self.destination_model.variables.get(feat.name))
                         self.r_cnf.append(cnf)
 
     def add_constraint(self, ctc: Constraint) -> None:
-        #We are only supporting requires or excludes
+        # We are only supporting requires or excludes
         if ctc.ast.root.data.upper() == 'REQUIRES' or ctc.ast.root.data.upper() == 'IMPLIES':
             dest = self.destination_model.variables.get(
                 ctc.ast.root.right.data
@@ -136,7 +157,7 @@ class FmToPysat(ModelToModel):
             if dest is None or orig is None:
                 print(self.source_model)
                 raise ElementNotFound
-            self.r_cnf.append([-1 * orig, dest])
+            self.ctc_cnf.append([-1 * orig, dest])
         elif ctc.ast.root.data.upper() == 'EQUIVALENCE':
             dest = self.destination_model.variables.get(
                 ctc.ast.root.right.data
@@ -147,8 +168,8 @@ class FmToPysat(ModelToModel):
             if dest is None or orig is None:
                 print(self.source_model)
                 raise ElementNotFound
-            self.r_cnf.append([-1 * orig, dest])
-            self.r_cnf.append([-1 * dest, orig])
+            self.ctc_cnf.append([-1 * orig, dest])
+            self.ctc_cnf.append([-1 * dest, orig])
         elif ctc.ast.root.data.upper() == 'EXCLUDES':
             dest = self.destination_model.variables.get(
                 ctc.ast.root.right.data
@@ -159,7 +180,7 @@ class FmToPysat(ModelToModel):
             if dest is None or orig is None:
                 print(self.source_model)
                 raise ElementNotFound
-            self.r_cnf.append([-1 * orig, -1 * dest])
+            self.ctc_cnf.append([-1 * orig, -1 * dest])
 
     def transform(self) -> VariabilityModel:
         for feature in self.source_model.get_features():
