@@ -145,12 +145,16 @@ class FmToPysat(ModelToModel):
                         self.r_cnf.append(cnf)
 
     def add_constraint(self, ctc: Constraint) -> None:
+        def transform_constraints(term):
+            if term.startswith('-'):
+                return -self.destination_model.variables.get(term[1:])
+
+            return self.destination_model.variables.get(term)
+
         clauses = ctc.ast.get_clauses()
         for clause in clauses:
-            constraint = list(map(lambda term: (-self.destination_model.variables.get(term[1:]) 
-                                        if term.startswith('-') 
-                                        else self.destination_model.variables.get(term)), clause))
-            self.r_cnf.append(constraint)
+            constraints = list(map(transform_constraints, clause))
+            self.r_cnf.append(constraints)
 
     def transform(self) -> PySATModel:
         for feature in self.source_model.get_features():
