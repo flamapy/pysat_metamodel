@@ -34,7 +34,7 @@ class Glucose3Filter(Filter):
         ]
 
         for solution in glucose.enum_models(assumptions=assumptions):
-            product = list()
+            product = []
             for variable in solution:
                 if variable > 0:
                     product.append(model.features.get(variable))

@@ -24,7 +24,7 @@ class Glucose3Products(Products):
             glucose.add_clause(clause)  # añadimos la constraint
 
         for solutions in glucose.enum_models():
-            product = list()
+            product = []
             for variable in solutions:
                 if variable > 0:
                     product.append(model.features.get(variable))
