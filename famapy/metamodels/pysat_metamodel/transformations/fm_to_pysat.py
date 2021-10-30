@@ -1,7 +1,8 @@
 import itertools
+from typing import Any
 
 from famapy.core.transformations import ModelToModel
-from famapy.metamodels.fm_metamodel.models.feature_model import (  # pylint: disable=import-error
+from famapy.metamodels.fm_metamodel.models.feature_model import (
     FeatureModel,
     Constraint,
     Feature,
@@ -145,7 +146,7 @@ class FmToPysat(ModelToModel):
                         self.r_cnf.append(cnf)
 
     def add_constraint(self, ctc: Constraint) -> None:
-        def transform_constraints(term):
+        def transform_constraints(term: Any) -> Constraint:
             if term.startswith('-'):
                 return -self.destination_model.variables.get(term[1:])
 
