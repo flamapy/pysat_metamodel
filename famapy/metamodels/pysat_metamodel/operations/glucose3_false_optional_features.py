@@ -4,16 +4,17 @@ from pysat.solvers import Glucose3
 
 from famapy.core.operations import FalseOptionalFeatures
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from famapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
 
 
 class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
 
-    def __init__(self, optional_features: list[str]) -> None:
+    def __init__(self, feature_model: FeatureModel) -> None:
         self.result: list[Any] = []
-        self.optional_features = optional_features
+        self.feature_model = feature_model
 
     def execute(self, model: PySATModel) -> 'Glucose3FalseOptionalFeatures':
-        self.result = get_false_optional_features(model, self.optional_features)
+        self.result = get_false_optional_features(model, self.feature_model)
         return self
 
     def get_false_optional_features(self) -> list[list[Any]]:
@@ -23,17 +24,21 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
         return self.result
 
 
-def get_false_optional_features(model: PySATModel, optional_features: list[str]) -> list[Any]:
+def get_false_optional_features(sat_model: PySATModel, feature_model: FeatureModel) -> list[Any]:
+    variant_features = [f for f in feature_model.get_features() 
+                          if not f.is_root() and not f.is_mandatory()]
+
     result = []
     solver = Glucose3()
-    for clause in model.get_all_clauses():
+    for clause in sat_model.get_all_clauses():
         solver.add_clause(clause)
     
-    for feature in optional_features:
-        variable = model.variables.get(feature)
+    for feature in variant_features:
+        variable = sat_model.variables.get(feature.name)
+        parent_variable = sat_model.variables.get(feature.get_parent().name)
         assert variable is not None
-        satisfiable = solver.solve(assumptions=[-variable])
+        satisfiable = solver.solve(assumptions=[parent_variable, -variable])
         if not satisfiable:
-            result.append(feature)
+            result.append(feature.name)
     solver.delete()
     return result
