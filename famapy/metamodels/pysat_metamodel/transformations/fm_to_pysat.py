@@ -89,7 +89,7 @@ class FmToPysat(ModelToModel):
                     self.destination_model.variables.get(child.name))
             self.destination_model.add_clause(alt_cnf)
 
-            for i in range(len(relation.children)):
+            for i, _ in enumerate(relation.children):
                 for j in range(i + 1, len(relation.children)):
                     if i != j:
                         self.destination_model.add_clause([

@@ -1,5 +1,3 @@
-from typing import Any
-
 from pysat.formula import CNF
 
 from famapy.core.models import VariabilityModel
