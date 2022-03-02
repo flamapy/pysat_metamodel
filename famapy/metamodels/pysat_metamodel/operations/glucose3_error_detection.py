@@ -39,7 +39,8 @@ class Glucose3ErrorDetection(ErrorDetection):
         # False optional detection
         fof_op = Glucose3FalseOptionalFeatures(self.feature_model) 
         false_optional_features = fof_op.execute(model).get_result()
-        self.errors_messages.append(f'False optional features: {false_optional_features}')
+        if false_optional_features:
+            self.errors_messages.append(f'False optional features: {false_optional_features}')
 
         return self
 
