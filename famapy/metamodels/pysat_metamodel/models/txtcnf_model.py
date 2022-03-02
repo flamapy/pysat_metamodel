@@ -98,6 +98,8 @@ class TextCNFModel():
 
         if syntax is not None and syntax == cnf_notation:
             return cnf_formula
+        if syntax is None:
+            syntax = cnf_notation
 
         # Translate AND operators
         symbol_pattern = ' ' + cnf_notation.value[CNFLogicConnective.AND] + ' '

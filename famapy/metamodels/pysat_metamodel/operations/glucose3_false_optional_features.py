@@ -26,13 +26,13 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
 
 def get_false_optional_features(sat_model: PySATModel, feature_model: FeatureModel) -> list[Any]:
     real_optional_features = [f for f in feature_model.get_features() 
-                                if not f.is_root() and not f.is_mandatory()]
+                              if not f.is_root() and not f.is_mandatory()]
 
     result = []
     solver = Glucose3()
     for clause in sat_model.get_all_clauses():
         solver.add_clause(clause)
-    
+
     for feature in real_optional_features:
         variable = sat_model.variables.get(feature.name)
         parent_variable = sat_model.variables.get(feature.get_parent().name)
