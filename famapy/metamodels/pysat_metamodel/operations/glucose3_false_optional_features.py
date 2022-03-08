@@ -4,39 +4,41 @@ from pysat.solvers import Glucose3
 
 from famapy.core.operations import FalseOptionalFeatures
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from famapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
 
 
 class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
 
-    def __init__(self) -> None:
-        self.false_optional_features: list[list[Any]] = []
-
-    def get_false_optional_features(self) -> list[list[Any]]:
-        return self.false_optional_features
-
-    def get_result(self) -> list[list[Any]]:
-        return self.get_false_optional_features()
+    def __init__(self, feature_model: FeatureModel) -> None:
+        self.result: list[Any] = []
+        self.feature_model = feature_model
 
     def execute(self, model: PySATModel) -> 'Glucose3FalseOptionalFeatures':
-        glucose_r = Glucose3()
-        glucose_r_ctc = Glucose3()
-        for clause in model.r_cnf:
-            glucose_r.add_clause(clause)
-            glucose_r_ctc.add_clause(clause)
-        for clause in model.ctc_cnf:
-            glucose_r_ctc.add_clause(clause)
-
-        if glucose_r_ctc.solve():
-            assumption = 1
-            for feat in model.features:
-                if (
-                    not glucose_r_ctc.solve(assumptions=[-feat]) and
-                    glucose_r.solve(assumptions=[-feat])
-                ):
-                    if glucose_r.solve(assumptions=[assumption, -feat]):
-                        self.false_optional_features.append(model.features.get(feat))
-                    assumption = feat
-
-        glucose_r.delete()
-        glucose_r_ctc.delete()
+        self.result = get_false_optional_features(model, self.feature_model)
         return self
+
+    def get_false_optional_features(self) -> list[list[Any]]:
+        return self.get_result()
+
+    def get_result(self) -> list[Any]:
+        return self.result
+
+
+def get_false_optional_features(sat_model: PySATModel, feature_model: FeatureModel) -> list[Any]:
+    real_optional_features = [f for f in feature_model.get_features() 
+                              if not f.is_root() and not f.is_mandatory()]
+
+    result = []
+    solver = Glucose3()
+    for clause in sat_model.get_all_clauses():
+        solver.add_clause(clause)
+
+    for feature in real_optional_features:
+        variable = sat_model.variables.get(feature.name)
+        parent_variable = sat_model.variables.get(feature.get_parent().name)
+        assert variable is not None
+        satisfiable = solver.solve(assumptions=[parent_variable, -variable])
+        if not satisfiable:
+            result.append(feature.name)
+    solver.delete()
+    return result

@@ -1,31 +1,11 @@
-from enum import Enum, auto
-
 from famapy.core.transformations import TextToModel
 
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-
-
-class LogicOperator(Enum):
-    NOT = auto()
-    AND = auto()
-    OR = auto()
-
-
-class CNFNotation(Enum):
-    LOGICAL = {LogicOperator.NOT: '¬', LogicOperator.AND: '∧', LogicOperator.OR: '∨'}
-    JAVA = {LogicOperator.NOT: '!', LogicOperator.AND: '&&', LogicOperator.OR: '||'}
-    SHORT = {LogicOperator.NOT: '-', LogicOperator.AND: '&', LogicOperator.OR: '|'}
-    TEXTUAL = {LogicOperator.NOT: 'not', LogicOperator.AND: 'and', LogicOperator.OR: 'or'}
-
-
-def identify_notation(cnf_formula: str) -> CNFNotation:
-    for notation in CNFNotation:
-        for symbol in notation.value.values():
-            symbol_pattern = ' ' + symbol + ' '
-            if symbol_pattern in cnf_formula:
-                return notation
-    raise Exception("This should have happend. \
-            The CNF file is corrupted or does not adhere to the format")
+from famapy.metamodels.pysat_metamodel.models.txtcnf_model import (
+    TextCNFModel, 
+    TextCNFNotation, 
+    CNFLogicConnective
+)
 
 
 class CNFReader(TextToModel):
@@ -55,29 +35,24 @@ class CNFReader(TextToModel):
         self._path = path
         self.counter = 1
         self.destination_model = PySATModel()
-        self.cnf = self.destination_model.cnf
 
     def transform(self) -> PySATModel:
-        self._read_clauses()
+        cnf_model = TextCNFModel()
+        cnf_model.from_textual_cnf_file(self._path)
+        cnf_notation = cnf_model.get_textual_cnf_notation()
+        cnf_formula = cnf_model.get_textual_cnf_formula(cnf_notation)
+
+        self._extract_clauses(cnf_formula, cnf_notation)
         return self.destination_model
 
     def _add_feature(self, feature_name: str) -> None:
-        if feature_name not in self.destination_model.variables.keys():
+        if feature_name not in self.destination_model.variables:
             self.destination_model.variables[feature_name] = self.counter
             self.destination_model.features[self.counter] = feature_name
             self.counter += 1
 
-    def _read_cnf_formula(self) -> str:
-        """It assumes the CNF formula is defined in one line in the file."""
-        with open(self._path, encoding='utf-8') as file:
-            cnf_formula = file.readline()
-        return cnf_formula
-
-    def _read_clauses(self) -> None:
-        cnf_formula = self._read_cnf_formula()
-        cnf_notation = identify_notation(cnf_formula)
-
-        and_symbol_pattern = ' ' + cnf_notation.value[LogicOperator.AND] + ' '
+    def _extract_clauses(self, cnf_formula: str, cnf_notation: TextCNFNotation) -> None:
+        and_symbol_pattern = ' ' + cnf_notation.value[CNFLogicConnective.AND] + ' '
         clauses = list(map(lambda c: c[1:len(c) - 1], cnf_formula.split(and_symbol_pattern)))
         # Remove initial and final parenthesis
 
@@ -87,14 +62,14 @@ class CNFReader(TextToModel):
 
         for _c in clauses:
             tokens = _c.split(' ')
-            tokens = list(filter(lambda t: t != cnf_notation.value[LogicOperator.OR], tokens))
+            tokens = list(filter(lambda t: t != cnf_notation.value[CNFLogicConnective.OR], tokens))
             logic_not = False
             cnf_clause = []
             for feature in tokens:
-                if feature == cnf_notation.value[LogicOperator.NOT]:
+                if feature == cnf_notation.value[CNFLogicConnective.NOT]:
                     logic_not = True
-                elif feature.startswith(cnf_notation.value[LogicOperator.NOT]):
-                    feature = feature.replace(cnf_notation.value[LogicOperator.NOT], '', 1)
+                elif feature.startswith(cnf_notation.value[CNFLogicConnective.NOT]):
+                    feature = feature.replace(cnf_notation.value[CNFLogicConnective.NOT], '', 1)
                     self._add_feature(feature)
                     cnf_clause.append(-1 * self.destination_model.variables[feature])
                 else:
@@ -106,42 +81,42 @@ class CNFReader(TextToModel):
                     logic_not = False
             self.destination_model.add_clause(cnf_clause)
 
-    def get_cnf_formula(self, cnf_output_syntax: CNFNotation = CNFNotation.JAVA) -> str:
-        cnf_formula = self._read_cnf_formula()
-        cnf_notation = identify_notation(cnf_formula)
+    # def get_cnf_formula(self, cnf_output_syntax: TextCNFNotation = TextCNFNotation.JAVA) -> str:
+    #     cnf_formula = self._read_cnf_formula()
+    #     cnf_notation = identify_notation(cnf_formula)
 
-        if cnf_output_syntax == cnf_notation:
-            return cnf_formula
-        # Translate AND operators
-        symbol_pattern = ' ' + cnf_notation.value[LogicOperator.AND] + ' '
-        new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.AND] + ' '
-        cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+    #     if cnf_output_syntax == cnf_notation:
+    #         return cnf_formula
+    #     # Translate AND operators
+    #     symbol_pattern = ' ' + cnf_notation.value[CNFLogicConnective.AND] + ' '
+    #     new_symbol = ' ' + cnf_output_syntax.value[CNFLogicConnective.AND] + ' '
+    #     cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
 
-        # Translate OR operators
-        symbol_pattern = ' ' + cnf_notation.value[LogicOperator.OR] + ' '
-        new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.OR] + ' '
-        cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+    #     # Translate OR operators
+    #     symbol_pattern = ' ' + cnf_notation.value[CNFLogicConnective.OR] + ' '
+    #     new_symbol = ' ' + cnf_output_syntax.value[CNFLogicConnective.OR] + ' '
+    #     cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
 
-        # Translate NOT operators (this is more complex because
-        # the symbol may be part of a feature's name)
-        if cnf_notation == CNFNotation.TEXTUAL:
-            symbol_pattern = cnf_notation.value[LogicOperator.NOT] + ' '
-            new_symbol = cnf_output_syntax.value[LogicOperator.NOT]
-            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
-        elif cnf_output_syntax == CNFNotation.TEXTUAL:
-            symbol_pattern = ' ' + cnf_notation.value[LogicOperator.NOT]
-            new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.NOT] + ' '
-            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+    #     # Translate NOT operators (this is more complex because
+    #     # the symbol may be part of a feature's name)
+    #     if cnf_notation == TextCNFNotation.TEXTUAL:
+    #         symbol_pattern = cnf_notation.value[CNFLogicConnective.NOT] + ' '
+    #         new_symbol = cnf_output_syntax.value[CNFLogicConnective.NOT]
+    #         cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+    #     elif cnf_output_syntax == TextCNFNotation.TEXTUAL:
+    #         symbol_pattern = ' ' + cnf_notation.value[CNFLogicConnective.NOT]
+    #         new_symbol = ' ' + cnf_output_syntax.value[CNFLogicConnective.NOT] + ' '
+    #         cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
 
-            symbol_pattern = '(' + cnf_notation.value[LogicOperator.NOT]
-            new_symbol = '(' + cnf_output_syntax.value[LogicOperator.NOT] + ' '
-            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
-        else:
-            symbol_pattern = ' ' + cnf_notation.value[LogicOperator.NOT]
-            new_symbol = ' ' + cnf_output_syntax.value[LogicOperator.NOT]
-            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+    #         symbol_pattern = '(' + cnf_notation.value[CNFLogicConnective.NOT]
+    #         new_symbol = '(' + cnf_output_syntax.value[CNFLogicConnective.NOT] + ' '
+    #         cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+    #     else:
+    #         symbol_pattern = ' ' + cnf_notation.value[CNFLogicConnective.NOT]
+    #         new_symbol = ' ' + cnf_output_syntax.value[CNFLogicConnective.NOT]
+    #         cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
 
-            symbol_pattern = '(' + cnf_notation.value[LogicOperator.NOT]
-            new_symbol = '(' + cnf_output_syntax.value[LogicOperator.NOT]
-            cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
-        return cnf_formula
+    #         symbol_pattern = '(' + cnf_notation.value[CNFLogicConnective.NOT]
+    #         new_symbol = '(' + cnf_output_syntax.value[CNFLogicConnective.NOT]
+    #         cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
+    #     return cnf_formula

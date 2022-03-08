@@ -24,26 +24,27 @@ class FmToPysat(ModelToModel):
         self.source_model = source_model
         self.counter = 1
         self.destination_model = PySATModel()
-        self.r_cnf = self.destination_model.r_cnf
-        self.ctc_cnf = self.destination_model.ctc_cnf
+        #self.r_cnf = self.destination_model.r_cnf
+        #self.ctc_cnf = self.destination_model.ctc_cnf
 
     def add_feature(self, feature: Feature) -> None:
-        if feature.name not in self.destination_model.variables.keys():
+        if feature.name not in self.destination_model.variables:
             self.destination_model.variables[feature.name] = self.counter
             self.destination_model.features[self.counter] = feature.name
             self.counter += 1
 
     def add_root(self, feature: Feature) -> None:
-        self.r_cnf.append([self.destination_model.variables.get(feature.name)])
+        #self.r_cnf.append([self.destination_model.variables.get(feature.name)])
+        self.destination_model.add_clause([self.destination_model.variables.get(feature.name)])
 
     def add_relation(self, relation: Relation) -> None:  # noqa: MC0001
         if relation.is_mandatory():
-            self.r_cnf.append([
+            self.destination_model.add_clause([
                 -1 *
                 self.destination_model.variables.get(relation.parent.name),
                 self.destination_model.variables.get(relation.children[0].name)
             ])
-            self.r_cnf.append([
+            self.destination_model.add_clause([
                 -1 *
                 self.destination_model.variables.get(
                     relation.children[0].name),
@@ -51,7 +52,7 @@ class FmToPysat(ModelToModel):
             ])
 
         elif relation.is_optional():
-            self.r_cnf.append([
+            self.destination_model.add_clause([
                 -1 *
                 self.destination_model.variables.get(
                     relation.children[0].name),
@@ -67,10 +68,10 @@ class FmToPysat(ModelToModel):
             for child in relation.children:
                 alt_cnf.append(
                     self.destination_model.variables.get(child.name))
-            self.r_cnf.append(alt_cnf)
+            self.destination_model.add_clause(alt_cnf)
 
             for child in relation.children:
-                self.r_cnf.append([
+                self.destination_model.add_clause([
                     -1 * self.destination_model.variables.get(child.name),
                     self.destination_model.variables.get(relation.parent.name)
                 ])
@@ -86,12 +87,12 @@ class FmToPysat(ModelToModel):
             for child in relation.children:
                 alt_cnf.append(
                     self.destination_model.variables.get(child.name))
-            self.r_cnf.append(alt_cnf)
+            self.destination_model.add_clause(alt_cnf)
 
-            for i in range(len(relation.children)):
+            for i, _ in enumerate(relation.children):
                 for j in range(i + 1, len(relation.children)):
                     if i != j:
-                        self.r_cnf.append([
+                        self.destination_model.add_clause([
                             -1 *
                             self.destination_model.variables.get(
                                 relation.children[i].name),
@@ -99,7 +100,7 @@ class FmToPysat(ModelToModel):
                             self.destination_model.variables.get(
                                 relation.children[j].name)
                         ])
-                self.r_cnf.append([
+                self.destination_model.add_clause([
                     -1 *
                     self.destination_model.variables.get(
                         relation.children[i].name),
@@ -128,7 +129,7 @@ class FmToPysat(ModelToModel):
                             else:
                                 cnf.append(
                                     self.destination_model.variables.get(feat.name))
-                        self.r_cnf.append(cnf)
+                        self.destination_model.add_clause(cnf)
                 else:
                     # This first for loop is to combine when the parent is not
                     # and the childs led to a 1-pathself which is actually
@@ -143,10 +144,10 @@ class FmToPysat(ModelToModel):
                             else:
                                 cnf.append(
                                     self.destination_model.variables.get(feat.name))
-                        self.r_cnf.append(cnf)
+                        self.destination_model.add_clause(cnf)
 
     def add_constraint(self, ctc: Constraint) -> None:
-        def transform_constraints(term: Any) -> Constraint:
+        def get_term_variable(term: Any) -> int:
             if term.startswith('-'):
                 return -self.destination_model.variables.get(term[1:])
 
@@ -154,8 +155,8 @@ class FmToPysat(ModelToModel):
 
         clauses = ctc.ast.get_clauses()
         for clause in clauses:
-            constraints = list(map(transform_constraints, clause))
-            self.r_cnf.append(constraints)
+            clause_variables = list(map(get_term_variable, clause))
+            self.destination_model.add_clause(clause_variables)
 
     def transform(self) -> PySATModel:
         for feature in self.source_model.get_features():

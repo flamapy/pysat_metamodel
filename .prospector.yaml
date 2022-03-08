@@ -3,9 +3,10 @@ test-warnings: true
 doc-warnings: false
 
 ignore-paths:
+  - env
   - tests
 
-pep8:
+pycodestyle:
   options:
     max-line-length: 100
 
