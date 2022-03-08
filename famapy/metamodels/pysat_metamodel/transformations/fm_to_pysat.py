@@ -28,7 +28,7 @@ class FmToPysat(ModelToModel):
         #self.ctc_cnf = self.destination_model.ctc_cnf
 
     def add_feature(self, feature: Feature) -> None:
-        if feature.name not in self.destination_model.variables.keys():
+        if feature.name not in self.destination_model.variables:
             self.destination_model.variables[feature.name] = self.counter
             self.destination_model.features[self.counter] = feature.name
             self.counter += 1

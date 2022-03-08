@@ -46,7 +46,7 @@ class CNFReader(TextToModel):
         return self.destination_model
 
     def _add_feature(self, feature_name: str) -> None:
-        if feature_name not in self.destination_model.variables.keys():
+        if feature_name not in self.destination_model.variables:
             self.destination_model.variables[feature_name] = self.counter
             self.destination_model.features[self.counter] = feature_name
             self.counter += 1
