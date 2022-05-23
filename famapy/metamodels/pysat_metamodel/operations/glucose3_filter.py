@@ -2,7 +2,7 @@ from typing import Any
 
 from pysat.solvers import Glucose3
 
-from famapy.core.models import Configuration
+from famapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from famapy.core.operations import Filter
 from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
