@@ -1,5 +1,6 @@
 from famapy.core.operations import Commonality
-from famapy.core.models import Configuration, VariabilityModel
+from famapy.core.models import VariabilityModel
+from core.famapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from famapy.metamodels.pysat_metamodel.operations.glucose3_products import Glucose3Products
 
 
