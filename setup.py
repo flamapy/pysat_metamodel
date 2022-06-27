@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="famapy-sat",
-    version="0.7.0",
+    version="0.8.0.dev0",
     author="Víctor Ramírez de la Corte",
     author_email="me@virako.es",
     description="famapy-sat is a plugin to FaMaPy module",
