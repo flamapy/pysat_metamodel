@@ -10,7 +10,7 @@ class CNFLogicConnective(Enum):
 
 
 class TextCNFNotation(Enum):
-    """Possible notations of a CNF formula. 
+    """Possible notations of a CNF formula.
 
     Five different notations are available:
         Logical symbols:
@@ -24,27 +24,27 @@ class TextCNFNotation(Enum):
         Short symbols:
             (A) & (-B | C) & ...
     """
-    LOGICAL = {CNFLogicConnective.NOT: '¬', 
-               CNFLogicConnective.AND: '∧', 
+    LOGICAL = {CNFLogicConnective.NOT: '¬',
+               CNFLogicConnective.AND: '∧',
                CNFLogicConnective.OR: '∨'}
-    TEXTUAL = {CNFLogicConnective.NOT: 'not', 
-               CNFLogicConnective.AND: 'and', 
+    TEXTUAL = {CNFLogicConnective.NOT: 'not',
+               CNFLogicConnective.AND: 'and',
                CNFLogicConnective.OR: 'or'}
-    JAVA = {CNFLogicConnective.NOT: '!', 
-            CNFLogicConnective.AND: '&&', 
+    JAVA = {CNFLogicConnective.NOT: '!',
+            CNFLogicConnective.AND: '&&',
             CNFLogicConnective.OR: '||'}
-    JAVA_SHORT = {CNFLogicConnective.NOT: '!', 
-                  CNFLogicConnective.AND: '&', 
+    JAVA_SHORT = {CNFLogicConnective.NOT: '!',
+                  CNFLogicConnective.AND: '&',
                   CNFLogicConnective.OR: '|'}
-    SHORT = {CNFLogicConnective.NOT: '-', 
-             CNFLogicConnective.AND: '&', 
+    SHORT = {CNFLogicConnective.NOT: '-',
+             CNFLogicConnective.AND: '&',
              CNFLogicConnective.OR: '|'}
 
 
 class TextCNFModel():
     """Textual representation of a conjunctive normal form (CNF) formula.
 
-    A CNF formula (or clausal normal form) is a conjunction of one or more clauses, 
+    A CNF formula (or clausal normal form) is a conjunction of one or more clauses,
     where a clause is a disjunction of literals.
     """
 
@@ -59,16 +59,16 @@ class TextCNFModel():
         self._variables = extract_variables(cnf_formula)
 
     def from_textual_cnf_file(self, filepath: str) -> None:
-        """This method reads any of the available textual notations, 
+        """This method reads any of the available textual notations,
         but only one notation at the same time,
         so the .txt file should include only one of the possible notations in a single line.
         """
         with open(filepath, 'r', encoding='utf-8') as file:
             self.from_textual_cnf(file.readline())
 
-    def write_textual_cnf_file(self, filepath: str, 
+    def write_textual_cnf_file(self, filepath: str,
                                syntax: TextCNFNotation = TextCNFNotation.JAVA_SHORT) -> None:
-        """Write the textual CNF formula as a string in a file. 
+        """Write the textual CNF formula as a string in a file.
 
         Default syntax is TextCNFNotation.JAVA_SHORT: (A) & (!B | C) && ...
         """
@@ -79,19 +79,19 @@ class TextCNFModel():
     def get_textual_cnf_notation(self) -> TextCNFNotation:
         """Return the notation used for the CNF formula."""
         if self._cnf_formula is None:
-            raise Exception("CNF Model not initialized. Use a `from_` method first.") 
+            raise Exception("CNF Model not initialized. Use a `from_` method first.")
         assert self._cnf_notation is not None
         return self._cnf_notation
 
-    def get_textual_cnf_formula(self, 
+    def get_textual_cnf_formula(self,
                                 syntax: Optional[TextCNFNotation] = None) -> str:
         """Return the CNF formula in the specified notation syntax.
 
         Default syntax is TextCNFNotation.JAVA_SHORT: (A) & (!B | C) && ...
         """
         if self._cnf_formula is None:
-            raise Exception("CNF Model not initialized. Use a `from_` method first.") 
-        assert self._cnf_notation is not None 
+            raise Exception("CNF Model not initialized. Use a `from_` method first.")
+        assert self._cnf_notation is not None
 
         cnf_formula = self._cnf_formula
         cnf_notation = self._cnf_notation
@@ -111,7 +111,7 @@ class TextCNFModel():
         new_symbol = ' ' + syntax.value[CNFLogicConnective.OR] + ' '
         cnf_formula = cnf_formula.replace(symbol_pattern, new_symbol)
 
-        # Translate NOT operators 
+        # Translate NOT operators
         # This is more complex because the symbol may be part of a feature's name
         if cnf_notation == TextCNFNotation.TEXTUAL:
             symbol_pattern = cnf_notation.value[CNFLogicConnective.NOT] + ' '
@@ -138,7 +138,7 @@ class TextCNFModel():
     def get_variables(self) -> list[str]:
         """Return the list of variables' names in the CNF formula."""
         if self._cnf_formula is None:
-            raise Exception("CNF Model not initialized. Use a `from_` method first.") 
+            raise Exception("CNF Model not initialized. Use a `from_` method first.")
         return self._variables
 
 
@@ -151,7 +151,7 @@ def identify_notation(cnf_formula: str) -> TextCNFNotation:
     if notation is None or notation in (TextCNFNotation.JAVA, TextCNFNotation.JAVA_SHORT):
         notation = check_binary_connective(cnf_formula)
     if notation is None:
-        notation = TextCNFNotation.JAVA_SHORT 
+        notation = TextCNFNotation.JAVA_SHORT
     return notation
 
 
@@ -170,7 +170,7 @@ def check_unary_connective(cnf_formula: str) -> Optional[TextCNFNotation]:
 
     symbol = TextCNFNotation.JAVA.value[CNFLogicConnective.NOT]  # JAVA or JAVA_SHORT
     if ' ' + symbol in cnf_formula or '(' + symbol in cnf_formula:
-        return TextCNFNotation.JAVA 
+        return TextCNFNotation.JAVA
 
     return None
 
@@ -197,7 +197,7 @@ def extract_variables(cnf_formula: str) -> list[str]:
 
     # Remove final parenthesis of last clause (because of the possible end of line: '\n')
     if ')' in clauses[len(clauses) - 1]:
-        clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]  
+        clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]
 
     for clause in clauses:
         tokens = clause.split(' ')
