@@ -11,9 +11,6 @@ from famapy.metamodels.pysat_metamodel.operations.glucose3_dead_features import 
 from famapy.metamodels.pysat_metamodel.operations.glucose3_error_detection import (
     Glucose3ErrorDetection,
 )
-from famapy.metamodels.pysat_metamodel.operations.glucose3_error_diagnosis import (
-    Glucose3ErrorDiagnosis,
-)
 from famapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_features import (
     Glucose3FalseOptionalFeatures,
 )
@@ -57,11 +54,6 @@ def run(
         error_detection = Glucose3ErrorDetection()
         error_detection.execute(model)
         assert error_detection.get_result() == expected_error_detection
-
-    if expected_error_diagnosis is not None:
-        error_diagnosis = Glucose3ErrorDiagnosis()
-        error_diagnosis.execute(model)
-        assert error_diagnosis.get_result() == expected_error_diagnosis
 
     if expected_false_optional_features is not None:
         false_optional_features = Glucose3FalseOptionalFeatures()

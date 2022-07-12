@@ -9,7 +9,6 @@ from .glucose3_core_features import Glucose3CoreFeatures
 from .glucose3_dead_features import Glucose3DeadFeatures
 from .glucose3_false_optional_features import Glucose3FalseOptionalFeatures
 from .glucose3_error_detection import Glucose3ErrorDetection
-from .glucose3_error_diagnosis import Glucose3ErrorDiagnosis
 
 
 __all__ = [
@@ -23,6 +22,5 @@ __all__ = [
     'Glucose3CoreFeatures', 
     'Glucose3DeadFeatures', 
     'Glucose3FalseOptionalFeatures', 
-    'Glucose3ErrorDetection', 
-    'Glucose3ErrorDiagnosis', 
+    'Glucose3ErrorDetection',  
 ]
