@@ -1,7 +1,7 @@
-from famapy.core.transformations import TextToModel
+from flamapy.core.transformations import TextToModel
 
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from famapy.metamodels.pysat_metamodel.models.txtcnf_model import (
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.metamodels.pysat_metamodel.models.txtcnf_model import (
     TextCNFModel, 
     TextCNFNotation, 
     CNFLogicConnective

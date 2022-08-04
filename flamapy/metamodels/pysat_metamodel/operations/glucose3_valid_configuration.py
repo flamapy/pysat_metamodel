@@ -1,10 +1,10 @@
 from pysat.solvers import Glucose3
 
-from famapy.core.operations import ValidConfiguration
-from famapy.metamodels.configuration_metamodel.models.configuration import Configuration
+from flamapy.core.operations import ValidConfiguration
+from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 
 
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
 class Glucose3ValidConfiguration(ValidConfiguration):

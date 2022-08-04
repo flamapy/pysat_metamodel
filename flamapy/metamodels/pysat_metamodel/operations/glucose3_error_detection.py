@@ -1,15 +1,15 @@
 #from pysat.solvers import Glucose3
 
-from famapy.core.operations import ErrorDetection
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from famapy.metamodels.pysat_metamodel.operations.glucose3_dead_features import (
+from flamapy.core.operations import ErrorDetection
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_dead_features import (
     Glucose3DeadFeatures
 )
-from famapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_features import (
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_features import (
     Glucose3FalseOptionalFeatures
 )
-from famapy.metamodels.pysat_metamodel.operations.glucose3_valid import Glucose3Valid
-from famapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_valid import Glucose3Valid
+from flamapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
 
 
 class Glucose3ErrorDetection(ErrorDetection):

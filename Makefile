@@ -17,15 +17,12 @@ lint:
 
 mypy:
 	echo "To lint this project, make sure that you have installed the core" >&2;
-	mypy famapy
+	mypy flamapy
 
 test:
 	python -m pytest -sv
 
 cov:
-	coverage run --source=famapy -m pytest
+	coverage run --source=flamapy -m pytest
 	coverage report
 	coverage html
-
-
-

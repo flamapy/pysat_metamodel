@@ -1,14 +1,14 @@
 import itertools
 from typing import Any
 
-from famapy.core.transformations import ModelToModel
-from famapy.metamodels.fm_metamodel.models.feature_model import (
+from flamapy.core.transformations import ModelToModel
+from flamapy.metamodels.fm_metamodel.models.feature_model import (
     FeatureModel,
     Constraint,
     Feature,
     Relation,
 )
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
 class FmToPysat(ModelToModel):

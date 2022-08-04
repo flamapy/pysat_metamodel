@@ -1,27 +1,27 @@
 
-from famapy.metamodels.configuration_metamodel.models import Configuration
-from famapy.metamodels.fm_metamodel.models import Feature
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from famapy.metamodels.pysat_metamodel.operations.glucose3_core_features import (
+from flamapy.metamodels.configuration_metamodel.models import Configuration
+from flamapy.metamodels.fm_metamodel.models import Feature
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_core_features import (
     Glucose3CoreFeatures,
 )
-from famapy.metamodels.pysat_metamodel.operations.glucose3_dead_features import (
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_dead_features import (
     Glucose3DeadFeatures,
 )
-from famapy.metamodels.pysat_metamodel.operations.glucose3_error_detection import (
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_error_detection import (
     Glucose3ErrorDetection,
 )
-from famapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_features import (
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_features import (
     Glucose3FalseOptionalFeatures,
 )
-from famapy.metamodels.pysat_metamodel.operations.glucose3_products import (
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_products import (
     Glucose3Products,
 )
-from famapy.metamodels.pysat_metamodel.operations.glucose3_products_number import (
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_products_number import (
     Glucose3ProductsNumber,
 )
-from famapy.metamodels.pysat_metamodel.operations.glucose3_valid import Glucose3Valid
-from famapy.metamodels.pysat_metamodel.operations.glucose3_valid_product import (
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_valid import Glucose3Valid
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_valid_product import (
     Glucose3ValidProduct,
 )
 

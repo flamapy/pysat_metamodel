@@ -6,15 +6,15 @@ with open("README.md", "r") as fh:
 
 
 setuptools.setup(
-    name="famapy-sat",
-    version="1.0.0",
-    author="Víctor Ramírez de la Corte",
-    author_email="me@virako.es",
-    description="famapy-sat is a plugin to FaMaPy module",
+    name="flamapy-sat",
+    version="1.0.0.dev0",
+    author="Flamapy",
+    author_email="flamapy@us.es",
+    description="flamapy-sat is a plugin to flamapy module",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/FaMaPy/pysat_metamodel",
-    packages=setuptools.find_namespace_packages(include=['famapy.*']),
+    url="https://github.com/flamapy/pysat_metamodel",
+    packages=setuptools.find_namespace_packages(include=['flamapy.*']),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
@@ -22,8 +22,8 @@ setuptools.setup(
     ],
     python_requires='>=3.9',
     install_requires=[
-        'famapy~=1.0.0',
-        'famapy-fm~=1.0.0',
+        'flamapy~=1.0.0.dev0',
+        'flamapy-fm~=1.0.0.dev0',
         'python-sat>=0.1.7.dev6'
     ],
     extras_require={
@@ -36,6 +36,6 @@ setuptools.setup(
         ]
     },
     dependency_links=[
-        'famapy~=1.0.0'
+        'flamapy~=1.0.0.dev0'
     ]
 )

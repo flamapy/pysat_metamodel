@@ -2,9 +2,9 @@ from typing import Any
 
 from pysat.solvers import Glucose3
 
-from famapy.metamodels.configuration_metamodel.models.configuration import Configuration
-from famapy.core.operations import Filter
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
+from flamapy.core.operations import Filter
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
 class Glucose3Filter(Filter):

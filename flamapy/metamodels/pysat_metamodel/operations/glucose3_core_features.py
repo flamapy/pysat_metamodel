@@ -2,8 +2,8 @@ from typing import Any
 
 from pysat.solvers import Glucose3
 
-from famapy.core.operations import CoreFeatures
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.core.operations import CoreFeatures
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
 class Glucose3CoreFeatures(CoreFeatures):

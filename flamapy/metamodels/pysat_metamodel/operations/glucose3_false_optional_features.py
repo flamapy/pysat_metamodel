@@ -2,9 +2,9 @@ from typing import Any
 
 from pysat.solvers import Glucose3
 
-from famapy.core.operations import FalseOptionalFeatures
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from famapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
+from flamapy.core.operations import FalseOptionalFeatures
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
 
 
 class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
