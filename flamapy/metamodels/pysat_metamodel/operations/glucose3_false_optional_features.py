@@ -1,6 +1,6 @@
 from typing import Any
 
-from pysat.solvers import Glucose3
+from pysat.solvers import Solver
 
 from flamapy.core.operations import FalseOptionalFeatures
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
@@ -12,6 +12,7 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
     def __init__(self, feature_model: FeatureModel) -> None:
         self.result: list[Any] = []
         self.feature_model = feature_model
+        self.solver = Solver(name='glucose3')
 
     def execute(self, model: PySATModel) -> 'Glucose3FalseOptionalFeatures':
         self.result = get_false_optional_features(model, self.feature_model)
@@ -29,16 +30,15 @@ def get_false_optional_features(sat_model: PySATModel, feature_model: FeatureMod
                               if not f.is_root() and not f.is_mandatory()]
 
     result = []
-    solver = Glucose3()
     for clause in sat_model.get_all_clauses():
-        solver.add_clause(clause)
+        self.solver.add_clause(clause)
 
     for feature in real_optional_features:
         variable = sat_model.variables.get(feature.name)
         parent_variable = sat_model.variables.get(feature.get_parent().name)
         assert variable is not None
-        satisfiable = solver.solve(assumptions=[parent_variable, -variable])
+        satisfiable = self.solver.solve(assumptions=[parent_variable, -variable])
         if not satisfiable:
             result.append(feature.name)
-    solver.delete()
+    self.solver.delete()
     return result

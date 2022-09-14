@@ -1,4 +1,4 @@
-from pysat.solvers import Glucose3
+from pysat.solvers import Solver
 
 from flamapy.core.operations import ValidProduct
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
@@ -11,6 +11,7 @@ class Glucose3ValidProduct(ValidProduct):
     def __init__(self) -> None:
         self.result = False
         self.configuration = Configuration({})
+        self.solver = Solver(name='glucose3')
 
     def is_valid(self) -> bool:
         return self.result
@@ -22,9 +23,9 @@ class Glucose3ValidProduct(ValidProduct):
         self.configuration = configuration
 
     def execute(self, model: PySATModel) -> 'Glucose3ValidProduct':
-        glucose = Glucose3()
+
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
-            glucose.add_clause(clause)  # añadimos la constraint
+            self.solver.add_clause(clause)  # añadimos la constraint
 
         assumptions = []
 
@@ -43,6 +44,6 @@ class Glucose3ValidProduct(ValidProduct):
             else:
                 assumptions.append(-model.variables[feat])
 
-        self.result = glucose.solve(assumptions=assumptions)
-        glucose.delete()
+        self.result = self.solver.solve(assumptions=assumptions)
+        self.solver.delete()
         return self

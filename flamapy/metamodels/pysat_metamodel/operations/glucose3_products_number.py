@@ -1,4 +1,4 @@
-from pysat.solvers import Glucose3
+from pysat.solvers import Solver
 
 from flamapy.core.operations import ProductsNumber
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
