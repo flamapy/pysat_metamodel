@@ -10,6 +10,7 @@ class Glucose3Valid(Valid):
     def __init__(self) -> None:
         self.result = False
         self.solver = Solver(name='glucose3')
+    
     def is_valid(self) -> bool:
         return self.result
 
