@@ -1,6 +1,3 @@
-from typing import Any
-
-from flamapy.core.models.ast import AST, Node, ASTOperation
 from flamapy.core.transformations import TextToModel
 
 from flamapy.metamodels.pysat_metamodel.models import PySATModel
