@@ -7,7 +7,7 @@ class DimacsReader(TextToModel):
 
     @staticmethod
     def get_source_extension() -> str:
-        return 'cnf'
+        return 'dimacs'
 
     def __init__(self, path: str) -> None:
         self.path = path
@@ -15,15 +15,20 @@ class DimacsReader(TextToModel):
     def transform(self) -> PySATModel:
         with open(self.path, 'r', encoding='utf-8') as file:
             lines = file.read().splitlines()
-            try:
-                header = lines[0]
-                header_list = header.split()
-                n_features = int(header_list[2])
-                features_lines = lines[1:n_features+1]
-                clauses_lines = lines[n_features+1:]
-            except Exception as e:
-                print(f'Incorrect Dimacs format of {self.path}')
-                e.with_traceback()
+            problem = None
+            features_lines = []
+            clauses_lines = []
+            for line in lines:
+                if line.startswith('c'):
+                    features_lines.append(line)
+                elif line.endswith('0'):
+                    clauses_lines.append(line)
+                else:
+                    problem = line
+            n_features = int(header_list[2])
+            n_clauses = int(header_list[3])
+            if n_features != len(features_lines) or n_clauses != len(clauses_lines):
+                raise Exception(f'Incorrect Dimacs format of {self.path}')
                 return None
 
         features, variables = self._parse_features_variables(features_lines)
