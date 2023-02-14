@@ -21,19 +21,17 @@ class DimacsReader(TextToModel):
             for line in lines:
                 if line.startswith('c'):
                     features_lines.append(line)
-                elif line.endswith('0'):
-                    clauses_lines.append(line)
-                else:
+                elif line.startswith('p'):
                     problem = line
+                else:
+                    clauses_lines.append(line)
             if problem is None:
                 raise Exception(f'Incorrect Dimacs format of {self.path}')
-                return None
             problem = problem.split()
             n_features = int(problem[2])
             n_clauses = int(problem[3])
             if n_features != len(features_lines) or n_clauses != len(clauses_lines):
                 raise Exception(f'Incorrect Dimacs format of {self.path}')
-                return None
         features, variables = self._parse_features_variables(features_lines)
         sat_model = PySATModel()
         sat_model.features = features
