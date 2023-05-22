@@ -181,3 +181,13 @@ def split(C: list) -> (list, list):
     """
     half_size = len(C) // 2
     return C[:half_size], C[half_size:]
+
+
+def diff(x: list, y: list) -> list:
+    """
+    Returns the difference of two lists.
+    :param x: list
+    :param y: list
+    :return: list
+    """
+    return [item for item in x if item not in y]

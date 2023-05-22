@@ -1,3 +1,4 @@
+from .glucose3_quickxplain import Glucose3QuickXPlain
 from .glucose3_valid import Glucose3Valid
 from .glucose3_valid_configuration import Glucose3ValidConfiguration
 from .glucose3_valid_product import Glucose3ValidProduct
@@ -9,6 +10,7 @@ from .glucose3_core_features import Glucose3CoreFeatures
 from .glucose3_dead_features import Glucose3DeadFeatures
 from .glucose3_false_optional_features import Glucose3FalseOptionalFeatures
 from .glucose3_error_detection import Glucose3ErrorDetection
+from .glucose3_fastdiag import Glucose3FastDiag
 
 
 __all__ = [
@@ -22,5 +24,7 @@ __all__ = [
     'Glucose3CoreFeatures', 
     'Glucose3DeadFeatures', 
     'Glucose3FalseOptionalFeatures', 
-    'Glucose3ErrorDetection',  
+    'Glucose3ErrorDetection',
+    'Glucose3FastDiag',
+    'Glucose3QuickXPlain'
 ]
