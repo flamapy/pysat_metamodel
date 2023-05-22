@@ -1,7 +1,5 @@
 from typing import Any
 
-# from pysat.solvers import Solver
-
 from flamapy.core.operations import ErrorDiagnosis
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel, ConsistencyChecker, diff, split
@@ -14,7 +12,6 @@ class Glucose3FastDiag(ErrorDiagnosis):
     def __init__(self) -> None:
         self.result = False
         self.configuration = None
-        # self.solver = Solver(name='glucose3')
         self.solverName = 'glucose3'
         self.diagnosis_messages: list[str] = []
 
@@ -47,19 +44,6 @@ class Glucose3FastDiag(ErrorDiagnosis):
 
         if diag:
             self.diagnosis_messages.append(f'Diagnosis: {diag}')
-        # print("Diagnosis")
-        # print(diag)
-
-        # CandB = model.get_C() + model.get_B()
-        #
-        # print("C+B")
-        # print(CandB)
-        #
-        # self.result = checker.is_consistent(CandB)
-        # if not self.result:
-        #     print("Model is not consistent")
-        # else:
-        #     print("Model is consistent")
 
         return self
 
@@ -100,6 +84,12 @@ class Glucose3FastDiag(ErrorDiagnosis):
 
 
 class FastDiag:
+    """
+    Implementation of MSS-based FastDiag algorithm.
+    Le, V. M., Silva, C. V., Felfernig, A., Benavides, D., Galindo, J., & Tran, T. N. T. (2023).
+    FastDiagP: An Algorithm for Parallelized Direct Diagnosis.
+    arXiv preprint arXiv:2305.06951.
+    """
 
     def __init__(self, checker: ConsistencyChecker) -> None:
         self.checker = checker
@@ -116,17 +106,17 @@ class FastDiag:
         :param B: a background knowledge
         :return: a diagnosis or an empty set
         """
-        logging.info("fastDiag [C={}, B={}]".format(C, B))
+        logging.debug(f'fastDiag [C={C}, B={B}]')
 
         # if isEmpty(C) or consistent(B U C) return Φ
         if len(C) == 0 or self.checker.is_consistent(B + C):
-            logging.info("return Φ")
+            logging.debug('return Φ')
             return []
         else:  # return C \ FD(C, B, Φ)
             mss = self.fd([], C, B)
             diag = diff(C, mss)
 
-            logging.info("return {}".format(diag))
+            logging.debug(f'return {diag}')
             return diag
 
     def fd(self, Δ: list, C: list, B: list) -> list:
@@ -147,16 +137,16 @@ class FastDiag:
         :param B: a background knowledge
         :return: a maximal satisfiable subset MSS of C U B
         """
-        logging.debug(">>> FD [Δ={}, C={}, B={}]".format(Δ, C, B))
+        logging.debug(f'>>> FD [Δ={Δ}, C={C}, B={B}]')
 
         # if Δ != Φ and consistent(B U C) return C;
         if len(Δ) != 0 and self.checker.is_consistent(B + C):
-            logging.debug("<<< return {}".format(C))
+            logging.debug(f'<<< return {C}')
             return C
 
         # if singleton(C) return Φ;
         if len(C) == 1:
-            logging.debug("<<< return Φ")
+            logging.debug('<<< return Φ')
             return []
 
         # C1 = {c1..ck}; C2 = {ck+1..cn};
@@ -168,7 +158,7 @@ class FastDiag:
         C1withoutΔ1 = diff(C1, Δ1)
         Δ2 = self.fd(C1withoutΔ1, C2, B + Δ1)
 
-        logging.debug("<<< return [Δ1={} ∪ Δ2={}]".format(Δ1, Δ2))
+        logging.debug('<<< return [Δ1={Δ1} ∪ Δ2={Δ2}]')
 
         # return Δ1 + Δ2
         return Δ1 + Δ2
