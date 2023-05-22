@@ -52,13 +52,13 @@ class PySATModel(VariabilityModel):
         # return clauses
         return self._cnf
 
-    def get_C(self) -> CNF:
+    def get_C(self) -> list:
         return self.C
 
-    def get_B(self) -> CNF:
+    def get_B(self) -> list:
         return self.B
 
-    def prepare_diagnosis_task(self, configuration: Configuration, test_case: Configuration = None) -> None:
+    def prepare_diagnosis_task(self, configuration: Configuration = None, test_case: Configuration = None) -> None:
         """
         Execute this method after the model is built.
         If a configuration is given:
@@ -79,20 +79,22 @@ class PySATModel(VariabilityModel):
             # C = configuration
             self.C = self.configuration_to_cnf(configuration)
             # B = {f0 = true} + CF (i.e., = PySATModel)
-            self.B = self._cnf.copy()
+            self.B = self.get_all_clauses().clauses.copy()
         else:
             if test_case is None:
                 # Diagnosis the feature model
                 # C = CF (i.e., = PySATModel - {f0 = true})
                 self.C = self.get_CF()
                 # B = {f0 = true}
-                self.B = self.get_root_constraint()
+                self.B = []
+                self.B.append(self.get_root_constraint())
             else:
                 # Diagnosis the error
                 # C = CF (i.e., = PySATModel - {f0 = true})
                 self.C = self.get_CF()
                 # B = {f0 = true} + test_case
-                self.B = self.get_root_constraint()
+                self.B = []
+                self.B.append(self.get_root_constraint())
                 self.B.append(self.configuration_to_cnf(test_case))
 
     def prepare_redundancy_detection_task(self) -> None:
@@ -104,10 +106,10 @@ class PySATModel(VariabilityModel):
         """
         # C = CF (i.e., = PySATModel - {f0 = true})
         self.C = self.get_CF()
-        self.B = CNF()  # B = {}
+        self.B = []  # B = {}
         # ToDo: TBD
 
-    def get_CF(self) -> CNF:
+    def get_CF(self) -> list:
         """
         Get the constraint set CF of the feature model.
         """
@@ -115,21 +117,19 @@ class PySATModel(VariabilityModel):
         del cnf.clauses[0]  # remove the root constraint (i.e., f0 = true)
         # reverse order of clauses
         cnf.clauses.reverse()
-        return cnf
+        return cnf.clauses
 
-    def get_root_constraint(self) -> CNF:
+    def get_root_constraint(self) -> list[int]:
         """
         Get the root constraint (i.e., f0 = true).
         """
-        root_constraint = CNF()
-        root_constraint.append(self._cnf.clauses[0])
-        return root_constraint
+        return self._cnf.clauses[0].copy()
 
-    def configuration_to_cnf(self, configuration: Configuration) -> CNF:
+    def configuration_to_cnf(self, configuration: Configuration) -> list:
         """
-        Convert a configuration to CNF.
+        Convert a configuration to a list of clauses.
         """
-        cnf = CNF()
+        cnf = []
 
         config: list[str] = []
         if configuration is not None:
@@ -163,7 +163,7 @@ class ConsistencyChecker:
             - a boolean value indicating whether the given CNF formula is consistent
             - the time taken to check the consistency
         """
-        self.solver = Solver(name='glucose3')
+        self.solver = Solver(self.solverName)
 
         for clause in C:
             self.solver.add_clause(clause)
