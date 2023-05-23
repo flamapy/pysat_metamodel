@@ -1,10 +1,10 @@
 from typing import Any
 
 from flamapy.core.operations import ErrorDiagnosis
-from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
-from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel, ConsistencyChecker, diff, split
-
-import logging
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.metamodels.pysat_metamodel.operations.diagnosis.diagnosis_model import DiagnosisModel
+from flamapy.metamodels.pysat_metamodel.operations.diagnosis.quickxplain import QuickXPlain
+from flamapy.metamodels.pysat_metamodel.operations.diagnosis.checker import ConsistencyChecker
 
 
 class Glucose3QuickXPlain(ErrorDiagnosis):
@@ -30,17 +30,17 @@ class Glucose3QuickXPlain(ErrorDiagnosis):
         return self.diagnosis_messages
 
     def execute(self, model: PySATModel) -> 'Glucose3QuickXPlain':
-        model.prepare_diagnosis_task(configuration=self.configuration)
+        # transform model to diagnosis model
+        diag_model = DiagnosisModel(model)
+        diag_model.prepare_diagnosis_task(configuration=self.configuration)
 
-        print("C")
-        print(model.get_C())
-        print("B")
-        print(model.get_B())
+        print(f'C: {diag_model.get_C()}')
+        print(f'B: {diag_model.get_B()}')
 
         checker = ConsistencyChecker(self.solverName)
         quickxplain = QuickXPlain(checker)
 
-        cs = quickxplain.findConflictSet(model.get_C(), model.get_B())
+        cs = quickxplain.findConflictSet(diag_model.get_C(), diag_model.get_B())
 
         if cs:
             self.diagnosis_messages.append(f'Conflicts: {cs}')
@@ -81,76 +81,3 @@ class Glucose3QuickXPlain(ErrorDiagnosis):
         # self.result = self.is_consistent(assumptions)
         # self.solver.delete()
         # return self
-
-
-class QuickXPlain:
-    """
-    Implementation of QuickXPlain algorithm
-    Junker, Ulrich. "Quickxplain: Conflict detection for arbitrary constraint propagation algorithms."
-    IJCAI’01 Workshop on Modelling and Solving problems with constraints. Vol. 4. 2001.
-    """
-
-    def __init__(self, checker: ConsistencyChecker) -> None:
-        self.checker = checker
-
-    def findConflictSet(self, C: list, B: list) -> list:
-        """
-        // Func QuickXPlain(C={c1,c2,…, cm}, B): CS
-        // IF consistent(B∪C) return "No conflict";
-        // IF isEmpty(C) return Φ;
-        // ELSE return QX(Φ, C, B);
-        :param C: a consideration set
-        :param B: a background knowledge
-        :return: a conflict set or an empty set
-        """
-        logging.debug(f'quickXPlain [C={C}, B={B}]')
-
-        # if C is empty or consistent(B U C) then return empty set
-        if len(C) == 0 or self.checker.is_consistent(B + C):
-            logging.debug('return Φ')
-            return []
-        else:  # return QX(Φ, C, B)
-            cs = self.qx([], C, B)
-
-            logging.debug(f'return {cs}')
-            return cs
-
-    def qx(self, D: list, C: list, B: list) -> list:
-        """
-        // func QX(Δ, C={c1,c2, …, cq}, B): CS
-        // IF (Δ != Φ AND inconsistent(B)) return Φ;
-        // IF singleton(C) return C;
-        // k = q/2;
-        // C1 <-- {c1, …, ck}; C2 <-- {ck+1, …, cq};
-        // CS1 <-- QX(C2, C1, B ∪ C2);
-        // CS2 <-- QX(CS1, C2, B ∪ CS1);
-        // return (CS1 ∪ CS2)
-        :param D: check to skip redundant consistency checks
-        :param C: a consideration set of constraints
-        :param B: a background knowledge
-        :return: a conflict set or an empty set
-        """
-        logging.debug(f'>>> QX [D={D}, C={C}, B={B}]')
-
-        # if D != Φ and inconsistent(B) then return Φ
-        if len(D) != 0 and not self.checker.is_consistent(B):
-            logging.debug('<<< return Φ')
-            return []
-
-        # if C is singleton then return C
-        if len(C) == 1:
-            logging.debug(f'<<< return {C}')
-            return C
-
-        # C1 = {c1..ck}; C2 = {ck+1..cn};
-        C1, C2 = split(C)
-
-        # CS1 = QX(C2, C1, B U C2)
-        CS1 = self.qx(C2, C1, (B + C2))
-        # CS2 = QX(CS1, C2, B U CS1)
-        CS2 = self.qx(CS1, C2, (B + CS1))
-
-        logging.debug(f'<<< return [CS1={CS1} U CS2={CS2}]')
-
-        # return CS1 U CS2
-        return CS1 + CS2

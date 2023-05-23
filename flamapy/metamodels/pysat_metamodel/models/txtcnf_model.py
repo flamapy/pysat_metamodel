@@ -1,6 +1,8 @@
 from typing import Optional
 from enum import Enum, auto
 
+import flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils
+
 
 class CNFLogicConnective(Enum):
     """The propositional logic connectives a formula in CNF can contain."""
@@ -200,7 +202,7 @@ def extract_variables(cnf_formula: str) -> list[str]:
         clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]
 
     for clause in clauses:
-        tokens = clause.split(' ')
+        tokens = flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils.split(' ')
         tokens = list(filter(lambda t: t != cnf_notation.value[CNFLogicConnective.OR], tokens))
         for feature in tokens:
             if feature == cnf_notation.value[CNFLogicConnective.NOT]:

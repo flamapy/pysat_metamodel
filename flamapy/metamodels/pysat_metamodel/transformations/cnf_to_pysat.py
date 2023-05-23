@@ -1,5 +1,6 @@
 from flamapy.core.transformations import TextToModel
 
+import flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.metamodels.pysat_metamodel.models.txtcnf_model import (
     TextCNFModel, 
@@ -61,7 +62,7 @@ class CNFReader(TextToModel):
             clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]
 
         for _c in clauses:
-            tokens = _c.split(' ')
+            tokens = flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils.split(' ')
             tokens = list(filter(lambda t: t != cnf_notation.value[CNFLogicConnective.OR], tokens))
             logic_not = False
             cnf_clause = []
