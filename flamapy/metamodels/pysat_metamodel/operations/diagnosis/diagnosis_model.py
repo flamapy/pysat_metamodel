@@ -117,14 +117,14 @@ class DiagnosisModel(object):
         if configuration is not None:
             config = [feat.name for feat in configuration.elements]
 
-        # for feat in config:
-        #     if feat not in self.variables.keys():
-        #         return None
-
         for feat in config:
-            if configuration.elements[feat] is True:
-                cnf.append([self.model.variables[feat]])
-            else:
-                cnf.append([-self.model.variables[feat]])
+            if feat not in self.model.variables.keys():
+                raise Exception(f'Feature {feat} is not in the model.')
+
+        for feat in configuration.elements.items():
+            if feat[1]:
+                cnf.append([self.model.variables[feat[0].name]])
+            elif not feat[1]:
+                cnf.append([-self.model.variables[feat[0].name]])
 
         return cnf
