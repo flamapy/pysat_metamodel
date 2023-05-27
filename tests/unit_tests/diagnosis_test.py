@@ -3,7 +3,6 @@ import unittest
 from flamapy.core.discover import DiscoverMetamodels  # This loads the tool in the python execution environment
 from flamapy.metamodels.configuration_metamodel.transformations import ConfigurationBasicReader
 from flamapy.metamodels.fm_metamodel.transformations import FeatureIDEReader
-from pysat.solvers import Solver
 
 from flamapy.metamodels.pysat_metamodel.transformations import FmToPysat
 
@@ -48,7 +47,22 @@ def test_fastdiag_with_configuration():
     result = fastdiag.get_result()
 
     print(result)
-    assert result == ['Diagnosis: [[10]]']
+    assert result == ['Diagnosis: [E-ink = true]']
+
+
+def test_fastdiag_with_test_case():
+    feature_model = FeatureIDEReader("../resources/smartwatch_consistent.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    test_case = ConfigurationBasicReader("../resources/smartwatch_testcase.csvconf").transform()
+
+    fastdiag = Glucose3FastDiag()
+    fastdiag.set_test_case(test_case)
+    fastdiag.execute(model)
+    result = fastdiag.get_result()
+
+    print(result)
+    assert result == ['Diagnosis: [(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
 
 
 def test_quickxplain():
@@ -60,7 +74,7 @@ def test_quickxplain():
     result = quickxplain.get_result()
 
     print(result)
-    assert result == ['Conflicts: [(5) IMPLIES[Smartwatch][Analog],(4) IMPLIES[Smartwatch][Cellular],(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
+    assert result == ['Conflicts: [(3) OR[NOT[Analog][]][NOT[Cellular][]],(4) IMPLIES[Smartwatch][Cellular],(5) IMPLIES[Smartwatch][Analog]]']
 
 
 def test_quickxplain_with_configuration():
@@ -75,7 +89,22 @@ def test_quickxplain_with_configuration():
     result = quickxplain.get_result()
 
     print(result)
-    assert result == ['Conflicts: [[10]]']
+    assert result == ['Conflicts: [E-ink = true]']
+
+
+def test_quickxplain_with_testcase():
+    feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    test_case = ConfigurationBasicReader("../resources/smartwatch_testcase.csvconf").transform()
+
+    quickxplain = Glucose3QuickXPlain()
+    quickxplain.set_test_case(test_case)
+    quickxplain.execute(model)
+    result = quickxplain.get_result()
+
+    print(result)
+    assert result == ['Conflicts: [(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
 
 
 if __name__ == '__main__':

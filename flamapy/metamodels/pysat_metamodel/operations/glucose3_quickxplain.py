@@ -14,6 +14,7 @@ class Glucose3QuickXPlain(Operation):
     def __init__(self) -> None:
         self.result = False
         self.configuration = None
+        self.test_case = None
         self.solverName = 'glucose3'
         self.diagnosis_messages: list[str] = []
 
@@ -22,11 +23,11 @@ class Glucose3QuickXPlain(Operation):
     def get_diagnosis_messages(self) -> list[Any]:
         return self.get_result()
 
-    # if specify configuration -> C=configuration
-    # otherwise -> C=PySATModel
     def set_configuration(self, configuration: Configuration) -> None:
         self.configuration = configuration
-        print(self.configuration)
+
+    def set_test_case(self, test_case: Configuration) -> None:
+        self.test_case = test_case
 
     def get_result(self) -> list[str]:
         return self.diagnosis_messages
@@ -34,7 +35,7 @@ class Glucose3QuickXPlain(Operation):
     def execute(self, model: PySATModel) -> 'Glucose3QuickXPlain':
         # transform model to diagnosis model
         diag_model = DiagnosisModel(model)
-        diag_model.prepare_diagnosis_task(configuration=self.configuration)
+        diag_model.prepare_diagnosis_task(configuration=self.configuration, test_case=self.test_case)
 
         print(f'C: {diag_model.get_C()}')
         print(f'B: {diag_model.get_B()}')
