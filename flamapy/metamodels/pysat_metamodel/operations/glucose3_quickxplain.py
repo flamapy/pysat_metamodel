@@ -1,6 +1,6 @@
 from typing import Any
 
-from flamapy.core.operations import ErrorDiagnosis, Operation
+from flamapy.core.operations import Operation
 from flamapy.metamodels.configuration_metamodel.models import Configuration
 
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
@@ -39,12 +39,17 @@ class Glucose3QuickXPlain(Operation):
         print(f'C: {diag_model.get_C()}')
         print(f'B: {diag_model.get_B()}')
 
-        checker = ConsistencyChecker(self.solverName)
+        checker = ConsistencyChecker(self.solverName, diag_model.get_KB())
         quickxplain = QuickXPlain(checker)
 
         cs = quickxplain.findConflictSet(diag_model.get_C(), diag_model.get_B())
 
         if cs:
-            self.diagnosis_messages.append(f'Conflicts: {cs}')
+            mess = f'Conflicts: ['
+            mess += diag_model.get_diagnosis(cs)
+            mess += ']'
+            self.diagnosis_messages.append(mess)
+
+        checker.delete()
 
         return self

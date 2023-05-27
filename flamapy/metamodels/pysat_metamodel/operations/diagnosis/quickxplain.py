@@ -27,7 +27,7 @@ class QuickXPlain:
         logging.debug(f'quickXPlain [C={C}, B={B}]')
 
         # if C is empty or consistent(B U C) then return empty set
-        if len(C) == 0 or self.checker.is_consistent(B + C):
+        if len(C) == 0 or self.checker.is_consistent(B + C, []):
             logging.debug('return Φ')
             return []
         else:  # return QX(Φ, C, B)
@@ -54,7 +54,7 @@ class QuickXPlain:
         logging.debug(f'>>> QX [D={D}, C={C}, B={B}]')
 
         # if D != Φ and inconsistent(B) then return Φ
-        if len(D) != 0 and not self.checker.is_consistent(B):
+        if len(D) != 0 and not self.checker.is_consistent(B, C):
             logging.debug('<<< return Φ')
             return []
 

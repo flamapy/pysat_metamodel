@@ -30,7 +30,7 @@ class FastDiag:
         logging.debug(f'fastDiag [C={C}, B={B}]')
 
         # if isEmpty(C) or consistent(B U C) return Φ
-        if len(C) == 0 or self.checker.is_consistent(B + C):
+        if len(C) == 0 or self.checker.is_consistent(B + C, []):
             logging.debug('return Φ')
             return []
         else:  # return C \ FD(C, B, Φ)
@@ -61,7 +61,7 @@ class FastDiag:
         logging.debug(f'>>> FD [Δ={Δ}, C={C}, B={B}]')
 
         # if Δ != Φ and consistent(B U C) return C;
-        if len(Δ) != 0 and self.checker.is_consistent(B + C):
+        if len(Δ) != 0 and self.checker.is_consistent(B + C, Δ):
             logging.debug(f'<<< return {C}')
             return C
 

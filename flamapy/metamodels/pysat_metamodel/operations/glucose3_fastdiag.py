@@ -43,15 +43,17 @@ class Glucose3FastDiag(Operation):
         print(f'C: {diag_model.get_C()}')
         print(f'B: {diag_model.get_B()}')
 
-        checker = ConsistencyChecker(self.solverName)
+        checker = ConsistencyChecker(self.solverName, diag_model.get_KB())
         fastdiag = FastDiag(checker)
 
         diag = fastdiag.findDiagnosis(diag_model.get_C(), diag_model.get_B())
 
         if diag:
             mess = f'Diagnosis: ['
-            mess += ','.join([d[0] for d in diag])
+            mess += diag_model.get_diagnosis(diag)
             mess += ']'
             self.diagnosis_messages.append(mess)
+
+        checker.delete()
 
         return self

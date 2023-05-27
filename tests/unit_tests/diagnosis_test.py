@@ -3,6 +3,8 @@ import unittest
 from flamapy.core.discover import DiscoverMetamodels  # This loads the tool in the python execution environment
 from flamapy.metamodels.configuration_metamodel.transformations import ConfigurationBasicReader
 from flamapy.metamodels.fm_metamodel.transformations import FeatureIDEReader
+from pysat.solvers import Solver
+
 from flamapy.metamodels.pysat_metamodel.transformations import FmToPysat
 
 from flamapy.metamodels.pysat_metamodel.operations import Glucose3FastDiag, Glucose3QuickXPlain
@@ -58,7 +60,7 @@ def test_quickxplain():
     result = quickxplain.get_result()
 
     print(result)
-    assert result == ['Conflicts: [[-1, 8], [-1, 4], [-8, -4]]']
+    assert result == ['Conflicts: [(5) IMPLIES[Smartwatch][Analog],(4) IMPLIES[Smartwatch][Cellular],(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
 
 
 def test_quickxplain_with_configuration():
