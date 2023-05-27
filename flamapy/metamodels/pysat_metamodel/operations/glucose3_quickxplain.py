@@ -48,38 +48,3 @@ class Glucose3QuickXPlain(Operation):
             self.diagnosis_messages.append(f'Conflicts: {cs}')
 
         return self
-
-        # assumptions = []
-        #
-        # if self.configuration is None:
-        #     print("Clauses")
-        #     for clause in model.get_all_clauses():
-        #         print(clause)
-        #
-        #     id = len(model.variables) + 1
-        #     for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
-        #         # add a selector variable to each clause
-        #         clause.append(id)
-        #         # print(clause)
-        #         assumptions.append(id)
-        #         id += 1
-        #         self.solver.add_clause(clause)  # añadimos la constraint
-        #
-        # print("New Clauses")
-        # for clause in model.get_all_clauses():
-        #     print(clause)
-        #
-        # # print assumptions
-        # print("Assumptions")
-        # print(assumptions)
-        # print(self.solver.solve())
-
-        # core_features = []
-        # if glucose.solve():
-        #     for variable in model.variables.items():
-        #         if not glucose.solve(assumptions=[-variable[1]]):
-        #             core_features.append(variable[0])
-
-        # self.result = self.is_consistent(assumptions)
-        # self.solver.delete()
-        # return self
