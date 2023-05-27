@@ -37,29 +37,37 @@ class FmToPysat(ModelToModel):
         #self.r_cnf.append([self.destination_model.variables.get(feature.name)])
         self.destination_model.add_clause([self.destination_model.variables.get(feature.name)])
 
+        self.destination_model.add_clause_toMap(str(feature), [[self.destination_model.variables.get(feature.name)]])
+
     def add_relation(self, relation: Relation) -> None:  # noqa: MC0001
         if relation.is_mandatory():
-            self.destination_model.add_clause([
+            clause_1 = [
                 -1 *
                 self.destination_model.variables.get(relation.parent.name),
                 self.destination_model.variables.get(relation.children[0].name)
-            ])
-            self.destination_model.add_clause([
+            ]
+            clause_2 = [
                 -1 *
                 self.destination_model.variables.get(
                     relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)
-            ])
+            ]
+            self.destination_model.add_clause(clause_1)
+            self.destination_model.add_clause(clause_2)
+            self.destination_model.add_clause_toMap(str(relation), [clause_1, clause_2])
 
         elif relation.is_optional():
-            self.destination_model.add_clause([
+            clause = [
                 -1 *
                 self.destination_model.variables.get(
                     relation.children[0].name),
                 self.destination_model.variables.get(relation.parent.name)
-            ])
+            ]
+            self.destination_model.add_clause(clause)
+            self.destination_model.add_clause_toMap(str(relation), [clause])
 
         elif relation.is_or():  # this is a 1 to n relatinship with multiple childs
+            clauses = []
             # add the first cnf child1 or child2 or ... or childN or no parent)
             # first elem of the constraint
             alt_cnf = [-1 *
@@ -67,16 +75,26 @@ class FmToPysat(ModelToModel):
             for child in relation.children:
                 alt_cnf.append(
                     self.destination_model.variables.get(child.name))
-            self.destination_model.add_clause(alt_cnf)
+            clauses.append(alt_cnf)
+            # self.destination_model.add_clause(alt_cnf)
 
             for child in relation.children:
-                self.destination_model.add_clause([
+                clauses.append([
                     -1 * self.destination_model.variables.get(child.name),
                     self.destination_model.variables.get(relation.parent.name)
                 ])
+                # self.destination_model.add_clause([
+                #     -1 * self.destination_model.variables.get(child.name),
+                #     self.destination_model.variables.get(relation.parent.name)
+                # ])
+
+            for clause in clauses:
+                self.destination_model.add_clause(clause)
+            self.destination_model.add_clause_toMap(str(relation), clauses)
 
         # TODO: fix too many nested blocks
         elif relation.is_alternative():  # pylint: disable=too-many-nested-blocks
+            clauses = []
             # this is a 1 to 1 relatinship with multiple childs
             # add the first cnf child1 or child2 or ... or childN or no parent)
 
@@ -86,12 +104,13 @@ class FmToPysat(ModelToModel):
             for child in relation.children:
                 alt_cnf.append(
                     self.destination_model.variables.get(child.name))
-            self.destination_model.add_clause(alt_cnf)
+            clauses.append(alt_cnf)
+            # self.destination_model.add_clause(alt_cnf)
 
             for i, _ in enumerate(relation.children):
                 for j in range(i + 1, len(relation.children)):
                     if i != j:
-                        self.destination_model.add_clause([
+                        clauses.append([
                             -1 *
                             self.destination_model.variables.get(
                                 relation.children[i].name),
@@ -99,14 +118,33 @@ class FmToPysat(ModelToModel):
                             self.destination_model.variables.get(
                                 relation.children[j].name)
                         ])
-                self.destination_model.add_clause([
+                        # self.destination_model.add_clause([
+                        #     -1 *
+                        #     self.destination_model.variables.get(
+                        #         relation.children[i].name),
+                        #     -1 *
+                        #     self.destination_model.variables.get(
+                        #         relation.children[j].name)
+                        # ])
+                clauses.append([
                     -1 *
                     self.destination_model.variables.get(
                         relation.children[i].name),
                     self.destination_model.variables.get(relation.parent.name)
                 ])
+                # self.destination_model.add_clause([
+                #     -1 *
+                #     self.destination_model.variables.get(
+                #         relation.children[i].name),
+                #     self.destination_model.variables.get(relation.parent.name)
+                # ])
+
+            for clause in clauses:
+                self.destination_model.add_clause(clause)
+            self.destination_model.add_clause_toMap(str(relation), clauses)
 
         else:
+            clauses = []
             # This is a _min to _max relationship
             _min = relation.card_min
             _max = relation.card_max
@@ -123,7 +161,8 @@ class FmToPysat(ModelToModel):
                             else:
                                 cnf.append(
                                     self.destination_model.variables.get(feat.name))
-                        self.destination_model.add_clause(cnf)
+                        clauses.append(cnf)
+                        # self.destination_model.add_clause(cnf)
 
             #there is a special case when coping with the upper part of the thru table
             #In the case of allowing 0 childs, you cannot exclude the option  in that
@@ -140,7 +179,12 @@ class FmToPysat(ModelToModel):
                         else:
                             cnf.append(
                                 self.destination_model.variables.get(feat.name))
-                    self.destination_model.add_clause(cnf)
+                    clauses.append(cnf)
+                    # self.destination_model.add_clause(cnf)
+
+            for clause in clauses:
+                self.destination_model.add_clause(clause)
+            self.destination_model.add_clause_toMap(str(relation), clauses)
 
     def add_constraint(self, ctc: Constraint) -> None:
         def get_term_variable(term: Any) -> int:
@@ -149,10 +193,14 @@ class FmToPysat(ModelToModel):
 
             return self.destination_model.variables.get(term)
 
+        ctc_clauses = []
         clauses = ctc.ast.get_clauses()
         for clause in clauses:
             clause_variables = list(map(get_term_variable, clause))
+            ctc_clauses.append(clause_variables)
             self.destination_model.add_clause(clause_variables)
+
+        self.destination_model.add_clause_toMap(str(ctc), ctc_clauses)
 
     def transform(self) -> PySATModel:
         for feature in self.source_model.get_features():

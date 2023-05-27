@@ -49,6 +49,9 @@ class Glucose3FastDiag(Operation):
         diag = fastdiag.findDiagnosis(diag_model.get_C(), diag_model.get_B())
 
         if diag:
-            self.diagnosis_messages.append(f'Diagnosis: {diag}')
+            mess = f'Diagnosis: ['
+            mess += ','.join([d[0] for d in diag])
+            mess += ']'
+            self.diagnosis_messages.append(mess)
 
         return self

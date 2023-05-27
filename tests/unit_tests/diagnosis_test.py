@@ -31,7 +31,7 @@ def test_fastdiag():
     result = fastdiag.get_result()
 
     print(result)
-    assert result == ['Diagnosis: [[-8, -4]]']
+    assert result == ['Diagnosis: [(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
 
 
 def test_fastdiag_with_configuration():

@@ -16,9 +16,14 @@ class PySATModel(VariabilityModel):
         self.variables: dict[str, int] = {}  # feature's name -> id
         self.features: dict[int, str] = {}  # id -> feature's name
 
+        self.map_clauses: list[(str, list[list[int]])] = []  # map clauses to relationships/constraint
+
     def add_clause(self, clause: list[int]) -> None:
         # self.ctc_cnf.append(clause)
         self._cnf.append(clause)
+
+    def add_clause_toMap(self, description: str, clauses: list[list[int]]) -> None:
+        self.map_clauses.append((description, clauses))
 
     def get_all_clauses(self) -> CNF:
         # clauses = CNF()
@@ -26,3 +31,6 @@ class PySATModel(VariabilityModel):
         # clauses.extend(self.ctc_cnf.clauses)
         # return clauses
         return self._cnf
+
+    def get_map_clauses(self) -> list:
+        return self.map_clauses

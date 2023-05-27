@@ -95,17 +95,17 @@ class DiagnosisModel(object):
         """
         Get the constraint set CF of the feature model.
         """
-        cnf = self.model.get_all_clauses().copy()
-        del cnf.clauses[0]  # remove the root constraint (i.e., f0 = true)
+        cnf = self.model.get_map_clauses().copy()
+        del cnf[0]  # remove the root constraint (i.e., f0 = true)
         # reverse order of clauses
-        cnf.clauses.reverse()
-        return cnf.clauses
+        cnf.reverse()
+        return cnf
 
-    def get_root_constraint(self) -> list[int]:
+    def get_root_constraint(self) -> (str, list):
         """
         Get the root constraint (i.e., f0 = true).
         """
-        return self.model.get_all_clauses().clauses[0].copy()
+        return self.model.get_map_clauses()[0]
 
     def configuration_to_cnf(self, configuration: Configuration) -> list:
         """
