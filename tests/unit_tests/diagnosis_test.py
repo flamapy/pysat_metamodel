@@ -34,8 +34,8 @@ def test_fastdiag_all():
     result = hsdag_fastdiag.get_result()
 
     print(result)
-    assert result == ['Diagnoses: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]],[(4) IMPLIES[Smartwatch][Cellular]],[(5) IMPLIES[Smartwatch][Analog]]]',
-                      'Conflict: [[(3) OR[NOT[Analog][]][NOT[Cellular][]], (4) IMPLIES[Smartwatch][Cellular], (5) IMPLIES[Smartwatch][Analog]]]']
+    assert result == ['Diagnoses: [(5) IMPLIES[Smartwatch][Analog]],[(4) IMPLIES[Smartwatch][Cellular]],[(3) OR[NOT[Analog][]][NOT[Cellular][]]]',
+                      'Conflict: [(5) IMPLIES[Smartwatch][Analog], (4) IMPLIES[Smartwatch][Cellular], (3) OR[NOT[Analog][]][NOT[Cellular][]]]']
 
 
 def test_fastdiag_one():
@@ -51,7 +51,7 @@ def test_fastdiag_one():
     result = hsdag_fastdiag.get_result()
 
     print(result)
-    assert result == ['Diagnosis: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]]]',
+    assert result == ['Diagnosis: [(5) IMPLIES[Smartwatch][Analog]]',
                       'No conflicts found']
 
 
@@ -68,7 +68,7 @@ def test_fastdiag_two():
     result = hsdag_fastdiag.get_result()
 
     print(result)
-    assert result == ['Diagnoses: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]],[(4) IMPLIES[Smartwatch][Cellular]]]',
+    assert result == ['Diagnoses: [(5) IMPLIES[Smartwatch][Analog]],[(4) IMPLIES[Smartwatch][Cellular]]',
                       'No conflicts found']
 
 
@@ -82,8 +82,8 @@ def test_quickxplain_all():
 
     print(result)
     assert result == [
-        'Conflict: [[(3) OR[NOT[Analog][]][NOT[Cellular][]], (4) IMPLIES[Smartwatch][Cellular], (5) IMPLIES[Smartwatch][Analog]]]',
-        'Diagnoses: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]],[(4) IMPLIES[Smartwatch][Cellular]],[(5) IMPLIES[Smartwatch][Analog]]]']
+        'Conflict: [(5) IMPLIES[Smartwatch][Analog], (4) IMPLIES[Smartwatch][Cellular], (3) OR[NOT[Analog][]][NOT[Cellular][]]]',
+        'Diagnoses: [(5) IMPLIES[Smartwatch][Analog]],[(4) IMPLIES[Smartwatch][Cellular]],[(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
 
 
 def test_quickxplain_one():
@@ -97,7 +97,7 @@ def test_quickxplain_one():
 
     print(result)
     assert result == [
-        'Conflict: [[(3) OR[NOT[Analog][]][NOT[Cellular][]], (4) IMPLIES[Smartwatch][Cellular], (5) IMPLIES[Smartwatch][Analog]]]',
+        'Conflict: [(5) IMPLIES[Smartwatch][Analog], (4) IMPLIES[Smartwatch][Cellular], (3) OR[NOT[Analog][]][NOT[Cellular][]]]',
         'No diagnosis found']
 
 
@@ -112,68 +112,75 @@ def test_quickxplain_two():
 
     print(result)
     assert result == [
-        'Conflict: [[(3) OR[NOT[Analog][]][NOT[Cellular][]], (4) IMPLIES[Smartwatch][Cellular], (5) IMPLIES[Smartwatch][Analog]]]',
-        'Diagnoses: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]],[(4) IMPLIES[Smartwatch][Cellular]],[(5) IMPLIES[Smartwatch][Analog]]]']
+        'Conflict: [(5) IMPLIES[Smartwatch][Analog], (4) IMPLIES[Smartwatch][Cellular], (3) OR[NOT[Analog][]][NOT[Cellular][]]]',
+        'Diagnoses: [(5) IMPLIES[Smartwatch][Analog]],[(4) IMPLIES[Smartwatch][Cellular]],[(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
 
 
-# def test_fastdiag_with_configuration():
-#     feature_model = FeatureIDEReader("../resources/smartwatch_consistent.fide").transform()
-#     model = FmToPysat(feature_model).transform()
-#
-#     configuration = ConfigurationBasicReader("../resources/smartwatch_nonvalid.csvconf").transform()
-#
-#     fastdiag = Glucose3Diagnosis()
-#     fastdiag.set_configuration(configuration)
-#     fastdiag.execute(model)
-#     result = fastdiag.get_result()
-#
-#     print(result)
-#     assert result == ['Diagnosis: [E-ink = true]']
-#
-#
-# def test_fastdiag_with_test_case():
-#     feature_model = FeatureIDEReader("../resources/smartwatch_consistent.fide").transform()
-#     model = FmToPysat(feature_model).transform()
-#
-#     test_case = ConfigurationBasicReader("../resources/smartwatch_testcase.csvconf").transform()
-#
-#     fastdiag = Glucose3Diagnosis()
-#     fastdiag.set_test_case(test_case)
-#     fastdiag.execute(model)
-#     result = fastdiag.get_result()
-#
-#     print(result)
-#     assert result == ['Diagnosis: [(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
-#
-#
-# def test_quickxplain_with_configuration():
-#     feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
-#     model = FmToPysat(feature_model).transform()
-#
-#     configuration = ConfigurationBasicReader("../resources/smartwatch_nonvalid.csvconf").transform()
-#
-#     quickxplain = Glucose3Conflicts()
-#     quickxplain.set_configuration(configuration)
-#     quickxplain.execute(model)
-#     result = quickxplain.get_result()
-#
-#     print(result)
-#     assert result == ['Conflicts: [E-ink = true]']
-#
-#
-# def test_quickxplain_with_testcase():
-#     feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
-#     model = FmToPysat(feature_model).transform()
-#
-#     test_case = ConfigurationBasicReader("../resources/smartwatch_testcase.csvconf").transform()
-#
-#     quickxplain = Glucose3Conflicts()
-#     quickxplain.set_test_case(test_case)
-#     quickxplain.execute(model)
-#     result = quickxplain.get_result()
-#
-#     print(result)
-#     assert result == ['Conflicts: [(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
+def test_fastdiag_with_configuration():
+    feature_model = FeatureIDEReader("../resources/smartwatch_consistent.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    configuration = ConfigurationBasicReader("../resources/smartwatch_nonvalid.csvconf").transform()
+
+    hsdag_fastdiag = Glucose3Diagnosis()
+    hsdag_fastdiag.set_configuration(configuration)
+    hsdag_fastdiag.execute(model)
+    result = hsdag_fastdiag.get_result()
+
+    print(result)
+    assert result == ['Diagnoses: [E-ink = true],[Analog = true]',
+                      'Conflict: [E-ink = true, Analog = true]']
+
+
+def test_quickxplain_with_configuration():
+    feature_model = FeatureIDEReader("../resources/smartwatch_consistent.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    configuration = ConfigurationBasicReader("../resources/smartwatch_nonvalid.csvconf").transform()
+
+    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain.set_configuration(configuration)
+    hsdag_quickxplain.execute(model)
+    result = hsdag_quickxplain.get_result()
+
+    print(result)
+    assert result == ['Conflict: [E-ink = true, Analog = true]', 'Diagnoses: [E-ink = true],[Analog = true]']
+
+
+def test_fastdiag_with_test_case():
+    feature_model = FeatureIDEReader("../resources/smartwatch_deadfeature.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    test_case = ConfigurationBasicReader("../resources/smartwatch_testcase.csvconf").transform()
+
+    hsdag_fastdiag = Glucose3Diagnosis()
+    hsdag_fastdiag.set_test_case(test_case)
+    hsdag_fastdiag.execute(model)
+    result = hsdag_fastdiag.get_result()
+
+    print(result)
+    assert result == ['Diagnoses: [(4) IMPLIES[Smartwatch][Analog]],'
+                      '[(alternative) Screen[1,1]Analog High Resolution E-ink ]',
+                      'Conflict: [(4) IMPLIES[Smartwatch][Analog], '
+                      '(alternative) Screen[1,1]Analog High Resolution E-ink ]']
+
+
+def test_quickxplain_with_testcase():
+    feature_model = FeatureIDEReader("../resources/smartwatch_deadfeature.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    test_case = ConfigurationBasicReader("../resources/smartwatch_testcase.csvconf").transform()
+
+    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain.set_test_case(test_case)
+    hsdag_quickxplain.execute(model)
+    result = hsdag_quickxplain.get_result()
+
+    print(result)
+    assert result == ['Conflict: [(4) IMPLIES[Smartwatch][Analog], '
+                      '(alternative) Screen[1,1]Analog High Resolution E-ink ]',
+                      'Diagnoses: [(4) IMPLIES[Smartwatch][Analog]],'
+                      '[(alternative) Screen[1,1]Analog High Resolution E-ink ]']
 
 
 if __name__ == '__main__':

@@ -18,6 +18,7 @@ class LabelerType(Enum):
 @dataclass
 class AbstractHSParameters:
     C: list[int]
+    D: list[int]
 
 
 class IHSLabelable(ABC):

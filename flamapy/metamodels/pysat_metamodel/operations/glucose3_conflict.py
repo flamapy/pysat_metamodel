@@ -59,11 +59,11 @@ class Glucose3Conflicts(Operation):
         # print(f'B: {diag_model.get_B()}')
 
         C = diag_model.get_C()
-        if self.configuration is None:
-            C.reverse()  # reverse the list to get the correct order of constraints in the diagnosis messages
+        # if self.configuration is None:
+        #     C.reverse()  # reverse the list to get the correct order of constraints in the diagnosis messages
 
         checker = ConsistencyChecker(self.solverName, diag_model.get_KB())
-        parameters = QuickXPlainParameters(C, diag_model.get_B())
+        parameters = QuickXPlainParameters(C, [], diag_model.get_B())
         quickxplain = QuickXPlainLabeler(checker, parameters)
         hsdag = HSDAG(quickxplain)
         hsdag.max_number_conflicts = self.max_conflicts
@@ -77,24 +77,20 @@ class Glucose3Conflicts(Operation):
         if len(diagnoses) == 0:
             diag_mess = 'No diagnosis found'
         elif len(diagnoses) == 1:
-            diag_mess = f'Diagnosis: ['
+            diag_mess = f'Diagnosis: '
             diag_mess += diag_model.get_pretty_diagnoses(diagnoses)
-            diag_mess += ']'
         else:
-            diag_mess = f'Diagnoses: ['
+            diag_mess = f'Diagnoses: '
             diag_mess += diag_model.get_pretty_diagnoses(diagnoses)
-            diag_mess += ']'
 
         if len(conflicts) == 0:
             cs_mess = 'No conflicts found'
         elif len(conflicts) == 1:
-            cs_mess = f'Conflict: ['
+            cs_mess = f'Conflict: '
             cs_mess += diag_model.get_pretty_diagnoses(conflicts)
-            cs_mess += ']'
         else:
-            cs_mess = f'Conflicts: ['
+            cs_mess = f'Conflicts: '
             cs_mess += diag_model.get_pretty_diagnoses(conflicts)
-            cs_mess += ']'
 
         self.diagnosis_messages.append(cs_mess)
         self.diagnosis_messages.append(diag_mess)

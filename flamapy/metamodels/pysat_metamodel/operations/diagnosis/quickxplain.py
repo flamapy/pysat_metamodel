@@ -30,15 +30,18 @@ class QuickXPlain:
         :return: a conflict set or an empty set
         """
         logging.debug(f'quickXPlain [C={C}, B={B}]')
+        # print(f'quickXPlain [C={C}, B={B}]')
 
         # if C is empty or consistent(B U C) then return empty set
         if len(C) == 0 or self.checker.is_consistent(B + C, []):
             logging.debug('return Φ')
+            # print('return Φ')
             return []
         else:  # return QX(Φ, C, B)
             cs = self.qx([], C, B)
 
             logging.debug(f'return {cs}')
+            # print(f'return {cs}')
             return cs
 
     def qx(self, D: list, C: list, B: list) -> list:

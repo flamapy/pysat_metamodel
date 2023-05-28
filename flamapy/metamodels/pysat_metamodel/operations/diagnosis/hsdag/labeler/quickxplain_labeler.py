@@ -40,7 +40,7 @@ class QuickXPlainLabeler(QuickXPlain, IHSLabelable):
         """
         assert isinstance(parameters, QuickXPlainParameters), "parameter must be an instance of QuickXPlainParameters"
 
-        cs = self.findConflictSet(parameters.C, parameters.B)
+        cs = self.findConflictSet(parameters.C, parameters.B + parameters.D)
 
         if len(cs) != 0:
             # reverse the order of the conflict set
@@ -59,8 +59,10 @@ class QuickXPlainLabeler(QuickXPlain, IHSLabelable):
         C = param_parent_node.C.copy()
         C.remove(arcLabel)
         B = param_parent_node.B.copy()
+        D = param_parent_node.D.copy()
+        D.append(-1 * arcLabel)
 
-        return QuickXPlainParameters(C, B)
+        return QuickXPlainParameters(C, D, B)
 
     def get_instance(self, checker: ConsistencyChecker):
         return QuickXPlainLabeler(checker, self.initial_parameters)

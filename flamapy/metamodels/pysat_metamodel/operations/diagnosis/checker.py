@@ -23,6 +23,7 @@ class ConsistencyChecker:
         """
         assumptions = C + [-1 * item for item in Δ]
         self.result = self.solver.solve(assumptions=assumptions)
+        # print(f"assumptions: {assumptions} - result: {self.result}")
         return self.result
 
     def delete(self):

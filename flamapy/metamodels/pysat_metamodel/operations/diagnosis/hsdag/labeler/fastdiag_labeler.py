@@ -39,8 +39,10 @@ class FastDiagLabeler(FastDiag, IHSLabelable):
         Identifies a diagnosis
         """
         assert isinstance(parameters, FastDiagParameters), "parameter must be an instance of FastDiagParameters"
-        if len(parameters.C) > 1 \
-                and (len(parameters.B) == 0 or self.checker.is_consistent(parameters.B, [])):
+        neg_C = [-1 * item for item in parameters.C]
+        if len(parameters.C) >= 1 \
+                and (len(parameters.B) == 0 or self.checker.is_consistent(parameters.B + neg_C, [])):
+
             diag = self.findDiagnosis(parameters.C, parameters.B)
             if len(diag) != 0:
                 return [diag]
@@ -58,8 +60,10 @@ class FastDiagLabeler(FastDiag, IHSLabelable):
         C.remove(arcLabel)
         B = param_parent_node.B.copy()
         B.append(arcLabel)
+        # D = param_parent_node.D.copy()
+        # D.append(arcLabel)
 
-        return FastDiagParameters(C, B)
+        return FastDiagParameters(C, [], B)
 
     def get_instance(self, checker: ConsistencyChecker):
         return FastDiagLabeler(checker, self.initial_parameters)

@@ -33,16 +33,19 @@ class FastDiag:
         :return: a diagnosis or an empty set
         """
         logging.debug(f'fastDiag [C={C}, B={B}]')
+        # print(f'fastDiag [C={C}, B={B}]')
 
         # if isEmpty(C) or consistent(B U C) return Φ
         if len(C) == 0 or self.checker.is_consistent(B + C, []):
             logging.debug('return Φ')
+            # print('return Φ')
             return []
         else:  # return C \ FD(C, B, Φ)
             mss = self.fd([], C, B)
             diag = diff(C, mss)
 
             logging.debug(f'return {diag}')
+            # print(f'return {diag}')
             return diag
 
     def fd(self, Δ: list, C: list, B: list) -> list:

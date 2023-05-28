@@ -59,15 +59,15 @@ class Glucose3Diagnosis(Operation):
         diag_model = DiagnosisModel(model)
         diag_model.prepare_diagnosis_task(configuration=self.configuration, test_case=self.test_case)
 
-        # print(f'C: {diag_model.get_C()}')
-        # print(f'B: {diag_model.get_B()}')
+        print(f'C: {diag_model.get_C()}')
+        print(f'B: {diag_model.get_B()}')
 
         C = diag_model.get_C()
-        if self.configuration is None:
-            C.reverse()  # reverse the list to get the correct order of diagnosis
+        # if self.configuration is None:
+        #     C.reverse()  # reverse the list to get the correct order of diagnosis
 
         checker = ConsistencyChecker(self.solverName, diag_model.get_KB())
-        parameters = FastDiagParameters(C, diag_model.get_B())
+        parameters = FastDiagParameters(C, [], diag_model.get_B())
         fastdiag = FastDiagLabeler(checker, parameters)
         hsdag = HSDAG(fastdiag)
         hsdag.max_number_diagnoses = self.max_diagnoses
@@ -81,24 +81,20 @@ class Glucose3Diagnosis(Operation):
         if len(diagnoses) == 0:
             diag_mess = 'No diagnosis found'
         elif len(diagnoses) == 1:
-            diag_mess = f'Diagnosis: ['
+            diag_mess = f'Diagnosis: '
             diag_mess += diag_model.get_pretty_diagnoses(diagnoses)
-            diag_mess += ']'
         else:
-            diag_mess = f'Diagnoses: ['
+            diag_mess = f'Diagnoses: '
             diag_mess += diag_model.get_pretty_diagnoses(diagnoses)
-            diag_mess += ']'
 
         if len(conflicts) == 0:
             cs_mess = 'No conflicts found'
         elif len(conflicts) == 1:
-            cs_mess = f'Conflict: ['
+            cs_mess = f'Conflict: '
             cs_mess += diag_model.get_pretty_diagnoses(conflicts)
-            cs_mess += ']'
         else:
-            cs_mess = f'Conflicts: ['
+            cs_mess = f'Conflicts: '
             cs_mess += diag_model.get_pretty_diagnoses(conflicts)
-            cs_mess += ']'
 
         self.diagnosis_messages.append(diag_mess)
         self.diagnosis_messages.append(cs_mess)
