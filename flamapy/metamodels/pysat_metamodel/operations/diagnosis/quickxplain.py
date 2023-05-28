@@ -1,3 +1,8 @@
+"""
+A Java version of this implementation is available at:
+https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java/at/tugraz/ist/ase/cacdr/algorithms/QuickXPlain.java
+"""
+
 import logging
 
 from flamapy.metamodels.pysat_metamodel.operations.diagnosis.checker import ConsistencyChecker

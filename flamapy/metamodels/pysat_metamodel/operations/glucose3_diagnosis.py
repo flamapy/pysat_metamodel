@@ -15,8 +15,11 @@ from flamapy.metamodels.pysat_metamodel.operations.diagnosis.hsdag.labeler.fastd
 class Glucose3Diagnosis(Operation):
     """
     An operation that computes diagnoses and conflict sets using the combination of HSDAG and FastDiag algorithms.
-    The operation has two optional inputs: a configuration and a test case.
-
+    Four optional inputs:
+    - configuration - a configuration to be diagnosed
+    - test_case - a test case to be used for diagnosis
+    - max_diagnoses - specify the maximum number of diagnoses to be computed
+    - max_depth - specify the maximum depth of the HSDAG to be computed
     """
 
     def __init__(self) -> None:
@@ -27,8 +30,8 @@ class Glucose3Diagnosis(Operation):
         self.diagnosis_messages: list[str] = []
 
         self.checker = None
-        self.max_diagnoses = -1
-        self.max_depth = 0
+        self.max_diagnoses = -1  # -1 means no limit
+        self.max_depth = 0  # 0 means no limit
 
     def set_max_diagnoses(self, max_diagnoses: int) -> None:
         self.max_diagnoses = max_diagnoses

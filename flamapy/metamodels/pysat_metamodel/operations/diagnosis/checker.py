@@ -1,3 +1,8 @@
+"""
+A Java version of this implementation is available at:
+https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java/at/tugraz/ist/ase/cacdr/checker/ChocoConsistencyChecker.java
+"""
+
 from pysat.solvers import Solver
 
 

@@ -14,6 +14,11 @@ from flamapy.metamodels.pysat_metamodel.operations.diagnosis.checker import Cons
 class Glucose3Conflicts(Operation):
     """
     An operation that computes conflicts and diagnoses using the combination of HSDAG and QuickXPlain algorithms.
+    Four optional inputs:
+    - configuration - a configuration to be diagnosed
+    - test_case - a test case to be used for diagnosis
+    - max_conflicts - specify the maximum number of conflicts to be computed
+    - max_depth - specify the maximum depth of the HSDAG to be computed
     """
 
     def __init__(self) -> None:
@@ -24,8 +29,8 @@ class Glucose3Conflicts(Operation):
         self.diagnosis_messages: list[str] = []
 
         self.checker = None
-        self.max_conflicts = -1
-        self.max_depth = 0
+        self.max_conflicts = -1  # -1 means no limit
+        self.max_depth = 0  # 0 means no limit
 
     def set_max_conflicts(self, max_conflicts: int) -> None:
         self.max_conflicts = max_conflicts
@@ -55,7 +60,7 @@ class Glucose3Conflicts(Operation):
 
         C = diag_model.get_C()
         if self.configuration is None:
-            C.reverse()  # reverse the list to get the correct order of diagnosis
+            C.reverse()  # reverse the list to get the correct order of constraints in the diagnosis messages
 
         checker = ConsistencyChecker(self.solverName, diag_model.get_KB())
         parameters = QuickXPlainParameters(C, diag_model.get_B())

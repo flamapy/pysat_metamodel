@@ -1,3 +1,8 @@
+"""
+A Java version of this implementation is available at:
+https://github.com/HiConfiT/hiconfit-core/blob/main/cdrmodel-package/src/main/java/at/tugraz/ist/ase/cdrmodel/CDRModel.java
+"""
+
 from flamapy.metamodels.configuration_metamodel.models import Configuration
 from flamapy.metamodels.pysat_metamodel.models import PySATModel
 
