@@ -5,7 +5,7 @@ from flamapy.metamodels.fm_metamodel.transformations import FeatureIDEReader
 
 from flamapy.metamodels.pysat_metamodel.transformations import FmToPysat
 
-from flamapy.metamodels.pysat_metamodel.operations import Glucose3Diagnosis, Glucose3Conflicts
+from flamapy.metamodels.pysat_metamodel.operations import Glucose3Diagnosis, Glucose3Conflict
 
 
 # def test_with_DiscoverMetamodels():
@@ -76,7 +76,7 @@ def test_quickxplain_all():
     feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
     model = FmToPysat(feature_model).transform()
 
-    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain = Glucose3Conflict()
     hsdag_quickxplain.execute(model)
     result = hsdag_quickxplain.get_result()
 
@@ -90,7 +90,7 @@ def test_quickxplain_one():
     feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
     model = FmToPysat(feature_model).transform()
 
-    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain = Glucose3Conflict()
     hsdag_quickxplain.max_conflicts = 1
     hsdag_quickxplain.execute(model)
     result = hsdag_quickxplain.get_result()
@@ -105,7 +105,7 @@ def test_quickxplain_two():
     feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
     model = FmToPysat(feature_model).transform()
 
-    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain = Glucose3Conflict()
     hsdag_quickxplain.max_conflicts = 2
     hsdag_quickxplain.execute(model)
     result = hsdag_quickxplain.get_result()
@@ -138,7 +138,7 @@ def test_quickxplain_with_configuration():
 
     configuration = ConfigurationBasicReader("../resources/smartwatch_nonvalid.csvconf").transform()
 
-    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain = Glucose3Conflict()
     hsdag_quickxplain.set_configuration(configuration)
     hsdag_quickxplain.execute(model)
     result = hsdag_quickxplain.get_result()
@@ -171,7 +171,7 @@ def test_quickxplain_with_testcase():
 
     test_case = ConfigurationBasicReader("../resources/smartwatch_testcase.csvconf").transform()
 
-    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain = Glucose3Conflict()
     hsdag_quickxplain.set_test_case(test_case)
     hsdag_quickxplain.execute(model)
     result = hsdag_quickxplain.get_result()

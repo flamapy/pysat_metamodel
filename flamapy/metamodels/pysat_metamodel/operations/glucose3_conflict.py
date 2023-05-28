@@ -11,7 +11,7 @@ from flamapy.metamodels.pysat_metamodel.operations.diagnosis.hsdag.labeler.quick
 from flamapy.metamodels.pysat_metamodel.operations.diagnosis.checker import ConsistencyChecker
 
 
-class Glucose3Conflicts(Operation):
+class Glucose3Conflict(Operation):
     """
     An operation that computes conflicts and diagnoses using the combination of HSDAG and QuickXPlain algorithms.
     Four optional inputs:
@@ -50,7 +50,7 @@ class Glucose3Conflicts(Operation):
     def get_result(self) -> list[str]:
         return self.diagnosis_messages
 
-    def execute(self, model: PySATModel) -> 'Glucose3Conflicts':
+    def execute(self, model: PySATModel) -> 'Glucose3Conflict':
         # transform model to diagnosis model
         diag_model = DiagnosisModel(model)
         diag_model.prepare_diagnosis_task(configuration=self.configuration, test_case=self.test_case)

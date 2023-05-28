@@ -1,4 +1,4 @@
-from .glucose3_conflict import Glucose3Conflicts
+from .glucose3_conflict import Glucose3Conflict
 from .glucose3_valid import Glucose3Valid
 from .glucose3_valid_configuration import Glucose3ValidConfiguration
 from .glucose3_valid_product import Glucose3ValidProduct
@@ -26,5 +26,5 @@ __all__ = [
     'Glucose3FalseOptionalFeatures', 
     'Glucose3ErrorDetection',
     'Glucose3Diagnosis',
-    'Glucose3Conflicts'
+    'Glucose3Conflict'
 ]
