@@ -64,7 +64,7 @@ class Glucose3Diagnosis(Operation):
             C.reverse()  # reverse the list to get the correct order of diagnosis
 
         checker = ConsistencyChecker(self.solverName, diag_model.get_KB())
-        parameters = FastDiagParameters(C, [], diag_model.get_B())
+        parameters = FastDiagParameters(C, diag_model.get_B())
         fastdiag = FastDiagLabeler(checker, parameters)
         hsdag = HSDAG(fastdiag)
         hsdag.max_number_diagnoses = self.max_diagnoses

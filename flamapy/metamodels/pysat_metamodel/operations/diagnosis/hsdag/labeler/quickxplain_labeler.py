@@ -11,7 +11,7 @@ class QuickXPlainParameters(AbstractHSParameters):
     B: list[int]
 
     def __str__(self):
-        return f"QuickXPlainParameters{{C={self.C}, D={self.D}, B={self.B}}}"
+        return f"QuickXPlainParameters{{C={self.C}, B={self.B}}}"
 
 
 class QuickXPlainLabeler(QuickXPlain, IHSLabelable):
@@ -27,11 +27,9 @@ class QuickXPlainLabeler(QuickXPlain, IHSLabelable):
         return self.initial_parameters
 
     def get_label(self, parameters: AbstractHSParameters) -> list:
-        # params = (FastDiagParameters)parameters
         assert isinstance(parameters, QuickXPlainParameters), "parameter must be an instance of QuickXPlainParameters"
-        params = parameters
 
-        cs = self.findConflictSet(params.C, params.B)
+        cs = self.findConflictSet(parameters.C, parameters.B)
 
         if len(cs) != 0:
             # reverse the order of the conflict set
@@ -43,15 +41,12 @@ class QuickXPlainLabeler(QuickXPlain, IHSLabelable):
             -> AbstractHSParameters:
         assert isinstance(param_parent_node,
                           QuickXPlainParameters), "parameter must be an instance of QuickXPlainParameters"
-        params = param_parent_node
-        C = params.C.copy()
+        C = param_parent_node.C.copy()
         C.remove(arcLabel)
 
-        B = params.B.copy()
-        D = params.D.copy()
-        D.append(arcLabel)  # TODO: check if this is correct
+        B = param_parent_node.B.copy()
 
-        return QuickXPlainParameters(C, D, B)
+        return QuickXPlainParameters(C, B)
 
     def get_instance(self, checker: ConsistencyChecker):
         return QuickXPlainLabeler(checker, self.initial_parameters)

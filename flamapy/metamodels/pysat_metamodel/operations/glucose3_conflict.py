@@ -58,7 +58,7 @@ class Glucose3Conflicts(Operation):
             C.reverse()  # reverse the list to get the correct order of diagnosis
 
         checker = ConsistencyChecker(self.solverName, diag_model.get_KB())
-        parameters = QuickXPlainParameters(C, [], diag_model.get_B())
+        parameters = QuickXPlainParameters(C, diag_model.get_B())
         quickxplain = QuickXPlainLabeler(checker, parameters)
         hsdag = HSDAG(quickxplain)
         hsdag.max_number_conflicts = self.max_conflicts
