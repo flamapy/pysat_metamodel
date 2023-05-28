@@ -45,13 +45,16 @@ class DiagnosisModel(object):
     def get_KB(self) -> list:
         return self.KB
 
-    def get_diagnosis(self, assumptions: list[int]) -> str:
-        diag = []
+    def get_pretty_diagnoses(self, assumptions: list[list[int]]) -> str:
+        diagnoses = []
         for ass in assumptions:
-            if self.constraint_assumption_map[ass]:
-                diag.append(self.constraint_assumption_map[ass])
+            diag = []
+            for item in ass:
+                if self.constraint_assumption_map[item]:
+                    diag.append(self.constraint_assumption_map[item])
+            diagnoses.append(f"[{', '.join(diag)}]")
 
-        return ','.join(diag)
+        return ','.join(diagnoses)
 
     def prepare_diagnosis_task(self, configuration: Configuration = None, test_case: Configuration = None) -> None:
         """

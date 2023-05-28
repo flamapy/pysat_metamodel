@@ -40,5 +40,5 @@ def contains(listofList: list, aList: list) -> bool:
     return any(aList == x for x in listofList)
 
 
-def containsAll(greater: list, smaller: list) -> bool:
+def contains_all(greater: list, smaller: list) -> bool:
     return all(i in smaller for i in greater)

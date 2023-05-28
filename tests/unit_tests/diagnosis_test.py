@@ -1,12 +1,12 @@
 import unittest
 
-from flamapy.core.discover import DiscoverMetamodels  # This loads the tool in the python execution environment
 from flamapy.metamodels.configuration_metamodel.transformations import ConfigurationBasicReader
 from flamapy.metamodels.fm_metamodel.transformations import FeatureIDEReader
 
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_hsdag_quickxplain import Glucose3HSDAGQuickXPlain
 from flamapy.metamodels.pysat_metamodel.transformations import FmToPysat
 
-from flamapy.metamodels.pysat_metamodel.operations import Glucose3FastDiag, Glucose3QuickXPlain
+from flamapy.metamodels.pysat_metamodel.operations import Glucose3Diagnosis, Glucose3Conflicts
 
 
 # def test_with_DiscoverMetamodels():
@@ -23,16 +23,98 @@ from flamapy.metamodels.pysat_metamodel.operations import Glucose3FastDiag, Gluc
 #     assert result == ['Diagnosis: [[-8, -4]]']
 
 
-def test_fastdiag():
+def test_fastdiag_all():
+    """
+    Identify all diagnoses
+    """
     feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
     model = FmToPysat(feature_model).transform()
 
-    fastdiag = Glucose3FastDiag()
-    fastdiag.execute(model)
-    result = fastdiag.get_result()
+    hsdag_fastdiag = Glucose3Diagnosis()
+    hsdag_fastdiag.execute(model)
+    result = hsdag_fastdiag.get_result()
 
     print(result)
-    assert result == ['Diagnosis: [(3) OR[NOT[Analog][]][NOT[Cellular][]]]']
+    assert result == ['Diagnoses: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]],[(4) IMPLIES[Smartwatch][Cellular]],[(5) IMPLIES[Smartwatch][Analog]]]',
+                      'Conflict: [[(3) OR[NOT[Analog][]][NOT[Cellular][]], (4) IMPLIES[Smartwatch][Cellular], (5) IMPLIES[Smartwatch][Analog]]]']
+
+
+def test_fastdiag_one():
+    """
+    Identify one diagnosis
+    """
+    feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    hsdag_fastdiag = Glucose3Diagnosis()
+    hsdag_fastdiag.max_diagnoses = 1
+    hsdag_fastdiag.execute(model)
+    result = hsdag_fastdiag.get_result()
+
+    print(result)
+    assert result == ['Diagnosis: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]]]',
+                      'No conflicts found']
+
+
+def test_fastdiag_two():
+    """
+    Identify two diagnoses
+    """
+    feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    hsdag_fastdiag = Glucose3Diagnosis()
+    hsdag_fastdiag.max_diagnoses = 2
+    hsdag_fastdiag.execute(model)
+    result = hsdag_fastdiag.get_result()
+
+    print(result)
+    assert result == ['Diagnoses: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]],[(4) IMPLIES[Smartwatch][Cellular]]]',
+                      'No conflicts found']
+
+
+def test_quickxplain_all():
+    feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain.execute(model)
+    result = hsdag_quickxplain.get_result()
+
+    print(result)
+    assert result == [
+        'Conflict: [[(3) OR[NOT[Analog][]][NOT[Cellular][]], (4) IMPLIES[Smartwatch][Cellular], (5) IMPLIES[Smartwatch][Analog]]]',
+        'Diagnoses: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]],[(4) IMPLIES[Smartwatch][Cellular]],[(5) IMPLIES[Smartwatch][Analog]]]']
+
+
+def test_quickxplain_one():
+    feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain.max_conflicts = 1
+    hsdag_quickxplain.execute(model)
+    result = hsdag_quickxplain.get_result()
+
+    print(result)
+    assert result == [
+        'Conflict: [[(3) OR[NOT[Analog][]][NOT[Cellular][]], (4) IMPLIES[Smartwatch][Cellular], (5) IMPLIES[Smartwatch][Analog]]]',
+        'No diagnosis found']
+
+
+def test_quickxplain_two():
+    feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
+    model = FmToPysat(feature_model).transform()
+
+    hsdag_quickxplain = Glucose3Conflicts()
+    hsdag_quickxplain.max_conflicts = 2
+    hsdag_quickxplain.execute(model)
+    result = hsdag_quickxplain.get_result()
+
+    print(result)
+    assert result == [
+        'Conflict: [[(3) OR[NOT[Analog][]][NOT[Cellular][]], (4) IMPLIES[Smartwatch][Cellular], (5) IMPLIES[Smartwatch][Analog]]]',
+        'Diagnoses: [[(3) OR[NOT[Analog][]][NOT[Cellular][]]],[(4) IMPLIES[Smartwatch][Cellular]],[(5) IMPLIES[Smartwatch][Analog]]]']
 
 
 def test_fastdiag_with_configuration():
@@ -41,7 +123,7 @@ def test_fastdiag_with_configuration():
 
     configuration = ConfigurationBasicReader("../resources/smartwatch_nonvalid.csvconf").transform()
 
-    fastdiag = Glucose3FastDiag()
+    fastdiag = Glucose3Diagnosis()
     fastdiag.set_configuration(configuration)
     fastdiag.execute(model)
     result = fastdiag.get_result()
@@ -56,7 +138,7 @@ def test_fastdiag_with_test_case():
 
     test_case = ConfigurationBasicReader("../resources/smartwatch_testcase.csvconf").transform()
 
-    fastdiag = Glucose3FastDiag()
+    fastdiag = Glucose3Diagnosis()
     fastdiag.set_test_case(test_case)
     fastdiag.execute(model)
     result = fastdiag.get_result()
@@ -69,7 +151,7 @@ def test_quickxplain():
     feature_model = FeatureIDEReader("../resources/smartwatch_inconsistent.fide").transform()
     model = FmToPysat(feature_model).transform()
 
-    quickxplain = Glucose3QuickXPlain()
+    quickxplain = Glucose3Conflicts()
     quickxplain.execute(model)
     result = quickxplain.get_result()
 
@@ -83,7 +165,7 @@ def test_quickxplain_with_configuration():
 
     configuration = ConfigurationBasicReader("../resources/smartwatch_nonvalid.csvconf").transform()
 
-    quickxplain = Glucose3QuickXPlain()
+    quickxplain = Glucose3Conflicts()
     quickxplain.set_configuration(configuration)
     quickxplain.execute(model)
     result = quickxplain.get_result()
@@ -98,7 +180,7 @@ def test_quickxplain_with_testcase():
 
     test_case = ConfigurationBasicReader("../resources/smartwatch_testcase.csvconf").transform()
 
-    quickxplain = Glucose3QuickXPlain()
+    quickxplain = Glucose3Conflicts()
     quickxplain.set_test_case(test_case)
     quickxplain.execute(model)
     result = quickxplain.get_result()
