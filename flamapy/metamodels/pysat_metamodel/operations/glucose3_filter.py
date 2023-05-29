@@ -1,6 +1,6 @@
 from typing import Any
 
-from pysat.solvers import Glucose3
+from pysat.solvers import Solver
 
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.core.operations import Filter
@@ -12,6 +12,7 @@ class Glucose3Filter(Filter):
     def __init__(self) -> None:
         self.filter_products: list[list[Any]] = []
         self.configuration = Configuration({})
+        self.solver = Solver(name='glucose3')
 
     def get_filter_products(self) -> list[list[Any]]:
         return self.filter_products
@@ -23,9 +24,8 @@ class Glucose3Filter(Filter):
         self.configuration = configuration
 
     def execute(self, model: PySATModel) -> 'Glucose3Filter':
-        glucose = Glucose3()
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
-            glucose.add_clause(clause)  # añadimos la constraint
+            self.solver.add_clause(clause)  # añadimos la constraint
 
         assumptions = [
             model.variables.get(feat[0].name) if feat[1]
@@ -33,11 +33,11 @@ class Glucose3Filter(Filter):
             for feat in self.configuration.elements.items()
         ]
 
-        for solution in glucose.enum_models(assumptions=assumptions):
+        for solution in self.solver.enum_models(assumptions=assumptions):
             product = []
             for variable in solution:
                 if variable > 0:
                     product.append(model.features.get(variable))
             self.filter_products.append(product)
-        glucose.delete()
+        self.solver.delete()
         return self
