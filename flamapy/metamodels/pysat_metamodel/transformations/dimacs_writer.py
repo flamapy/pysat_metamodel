@@ -25,8 +25,8 @@ def pysat_to_dimacs(model: PySATModel) -> str:
     features_dict = model.features
     clauses_list = model.get_all_clauses().clauses
     lines.append(f'p cnf {len(features_dict)} {len(clauses_list)}')
-    for id, name in features_dict.items():
-        lines.append(f'c {id} {name}')
+    for identification, name in features_dict.items():
+        lines.append(f'c {identification} {name}')
     for clause in clauses_list:
         lines.append(f'{" ".join((str(c) for c in clause))} 0')
     return '\n'.join(lines)
