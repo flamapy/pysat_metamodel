@@ -15,7 +15,7 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
         self.solver = Solver(name='glucose3')
 
     def execute(self, model: PySATModel) -> 'Glucose3FalseOptionalFeatures':
-        self.result = _get_false_optional_features(model, self.feature_model)
+        self.result = self._get_false_optional_features(model, self.feature_model)
         return self
 
     def get_false_optional_features(self) -> list[list[Any]]:
