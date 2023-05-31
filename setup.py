@@ -22,8 +22,8 @@ setuptools.setup(
     ],
     python_requires='>=3.9',
     install_requires=[
-        'flamapy~=1.0.1',
-        'flamapy-fm~=1.0.1',
+        'flamapy~=1.1.2',
+        'flamapy-fm~=1.1.1',
         'python-sat>=0.1.7.dev6'
     ],
     extras_require={
