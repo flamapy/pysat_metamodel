@@ -1,9 +1,10 @@
-from typing import Any
+from typing import Any,cast
 
 from pysat.solvers import Solver
 
 from flamapy.core.operations import DeadFeatures
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.core.models import VariabilityModel
 
 
 class Glucose3DeadFeatures(DeadFeatures):
@@ -18,7 +19,8 @@ class Glucose3DeadFeatures(DeadFeatures):
     def get_result(self) -> list[list[Any]]:
         return self.get_dead_features()
 
-    def execute(self, model: PySATModel) -> 'Glucose3DeadFeatures':
+    def execute(self, model: VariabilityModel) -> 'Glucose3DeadFeatures':
+        model=cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint

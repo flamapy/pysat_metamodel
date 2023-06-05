@@ -1,4 +1,4 @@
-#from pysat.solvers import Glucose3
+from typing import cast
 
 from flamapy.core.operations import ErrorDetection
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
@@ -10,12 +10,14 @@ from flamapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_featu
 )
 from flamapy.metamodels.pysat_metamodel.operations.glucose3_valid import Glucose3Valid
 from flamapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
+from flamapy.core.models import VariabilityModel
+from flamapy.core.exceptions import FLAMAException
 
 
 class Glucose3ErrorDetection(ErrorDetection):
 
-    def __init__(self, feature_model: FeatureModel) -> None:
-        self.feature_model = feature_model
+    def __init__(self) -> None:
+        self.feature_model = None
         self.errors_messages: list[str] = []
 
     def get_errors_messages(self) -> list[str]:
@@ -24,7 +26,12 @@ class Glucose3ErrorDetection(ErrorDetection):
     def get_result(self) -> list[str]:
         return self.errors_messages
 
-    def execute(self, model: PySATModel) -> 'Glucose3ErrorDetection':
+    def execute(self, model: VariabilityModel) -> 'Glucose3ErrorDetection':
+        if self.feature_model is None:
+            raise FLAMAException('The feature model is not setted')
+        
+        model=cast(PySATModel, model)
+
         # Valid feature model check
         valid = Glucose3Valid().execute(model).get_result()
         if not valid:

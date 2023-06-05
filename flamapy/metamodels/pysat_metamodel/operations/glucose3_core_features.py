@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 
 from pysat.solvers import Solver
 
@@ -18,7 +18,8 @@ class Glucose3CoreFeatures(CoreFeatures):
     def get_result(self) -> list[list[Any]]:
         return self.get_core_features()
 
-    def execute(self, model: PySATModel) -> 'Glucose3CoreFeatures':
+    def execute(self, model: VariabilityModel) -> 'Glucose3CoreFeatures':
+        model=cast(PySATModel, model)
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint
 

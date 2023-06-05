@@ -1,10 +1,11 @@
-from typing import Any
+from typing import Any, cast
 
 from pysat.solvers import Solver
 
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.core.operations import Filter
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.core.models import VariabilityModel
 
 
 class Glucose3Filter(Filter):
@@ -23,7 +24,9 @@ class Glucose3Filter(Filter):
     def set_configuration(self, configuration: Configuration) -> None:
         self.configuration = configuration
 
-    def execute(self, model: PySATModel) -> 'Glucose3Filter':
+    def execute(self, model: VariabilityModel) -> 'Glucose3Filter':
+        model=cast(PySATModel, model)
+
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint
 
