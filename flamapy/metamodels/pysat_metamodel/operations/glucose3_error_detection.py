@@ -11,7 +11,7 @@ from flamapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_featu
 from flamapy.metamodels.pysat_metamodel.operations.glucose3_valid import Glucose3Valid
 from flamapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
 from flamapy.core.models import VariabilityModel
-from flamapy.core.exceptions import FLAMAException
+from flamapy.core.exceptions import FlamaException
 
 
 class Glucose3ErrorDetection(ErrorDetection):
@@ -28,7 +28,7 @@ class Glucose3ErrorDetection(ErrorDetection):
 
     def execute(self, model: VariabilityModel) -> 'Glucose3ErrorDetection':
         if self.feature_model is None:
-            raise FLAMAException('The feature model is not setted')
+            raise FlamaException('The feature model is not setted')
         
         model=cast(PySATModel, model)
 
