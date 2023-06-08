@@ -5,7 +5,7 @@ from .dimacs_writer import DimacsWriter
 
 
 __all__ = [
-    'FmToPysat', 
+    'FmToPysat',
     'CNFReader',
     'DimacsReader',
     'DimacsWriter'

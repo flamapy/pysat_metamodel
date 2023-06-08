@@ -1,7 +1,8 @@
-from flamapy.core.transformations import TextToModel
+from typing import Optional
 
-from flamapy.metamodels.pysat_metamodel.models import PySATModel
 from flamapy.core.exceptions import FlamaException
+from flamapy.core.transformations import TextToModel
+from flamapy.metamodels.pysat_metamodel.models import PySATModel
 
 
 class DimacsReader(TextToModel):
@@ -16,7 +17,7 @@ class DimacsReader(TextToModel):
     def transform(self) -> PySATModel:
         with open(self.path, 'r', encoding='utf-8') as file:
             lines = file.read().splitlines()
-            problem = None
+            problem: Optional[str] = None
             features_lines = []
             clauses_lines = []
             for line in lines:
@@ -28,9 +29,10 @@ class DimacsReader(TextToModel):
                     clauses_lines.append(line)
             if problem is None:
                 raise FlamaException(f'Incorrect Dimacs format of {self.path}')
-            problem = problem.split()
-            n_features = int(problem[2])
-            n_clauses = int(problem[3])
+
+            problem_list = problem.split()
+            n_features = int(problem_list[2])
+            n_clauses = int(problem_list[3])
             if n_features != len(features_lines) or n_clauses != len(clauses_lines):
                 raise FlamaException(f'Incorrect Dimacs format of {self.path}')
         features, variables = self._parse_features_variables(features_lines)

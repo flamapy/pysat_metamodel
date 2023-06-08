@@ -17,7 +17,7 @@ lint:
 
 mypy:
 	echo "To lint this project, make sure that you have installed the core" >&2;
-	mypy flamapy
+	mypy -p flamapy
 
 test:
 	python -m pytest -sv
