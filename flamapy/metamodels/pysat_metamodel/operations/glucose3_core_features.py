@@ -4,6 +4,7 @@ from pysat.solvers import Solver
 
 from flamapy.core.operations import CoreFeatures
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.core.models import VariabilityModel
 
 
 class Glucose3CoreFeatures(CoreFeatures):
