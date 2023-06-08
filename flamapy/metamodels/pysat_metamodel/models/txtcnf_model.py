@@ -1,5 +1,6 @@
 from typing import Optional
 from enum import Enum, auto
+from flamapy.core.exceptions import FlamaException
 
 
 class CNFLogicConnective(Enum):
@@ -79,7 +80,7 @@ class TextCNFModel():
     def get_textual_cnf_notation(self) -> TextCNFNotation:
         """Return the notation used for the CNF formula."""
         if self._cnf_formula is None:
-            raise Exception("CNF Model not initialized. Use a `from_` method first.")
+            raise FlamaException("CNF Model not initialized. Use a `from_` method first.")
         assert self._cnf_notation is not None
         return self._cnf_notation
 
@@ -90,7 +91,7 @@ class TextCNFModel():
         Default syntax is TextCNFNotation.JAVA_SHORT: (A) & (!B | C) && ...
         """
         if self._cnf_formula is None:
-            raise Exception("CNF Model not initialized. Use a `from_` method first.")
+            raise FlamaException("CNF Model not initialized. Use a `from_` method first.")
         assert self._cnf_notation is not None
 
         cnf_formula = self._cnf_formula
@@ -138,7 +139,7 @@ class TextCNFModel():
     def get_variables(self) -> list[str]:
         """Return the list of variables' names in the CNF formula."""
         if self._cnf_formula is None:
-            raise Exception("CNF Model not initialized. Use a `from_` method first.")
+            raise FlamaException("CNF Model not initialized. Use a `from_` method first.")
         return self._variables
 
 

@@ -1,14 +1,14 @@
 import itertools
 from typing import Any
 
-from famapy.core.transformations import ModelToModel
-from famapy.metamodels.fm_metamodel.models.feature_model import (
+from flamapy.core.transformations import ModelToModel
+from flamapy.metamodels.fm_metamodel.models.feature_model import (
     FeatureModel,
     Constraint,
     Feature,
     Relation,
 )
-from famapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
 class FmToPysat(ModelToModel):
@@ -61,7 +61,6 @@ class FmToPysat(ModelToModel):
 
         elif relation.is_or():  # this is a 1 to n relatinship with multiple childs
             # add the first cnf child1 or child2 or ... or childN or no parent)
-
             # first elem of the constraint
             alt_cnf = [-1 *
                        self.destination_model.variables.get(relation.parent.name)]
@@ -111,40 +110,37 @@ class FmToPysat(ModelToModel):
             # This is a _min to _max relationship
             _min = relation.card_min
             _max = relation.card_max
-
             for val in range(len(relation.children) + 1):
                 if val < _min or val > _max:
-                    # These sets are the combinations that shouldn't be in the res
-                    # Let ¬A, B, C be one of your 0-paths.
-                    # The relative clause will be (A ∨ ¬B ∨ ¬C).
-                    # This first for loop is to combine when the parent is and
-                    # the childs led to a 0-pathself.
-                    for res in itertools.combinations(relation.children, val):
+                    #combinations of val elements
+                    for combination in itertools.combinations(relation.children, val):
                         cnf = [-1 *
                                self.destination_model.variables.get(relation.parent.name)]
                         for feat in relation.children:
-                            if feat in res:
+                            if feat in combination:
                                 cnf.append(-1 *
                                            self.destination_model.variables.get(feat.name))
                             else:
                                 cnf.append(
                                     self.destination_model.variables.get(feat.name))
                         self.destination_model.add_clause(cnf)
-                else:
-                    # This first for loop is to combine when the parent is not
-                    # and the childs led to a 1-pathself which is actually
-                    # 0-path considering the parent.
-                    for res in itertools.combinations(relation.children, val):
-                        cnf = [self.destination_model.variables.get(
-                            relation.parent.name)]
-                        for feat in relation.children:
-                            if feat in res:
-                                cnf.append(-1 *
-                                           self.destination_model.variables.get(feat.name))
-                            else:
-                                cnf.append(
-                                    self.destination_model.variables.get(feat.name))
-                        self.destination_model.add_clause(cnf)
+
+            #there is a special case when coping with the upper part of the thru table
+            #In the case of allowing 0 childs, you cannot exclude the option  in that
+            # no feature in this relation is activated
+            for val in range(1, len(relation.children) + 1):
+
+                for combination in itertools.combinations(relation.children, val):
+                    cnf = [self.destination_model.variables.get(relation.parent.name)]
+                    for feat in relation.children:
+                        if feat in combination:
+                            cnf.append(
+                                -1 * self.destination_model.variables.get(feat.name)
+                            )
+                        else:
+                            cnf.append(
+                                self.destination_model.variables.get(feat.name))
+                    self.destination_model.add_clause(cnf)
 
     def add_constraint(self, ctc: Constraint) -> None:
         def get_term_variable(term: Any) -> int:

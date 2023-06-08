@@ -1,7 +1,7 @@
-from famapy.core.operations import Commonality
-from famapy.core.models import VariabilityModel
-from famapy.metamodels.configuration_metamodel.models.configuration import Configuration
-from famapy.metamodels.pysat_metamodel.operations.glucose3_products import Glucose3Products
+from flamapy.core.operations import Commonality
+from flamapy.core.models import VariabilityModel
+from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
+from flamapy.metamodels.pysat_metamodel.operations.glucose3_products import Glucose3Products
 
 
 class Glucose3Commonality(Commonality):

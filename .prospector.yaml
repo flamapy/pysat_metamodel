@@ -5,6 +5,7 @@ doc-warnings: false
 ignore-paths:
   - env
   - tests
+  - build
 
 pycodestyle:
   options:
