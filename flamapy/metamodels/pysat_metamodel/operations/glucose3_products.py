@@ -1,9 +1,10 @@
-from typing import Any
+from typing import Any, cast
 
 from pysat.solvers import Solver
 
 from flamapy.core.operations import Products
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+from flamapy.core.models import VariabilityModel
 
 
 class Glucose3Products(Products):
@@ -18,7 +19,8 @@ class Glucose3Products(Products):
     def get_result(self) -> list[list[Any]]:
         return self.get_products()
 
-    def execute(self, model: PySATModel) -> 'Glucose3Products':
+    def execute(self, model: VariabilityModel) -> 'Glucose3Products':
+        model=cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint
