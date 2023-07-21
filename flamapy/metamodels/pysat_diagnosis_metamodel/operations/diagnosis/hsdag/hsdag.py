@@ -3,11 +3,11 @@ A Java version of this implementation is available at:
 https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java/at/tugraz/ist/ase/cacdr/algorithms/hs/HSDAG.java
 """
 
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis import utils
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.hsdag.labeler.labeler import IHSLabelable, LabelerType, \
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis import utils
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.hsdag.labeler.labeler import IHSLabelable, LabelerType, \
     AbstractHSParameters
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.hsdag.node import Node, NodeStatus
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils import diff, contains
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.hsdag.node import Node, NodeStatus
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.utils import diff, contains
 
 
 class HSDAG:

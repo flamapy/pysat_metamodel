@@ -5,10 +5,9 @@ https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java
 
 from dataclasses import dataclass
 
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.checker import ConsistencyChecker
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.fastdiag import FastDiag
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.hsdag.labeler.labeler import IHSLabelable, LabelerType, \
-    AbstractHSParameters
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.checker import ConsistencyChecker
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.fastdiag import FastDiag
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.hsdag.labeler.labeler import IHSLabelable, LabelerType, AbstractHSParameters
 
 
 @dataclass

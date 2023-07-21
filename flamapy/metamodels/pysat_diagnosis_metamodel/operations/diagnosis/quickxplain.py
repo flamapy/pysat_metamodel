@@ -5,8 +5,8 @@ https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java
 
 import logging
 
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.checker import ConsistencyChecker
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils import split
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.checker import ConsistencyChecker
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.utils import split
 
 
 class QuickXPlain:

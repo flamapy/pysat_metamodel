@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.checker import ConsistencyChecker
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.checker import ConsistencyChecker
 
 
 class LabelerType(Enum):

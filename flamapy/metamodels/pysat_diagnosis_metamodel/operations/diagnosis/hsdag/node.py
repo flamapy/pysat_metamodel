@@ -4,7 +4,7 @@ https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java
 """
 from enum import Enum
 
-from flamapy.metamodels.pysat_metamodel.operations.diagnosis.hsdag.labeler.labeler import AbstractHSParameters
+from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.hsdag.labeler.labeler import AbstractHSParameters
 
 
 class NodeStatus(Enum):

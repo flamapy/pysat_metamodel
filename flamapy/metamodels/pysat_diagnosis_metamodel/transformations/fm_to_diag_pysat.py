@@ -1,5 +1,5 @@
 import itertools
-from typing import Any
+from typing import Any, List
 
 from flamapy.core.transformations import ModelToModel
 from flamapy.metamodels.fm_metamodel.models.feature_model import (

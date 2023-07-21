@@ -40,6 +40,9 @@ class DiagnosisModel(PySATModel):
 
         self.constraint_assumption_map = None
 
+    def add_clause_toMap(self, description: str, clauses: list[list[int]]) -> None:
+        self.constraint_map.append((description, clauses))
+
     def get_C(self) -> list:
         return self.C
 
