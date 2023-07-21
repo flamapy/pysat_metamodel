@@ -1,13 +1,10 @@
-"""
-A Java version of this implementation is available at:
-https://github.com/HiConfiT/hiconfit-core/blob/main/cdrmodel-package/src/main/java/at/tugraz/ist/ase/cdrmodel/CDRModel.java
-"""
+from typing import List, Dict, Tuple
 
 from flamapy.metamodels.configuration_metamodel.models import Configuration
 from flamapy.metamodels.pysat_metamodel.models import PySATModel
 
 
-class DiagnosisModel(object):
+class DiagnosisModel(PySATModel):
     """
     This is a new version of the PySATModel class to support the following tasks:
     1. Diagnosis Task
@@ -29,16 +26,18 @@ class DiagnosisModel(object):
         B = {}
     """
 
-    # @staticmethod
-    # def get_extension() -> str:
-    #     return 'pysat'
+    @staticmethod
+    def get_extension() -> str:
+        return 'pysat_diagnosys'
 
-    def __init__(self, model: PySATModel) -> None:
-        self.model = model
+    def __init__(self) -> None:
+        super().__init__()
         self.C = None  # set of constraints which could be faulty
         self.B = None  # background knowledge (i.e., the knowledge that is known to be true)
 
         self.KB = None  # set of all CNF with added assumptions
+        self.constraint_map: list[(str, list[list[int]])] = []  # map clauses to relationships/constraint
+
         self.constraint_assumption_map = None
 
     def get_C(self) -> list:
@@ -108,7 +107,7 @@ class DiagnosisModel(object):
         # ToDo: TBD
 
     def prepare_assumptions(self, configuration: Configuration = None, test_case: Configuration = None) \
-            -> (list, list, list, dict):
+            -> Tuple[List, List, List, Dict]:
         assumption = []
         KB = []
         constraint_assumption_map = {}

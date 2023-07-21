@@ -1,6 +1,5 @@
 from flamapy.core.transformations import TextToModel
 
-import flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.metamodels.pysat_metamodel.models.txtcnf_model import (
     TextCNFModel, 

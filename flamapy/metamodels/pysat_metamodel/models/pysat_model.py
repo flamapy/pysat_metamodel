@@ -1,10 +1,10 @@
 from pysat.formula import CNF
 
+from flamapy.core.exceptions import FlamaException
 from flamapy.core.models import VariabilityModel
 
 
 class PySATModel(VariabilityModel):
-
     @staticmethod
     def get_extension() -> str:
         return 'pysat'
@@ -16,14 +16,14 @@ class PySATModel(VariabilityModel):
         self.variables: dict[str, int] = {}  # feature's name -> id
         self.features: dict[int, str] = {}  # id -> feature's name
 
-        self.constraint_map: list[(str, list[list[int]])] = []  # map clauses to relationships/constraint
-
     def add_clause(self, clause: list[int]) -> None:
         # self.ctc_cnf.append(clause)
         self._cnf.append(clause)
 
-    def add_clause_toMap(self, description: str, clauses: list[list[int]]) -> None:
-        self.constraint_map.append((description, clauses))
+    def get_variable(self, key: str) -> int:
+        if key not in self.variables:
+            raise FlamaException(f'Feature {key} not found')
+        return self.variables[key]
 
     def get_all_clauses(self) -> CNF:
         # clauses = CNF()
@@ -31,6 +31,3 @@ class PySATModel(VariabilityModel):
         # clauses.extend(self.ctc_cnf.clauses)
         # return clauses
         return self._cnf
-
-    def get_constraint_map(self) -> list:
-        return self.constraint_map

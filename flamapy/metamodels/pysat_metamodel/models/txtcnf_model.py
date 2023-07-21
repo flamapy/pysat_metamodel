@@ -2,8 +2,6 @@ from typing import Optional
 from enum import Enum, auto
 from flamapy.core.exceptions import FlamaException
 
-import flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils
-
 
 class CNFLogicConnective(Enum):
     """The propositional logic connectives a formula in CNF can contain."""
