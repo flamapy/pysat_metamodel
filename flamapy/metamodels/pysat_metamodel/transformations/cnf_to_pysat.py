@@ -2,8 +2,8 @@ from flamapy.core.transformations import TextToModel
 
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.metamodels.pysat_metamodel.models.txtcnf_model import (
-    TextCNFModel, 
-    TextCNFNotation, 
+    TextCNFModel,
+    TextCNFNotation,
     CNFLogicConnective
 )
 

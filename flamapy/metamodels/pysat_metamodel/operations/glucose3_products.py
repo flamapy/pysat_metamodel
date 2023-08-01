@@ -20,7 +20,7 @@ class Glucose3Products(Products):
         return self.get_products()
 
     def execute(self, model: VariabilityModel) -> 'Glucose3Products':
-        model=cast(PySATModel, model)
+        model = cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint

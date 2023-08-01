@@ -8,7 +8,7 @@ from .txtcnf_model import (
 
 __all__ = [
     'PySATModel',
-    'TextCNFModel', 
-    'CNFLogicConnective', 
+    'TextCNFModel',
+    'CNFLogicConnective',
     'TextCNFNotation'
 ]

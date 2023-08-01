@@ -1,4 +1,4 @@
-from typing import Any,cast
+from typing import Any, cast
 
 from pysat.solvers import Solver
 
@@ -20,7 +20,7 @@ class Glucose3DeadFeatures(DeadFeatures):
         return self.get_dead_features()
 
     def execute(self, model: VariabilityModel) -> 'Glucose3DeadFeatures':
-        model=cast(PySATModel, model)
+        model = cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint

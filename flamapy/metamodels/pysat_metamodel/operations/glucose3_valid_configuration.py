@@ -27,7 +27,7 @@ class Glucose3ValidConfiguration(ValidConfiguration):
         self.configuration = configuration
 
     def execute(self, model: VariabilityModel) -> 'Glucose3ValidConfiguration':
-        model=cast(PySATModel, model)
+        model = cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint

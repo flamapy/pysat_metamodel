@@ -12,15 +12,15 @@ from .glucose3_error_detection import Glucose3ErrorDetection
 
 
 __all__ = [
-    'Glucose3Valid', 
-    'Glucose3ValidConfiguration', 
-    'Glucose3ValidProduct', 
-    'Glucose3Products', 
-    'Glucose3ProductsNumber', 
-    'Glucose3Commonality', 
-    'Glucose3Filter', 
-    'Glucose3CoreFeatures', 
-    'Glucose3DeadFeatures', 
-    'Glucose3FalseOptionalFeatures', 
+    'Glucose3Valid',
+    'Glucose3ValidConfiguration',
+    'Glucose3ValidProduct',
+    'Glucose3Products',
+    'Glucose3ProductsNumber',
+    'Glucose3Commonality',
+    'Glucose3Filter',
+    'Glucose3CoreFeatures',
+    'Glucose3DeadFeatures',
+    'Glucose3FalseOptionalFeatures',
     'Glucose3ErrorDetection',
 ]
