@@ -28,7 +28,7 @@ class DiagnosisModel(PySATModel):
 
     @staticmethod
     def get_extension() -> str:
-        return 'pysat_diagnosys'
+        return 'pysat_diagnosis'
 
     def __init__(self) -> None:
         super().__init__()
@@ -115,7 +115,7 @@ class DiagnosisModel(PySATModel):
         KB = []
         constraint_assumption_map = {}
 
-        id_assumption = len(self.model.variables) + 1
+        id_assumption = len(self.variables) + 1
         id_assumption = self.prepare_assumptions_for_KB(KB, assumption, constraint_assumption_map, id_assumption)
 
         start_id_configuration = len(assumption)
@@ -145,7 +145,7 @@ class DiagnosisModel(PySATModel):
         return C, B, KB, constraint_assumption_map
 
     def prepare_assumptions_for_KB(self, KB, assumption, constraint_assumption_map, id_assumption):
-        c_map = self.model.get_constraint_map()
+        c_map = self.constraint_map
         # loop through all tuples in the constraint map
         for i in range(len(c_map)):
             # get description
@@ -173,7 +173,7 @@ class DiagnosisModel(PySATModel):
                                               id_assumption):
         config = [feat.name for feat in configuration.elements]
         for feat in config:
-            if feat not in self.model.variables.keys():
+            if feat not in self.variables.keys():
                 raise Exception(f'Feature {feat} is not in the model.')
 
         for feat in configuration.elements.items():
@@ -182,10 +182,10 @@ class DiagnosisModel(PySATModel):
 
             if feat[1]:
                 desc = f'{feat[0].name} = true'
-                clause = [self.model.variables[feat[0].name], -1 * id_assumption]
+                clause = [self.variables[feat[0].name], -1 * id_assumption]
             elif not feat[1]:
                 desc = f'{feat[0].name} = false'
-                clause = [-1 * self.model.variables[feat[0].name], -1 * id_assumption]
+                clause = [-1 * self.variables[feat[0].name], -1 * id_assumption]
 
             assumption.append(id_assumption)
             KB.append(clause)

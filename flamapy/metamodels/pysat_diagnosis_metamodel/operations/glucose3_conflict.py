@@ -52,18 +52,17 @@ class Glucose3Conflict(Operation):
 
     def execute(self, model: VariabilityModel) -> 'Glucose3Conflict':
         # transform model to diagnosis model
-        diag_model = DiagnosisModel(model)
-        diag_model.prepare_diagnosis_task(configuration=self.configuration, test_case=self.test_case)
+        model.prepare_diagnosis_task(configuration=self.configuration, test_case=self.test_case)
 
         # print(f'C: {diag_model.get_C()}')
         # print(f'B: {diag_model.get_B()}')
 
-        C = diag_model.get_C()
+        C = model.get_C()
         # if self.configuration is None:
         #     C.reverse()  # reverse the list to get the correct order of constraints in the diagnosis messages
 
-        checker = ConsistencyChecker(self.solverName, diag_model.get_KB())
-        parameters = QuickXPlainParameters(C, [], diag_model.get_B())
+        checker = ConsistencyChecker(self.solverName, model.get_KB())
+        parameters = QuickXPlainParameters(C, [], model.get_B())
         quickxplain = QuickXPlainLabeler(checker, parameters)
         hsdag = HSDAG(quickxplain)
         hsdag.max_number_conflicts = self.max_conflicts
@@ -78,19 +77,19 @@ class Glucose3Conflict(Operation):
             diag_mess = 'No diagnosis found'
         elif len(diagnoses) == 1:
             diag_mess = f'Diagnosis: '
-            diag_mess += diag_model.get_pretty_diagnoses(diagnoses)
+            diag_mess += model.get_pretty_diagnoses(diagnoses)
         else:
             diag_mess = f'Diagnoses: '
-            diag_mess += diag_model.get_pretty_diagnoses(diagnoses)
+            diag_mess += model.get_pretty_diagnoses(diagnoses)
 
         if len(conflicts) == 0:
             cs_mess = 'No conflicts found'
         elif len(conflicts) == 1:
             cs_mess = f'Conflict: '
-            cs_mess += diag_model.get_pretty_diagnoses(conflicts)
+            cs_mess += model.get_pretty_diagnoses(conflicts)
         else:
             cs_mess = f'Conflicts: '
-            cs_mess += diag_model.get_pretty_diagnoses(conflicts)
+            cs_mess += model.get_pretty_diagnoses(conflicts)
 
         self.diagnosis_messages.append(cs_mess)
         self.diagnosis_messages.append(diag_mess)
