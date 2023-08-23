@@ -7,7 +7,7 @@ from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.core.models import VariabilityModel
 
 
-class Glucose3ProductsNumber(ProductsNumber):
+class PySATProductsNumber(ProductsNumber):
 
     def __init__(self) -> None:
         self.products_number = 0
@@ -19,7 +19,7 @@ class Glucose3ProductsNumber(ProductsNumber):
     def get_result(self) -> int:
         return self.get_products_number()
 
-    def execute(self, model: VariabilityModel) -> 'Glucose3ProductsNumber':
+    def execute(self, model: VariabilityModel) -> 'PySATProductsNumber':
         model = cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos

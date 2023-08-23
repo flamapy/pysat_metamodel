@@ -24,6 +24,7 @@ class FmToPysat(ModelToModel):
         self.source_model = source_model
         self.counter = 1
         self.destination_model = PySATModel()
+        self.destination_model.original_model =source_model
         # self.r_cnf = self.destination_model.r_cnf
         # self.ctc_cnf = self.destination_model.ctc_cnf
 

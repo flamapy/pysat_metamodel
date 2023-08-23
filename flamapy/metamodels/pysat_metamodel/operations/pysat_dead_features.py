@@ -7,7 +7,7 @@ from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.core.models import VariabilityModel
 
 
-class Glucose3DeadFeatures(DeadFeatures):
+class PySATDeadFeatures(DeadFeatures):
 
     def __init__(self) -> None:
         self.dead_features: list[list[Any]] = []
@@ -19,7 +19,7 @@ class Glucose3DeadFeatures(DeadFeatures):
     def get_result(self) -> list[list[Any]]:
         return self.get_dead_features()
 
-    def execute(self, model: VariabilityModel) -> 'Glucose3DeadFeatures':
+    def execute(self, model: VariabilityModel) -> 'PySATDeadFeatures':
         model = cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
