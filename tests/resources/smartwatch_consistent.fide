@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<featureModel>
+	<struct>
+		<and abstract="true" mandatory="true" name="Smartwatch">
+			<or mandatory="true" name="Connector">
+				<feature name="GPS"/>
+				<feature name="Cellular"/>
+				<feature name="Wifi"/>
+				<feature name="Bluetooth"/>
+			</or>
+			<alt mandatory="true" name="Screen">
+				<feature name="Analog"/>
+				<feature name="High Resolution"/>
+				<feature name="E-ink"/>
+			</alt>
+			<feature name="Camera"/>
+			<feature name="Compass"/>
+		</and>
+	</struct>
+	<constraints>
+		<rule>
+			<imp>
+				<var>Camera</var>
+				<var>High Resolution</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>Compass</var>
+				<var>GPS</var>
+			</imp>
+		</rule>
+		<rule>
+		    <disj>
+				<not>
+					<var>Analog</var>
+				</not>
+				<not>
+					<var>Cellular</var>
+				</not>
+			</disj>
+		</rule>
+	</constraints>
+</featureModel>
