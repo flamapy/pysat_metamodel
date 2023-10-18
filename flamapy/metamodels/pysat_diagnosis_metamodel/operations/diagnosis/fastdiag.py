@@ -4,6 +4,7 @@ https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java
 """
 
 import logging
+from typing import List
 
 from .checker import ConsistencyChecker
 from .utils import split, diff
@@ -20,7 +21,7 @@ class FastDiag:
     def __init__(self, checker: ConsistencyChecker) -> None:
         self.checker = checker
 
-    def find_diagnosis(self, set_c: list, set_b: list) -> list:
+    def find_diagnosis(self, set_c: List[int], set_b: List[int]) -> List[int]:
         """
         Activate FastDiag algorithm if there exists at least one constraint,
         which induces an inconsistency in B. Otherwise, it returns an empty set.
@@ -49,7 +50,7 @@ class FastDiag:
         # print(f'return {diag}')
         return diag
 
-    def _fd(self, delta: list, set_c: list, set_b: list) -> list:
+    def _fd(self, delta: List[int], set_c: List[int], set_b: List[int]) -> List[int]:
         """
         The implementation of MSS-based FastDiag algorithm.
         The algorithm determines a maximal satisfiable subset MSS (Γ) of C U B.

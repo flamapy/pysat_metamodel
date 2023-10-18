@@ -21,19 +21,19 @@ class FmToDiagPysat(FmToPysat):
         return 'pysat_diagnosis'
 
     def __init__(self, source_model: FeatureModel) -> None:
-        self.source_model = source_model
-        self.counter = 1
+        super().__init__(source_model)
         self.destination_model = DiagnosisModel()
         # self.r_cnf = self.destination_model.r_cnf
         # self.ctc_cnf = self.destination_model.ctc_cnf
 
     def add_root(self, feature: Feature) -> None:
         #self.r_cnf.append([self.destination_model.variables.get(feature.name)])
-        self.destination_model.add_clause([self.destination_model.variables.get(feature.name)])
-        # print(self.destination_model.__class__)
-        (self.destination_model
-         .add_clause_to_map(str(feature),
-                            [[self.destination_model.variables.get(feature.name)]]))
+        var = self.destination_model.variables.get(feature.name)
+        if var is None:
+            raise KeyError(f'Feature {feature.name} not found in the model')
+
+        self.destination_model.add_clause([var])
+        self.destination_model.add_clause_to_map(str(feature), [[var]])
 
     def _store_constraint_relation(self, relation: Relation, clauses: List[List[int]]) -> None:
         for clause in clauses:
@@ -42,10 +42,18 @@ class FmToDiagPysat(FmToPysat):
 
     def add_constraint(self, ctc: Constraint) -> None:
         def get_term_variable(term: Any) -> int:
+            negated = False
             if term.startswith('-'):
-                return -self.destination_model.variables.get(term[1:])
+                term = term[1:]
+                negated = True
 
-            return self.destination_model.variables.get(term)
+            var = self.destination_model.variables.get(term)
+            if var is None:
+                raise KeyError(f'Feature {term} not found in the model')
+
+            if negated:
+                return -var
+            return var
 
         ctc_clauses = []
         clauses = ctc.ast.get_clauses()

@@ -6,6 +6,7 @@ https://github.com/HiConfiT/hiconfit-core/tree/main/ca-cdr-package/src/main/java
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
+from typing import List
 
 from ...checker import ConsistencyChecker
 
@@ -17,8 +18,8 @@ class LabelerType(Enum):
 
 @dataclass
 class AbstractHSParameters:
-    set_c: list[int]
-    set_d: list[int]
+    set_c: List[int]
+    set_d: List[int]
 
 
 class IHSLabelable(ABC):
@@ -35,7 +36,7 @@ class IHSLabelable(ABC):
         pass
 
     @abstractmethod
-    def get_label(self, parameters: AbstractHSParameters) -> list:
+    def get_label(self, parameters: AbstractHSParameters) -> List[List[int]]:
         pass
 
     @abstractmethod
@@ -44,5 +45,5 @@ class IHSLabelable(ABC):
         pass
 
     @abstractmethod
-    def get_instance(self, checker: ConsistencyChecker):
+    def get_instance(self, checker: ConsistencyChecker) -> 'IHSLabelable':
         pass

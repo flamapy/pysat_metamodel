@@ -4,6 +4,7 @@ https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java
 """
 
 from dataclasses import dataclass
+from typing import List
 
 from .labeler import IHSLabelable, LabelerType, AbstractHSParameters
 from ...checker import ConsistencyChecker
@@ -12,9 +13,9 @@ from ...quickxplain import QuickXPlain
 
 @dataclass
 class QuickXPlainParameters(AbstractHSParameters):
-    set_b: list[int]
+    set_b: List[int]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"QuickXPlainParameters{{C={self.set_c}, B={self.set_b}}}"
 
 
@@ -33,7 +34,7 @@ class QuickXPlainLabeler(QuickXPlain, IHSLabelable):
     def get_initial_parameters(self) -> AbstractHSParameters:
         return self.initial_parameters
 
-    def get_label(self, parameters: AbstractHSParameters) -> list:
+    def get_label(self, parameters: AbstractHSParameters) -> List[List[int]]:
         """
         Identifies a conflict
         """
@@ -64,5 +65,5 @@ class QuickXPlainLabeler(QuickXPlain, IHSLabelable):
 
         return QuickXPlainParameters(new_c, new_d, new_b)
 
-    def get_instance(self, checker: ConsistencyChecker):
+    def get_instance(self, checker: ConsistencyChecker) -> 'IHSLabelable':
         return QuickXPlainLabeler(checker, self.initial_parameters)

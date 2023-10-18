@@ -2,11 +2,18 @@
 A Java version of this implementation is available at:
 https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java/at/tugraz/ist/ase/cacdr/algorithms/hs/HSDAG.java
 """
+from typing import List, Optional, Dict
 
 from .labeler.labeler import IHSLabelable, LabelerType, AbstractHSParameters
 from .node import Node, NodeStatus
 from .. import utils
 from ..utils import diff, contains
+
+
+class HSDAGException(Exception):
+    """
+    Exception class for HSDAG
+    """
 
 
 class HSDAG:
@@ -23,16 +30,16 @@ class HSDAG:
         self.max_number_conflicts = -1  # maximum number of conflicts to be found
         self.max_depth = 0  # maximum depth of the HS-dag
 
-        self.node_labels = []  # list of diagnoses or conflicts found
-        self.path_labels = []  # list of diagnoses or conflicts found
+        self.node_labels: List[List[int]] = []  # list of diagnoses or conflicts found
+        self.path_labels: List[List[int]] = []  # list of diagnoses or conflicts found
 
-        self.root = None  # root node of the HS-dag
-        self.open_nodes = []  # list of open nodes
+        self.root: Optional[Node] = None  # root node of the HS-dag
+        self.open_nodes: List[Node] = []  # list of open nodes
         # Map of <label, list of nodes which have the label as its label>
-        self.label_nodes_map = {}
-        self.nodes_lookup = {}  # Map of <pathLabel, Node>
+        self.label_nodes_map: Dict[int, List[Node]] = {}
+        self.nodes_lookup: Dict[int, Node] = {}  # Map of <pathLabel, Node>
 
-    def get_conflicts(self):
+    def get_conflicts(self) -> List[List[int]]:
         """
         Returns the list of conflicts found.
         """
@@ -40,7 +47,7 @@ class HSDAG:
             return self.node_labels
         return self.path_labels
 
-    def get_diagnoses(self):
+    def get_diagnoses(self) -> List[List[int]]:
         """
         Returns the list of diagnoses found.
         """
@@ -55,7 +62,7 @@ class HSDAG:
                       and self.max_number_conflicts <= len(self.get_conflicts()))
         return condition1 or condition2
 
-    def construct(self):
+    def construct(self) -> None:
         """
         Constructs the HS-dag.
         """
@@ -88,7 +95,7 @@ class HSDAG:
 
         return has_root_label
 
-    def create_nodes(self):
+    def create_nodes(self) -> None:
         """
         Creates nodes of the HS-dag.
         """
@@ -107,7 +114,7 @@ class HSDAG:
             if node.status == NodeStatus.OPEN:
                 self.expand(node)
 
-    def label(self, node: Node):
+    def label(self, node: Node) -> None:
         """
         Labels a node - identify new conflict or diagnosis.
         """
@@ -129,12 +136,15 @@ class HSDAG:
         else:  # found a path label
             self.found_a_path_label_at_node(node)
 
-    def expand(self, node_to_expand: Node):
+    def expand(self, node_to_expand: Node) -> None:
         """
         Creates children of a node.
         """
         for arc_label in node_to_expand.label:
             param_parent_node = node_to_expand.parameters
+            if param_parent_node is None:
+                raise HSDAGException("The parent node must have parameters.")
+
             new_param = self.labeler.identify_new_node_parameters(param_parent_node, arc_label)
 
             # rule 1.a - reuse node
@@ -149,7 +159,7 @@ class HSDAG:
                 if not self.can_prune(node):
                     self.open_nodes.append(node)
 
-    def add_item_to_label_nodes_map(self, label, node):
+    def add_item_to_label_nodes_map(self, label: List[int], node: Node) -> None:
         """
         Adds a node to the label_nodes_map.
         """
@@ -157,46 +167,48 @@ class HSDAG:
         if hashcode in self.label_nodes_map:
             self.label_nodes_map[hashcode].append(node)
         else:
-            self.label_nodes_map[hashcode] = node
+            self.label_nodes_map[hashcode] = [node]
 
     @staticmethod
-    def compute_label(labeler: IHSLabelable, param: AbstractHSParameters):
+    def compute_label(labeler: IHSLabelable, param: AbstractHSParameters) -> List[List[int]]:
         return labeler.get_label(param)
 
     @staticmethod
-    def compute_label_from_node(labeler: IHSLabelable, node: Node):
+    def compute_label_from_node(labeler: IHSLabelable, node: Node) -> List[List[int]]:
         param = node.parameters
+        if param is None:
+            raise HSDAGException("The node must have parameters.")
         return HSDAG.compute_label(labeler, param)
 
-    def add_node_labels(self, labels: list[list[int]]):
+    def add_node_labels(self, labels: List[List[int]]) -> None:
         for label in labels:
             self.node_labels.append(label)
 
-    def found_a_path_label_at_node(self, node: Node):
+    def found_a_path_label_at_node(self, node: Node) -> None:
         node.status = NodeStatus.CHECKED
         path_label = node.path_label.copy()
 
         self.path_labels.append(path_label)
 
     @staticmethod
-    def select_label(labels):
+    def select_label(labels: List[List[int]]) -> List[int]:
         return labels[0]
 
-    def has_nodes_to_expand(self):
+    def has_nodes_to_expand(self) -> bool:
         return len(self.open_nodes) > 0
 
-    def get_next_node(self):
+    def get_next_node(self) -> Node:
         return self.open_nodes.pop(0)
 
-    def has_root(self):
+    def has_root(self) -> bool:
         return self.root is not None
 
     # Pruning engine
-    def skip_node(self, node: Node):
+    def skip_node(self, node: Node) -> bool:
         condition1 = self.max_depth != 0 and self.max_depth < node.level
         return node.status != NodeStatus.OPEN or condition1 or self.can_prune(node)
 
-    def can_prune(self, node_2prime: Node):
+    def can_prune(self, node_2prime: Node) -> bool:
         # 3.i - if n is checked, and n'' is such that H(n) ⊆ H(n'), then close the node n''
         # n is a diagnosis
         for path_label in self.path_labels:
@@ -214,7 +226,7 @@ class HSDAG:
                 return True
         return False
 
-    def get_reusable_labels(self, node: Node):
+    def get_reusable_labels(self, node: Node) -> List[List[int]]:
         labels = []
         for label in self.node_labels:
             # H(node) ∩ S = {}
@@ -222,8 +234,8 @@ class HSDAG:
                 labels.append(label)
         return labels
 
-    def get_reusable_node(self, path_labels, arc_label):
-        if path_labels is None:
+    def get_reusable_node(self, path_labels: List[int], arc_label: int) -> Node | None:
+        if len(path_labels) == 0:
             new_path_labels = [arc_label]
         else:
             new_path_labels = path_labels.copy()
@@ -231,12 +243,12 @@ class HSDAG:
         hashcode = sum(new_path_labels)
         return self.nodes_lookup.get(hashcode)
 
-    def process_labels(self, labels):
+    def process_labels(self, labels: List[List[int]]) -> None:
         # check existing and obtained labels for subset-relations
         if len(labels) <= 0:
             return
 
-        non_min_labels = []
+        non_min_labels: List[List[int]] = []
         for first_label in self.node_labels:
             if contains(non_min_labels, first_label):
                 continue
@@ -252,32 +264,43 @@ class HSDAG:
 
                 non_min_labels.append(greater)
                 # update the DAG
-                nodes = self.label_nodes_map.get(greater)
+                nodes = self.label_nodes_map.get(sum(greater))
+
+                if nodes is None:
+                    continue
+
                 # get a list of nodes which have the status OPEN
-                open_nodes = [n for n in nodes if n.get_status() == NodeStatus.OPEN]
+                open_nodes = [n for n in nodes if n.status == NodeStatus.OPEN]
 
-                for node in open_nodes:
-                    node.set_label(smaller)  # relabel the node with smaller
-                    # add new label to the map
-                    self.add_item_to_label_nodes_map(smaller, node)
-                    delete = diff(greater, smaller)
-
-                    for label in delete:
-                        child = node.get_children().get(label)
-                        child.parents.remove(node)
-                        node.get_children().remove(label)
-                        self.clean_up_nodes(child)
+                self.update_dag(greater, open_nodes, smaller)
 
         # remove the known non - minimal conflicts
-        for label in non_min_labels:
-            labels.remove(label)  # labels.removeAll(non_min_labels)
-            del self.label_nodes_map[label]  # non_min_labels.forEach(label_nodesMap::remove)
+        for non_min_label in non_min_labels:
+            labels.remove(non_min_label)  # labels.removeAll(non_min_labels)
+            hashcode = sum(non_min_label)
+            del self.label_nodes_map[hashcode]  # non_min_labels.forEach(label_nodesMap::remove)
 
         # add new labels to the list of labels
         self.add_node_labels(labels)
 
-    def clean_up_nodes(self, node: Node):
-        del self.nodes_lookup[node.path_label]
+    def update_dag(self, greater: List[int], open_nodes: List[Node], smaller: List[int]) -> None:
+        for node in open_nodes:
+            node.label = smaller  # relabel the node with smaller
+            # add new label to the map
+            self.add_item_to_label_nodes_map(smaller, node)
+            delete = diff(greater, smaller)
+
+            for label in delete:
+                child = node.children.get(label)
+                if child is None:
+                    continue
+                child.parents.remove(node)
+                del node.children[label]
+                self.clean_up_nodes(child)
+
+    def clean_up_nodes(self, node: Node) -> None:
+        hashcode = sum(node.path_label)
+        del self.nodes_lookup[hashcode]
 
         if node.status == NodeStatus.OPEN:
             node.status = NodeStatus.PRUNED

@@ -4,6 +4,7 @@ https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java
 """
 
 import logging
+from typing import List
 
 from .checker import ConsistencyChecker
 from .utils import split
@@ -20,7 +21,7 @@ class QuickXPlain:
     def __init__(self, checker: ConsistencyChecker) -> None:
         self.checker = checker
 
-    def find_conflict(self, set_c: list, set_b: list) -> list:
+    def find_conflict(self, set_c: List[int], set_b: List[int]) -> List[int]:
         """
         // Func QuickXPlain(C={c1,c2,…, cm}, B): CS
         // IF consistent(B∪C) return "No conflict";
@@ -46,7 +47,7 @@ class QuickXPlain:
         # print(f'return {cs}')
         return set_cs
 
-    def _qx(self, set_d: list, set_c: list, set_b: list) -> list:
+    def _qx(self, set_d: List[int], set_c: List[int], set_b: List[int]) -> List[int]:
         """
         // func QX(Δ, C={c1,c2, …, cq}, B): CS
         // IF (Δ != Φ AND inconsistent(B)) return Φ;
