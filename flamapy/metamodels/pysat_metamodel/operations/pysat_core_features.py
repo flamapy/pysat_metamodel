@@ -7,7 +7,7 @@ from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.core.models import VariabilityModel
 
 
-class Glucose3CoreFeatures(CoreFeatures):
+class PySATCoreFeatures(CoreFeatures):
 
     def __init__(self) -> None:
         self.core_features: list[list[Any]] = []
@@ -19,7 +19,7 @@ class Glucose3CoreFeatures(CoreFeatures):
     def get_result(self) -> list[list[Any]]:
         return self.get_core_features()
 
-    def execute(self, model: VariabilityModel) -> 'Glucose3CoreFeatures':
+    def execute(self, model: VariabilityModel) -> 'PySATCoreFeatures':
         model = cast(PySATModel, model)
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint

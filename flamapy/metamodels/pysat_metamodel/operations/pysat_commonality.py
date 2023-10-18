@@ -1,10 +1,10 @@
 from flamapy.core.operations import Commonality
 from flamapy.core.models import VariabilityModel
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
-from flamapy.metamodels.pysat_metamodel.operations.glucose3_products import Glucose3Products
+from flamapy.metamodels.pysat_metamodel.operations.pysat_products import PySATProducts
 
 
-class Glucose3Commonality(Commonality):
+class PySATCommonality(Commonality):
     def __init__(self) -> None:
         self.commonality: float = 0
         self.configuration = Configuration({})
@@ -18,8 +18,8 @@ class Glucose3Commonality(Commonality):
     def get_result(self) -> float:
         return self.get_commonality()
 
-    def execute(self, model: VariabilityModel) -> 'Glucose3Commonality':
-        glucose3products = Glucose3Products()
+    def execute(self, model: VariabilityModel) -> 'PySATCommonality':
+        glucose3products = PySATProducts()
         glucose3products.execute(model)
 
         products = glucose3products.get_result()

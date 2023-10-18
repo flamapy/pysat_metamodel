@@ -10,7 +10,7 @@ from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.core.models import VariabilityModel
 
 
-class Glucose3ValidConfiguration(ValidConfiguration):
+class PySATValidConfiguration(ValidConfiguration):
 
     def __init__(self) -> None:
         self.result = False
@@ -26,7 +26,7 @@ class Glucose3ValidConfiguration(ValidConfiguration):
     def set_configuration(self, configuration: Configuration) -> None:
         self.configuration = configuration
 
-    def execute(self, model: VariabilityModel) -> 'Glucose3ValidConfiguration':
+    def execute(self, model: VariabilityModel) -> 'PySATValidConfiguration':
         model = cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos

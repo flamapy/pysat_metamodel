@@ -1,4 +1,5 @@
-from typing import Any, Optional, cast
+import logging
+from typing import Any, cast
 
 from pysat.solvers import Solver
 
@@ -8,21 +9,19 @@ from flamapy.metamodels.fm_metamodel.models.feature_model import FeatureModel
 from flamapy.core.models import VariabilityModel
 from flamapy.core.exceptions import FlamaException
 
+LOGGER = logging.getLogger('PySATFalseOptionalFeatures')
 
-class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
+
+class PySATFalseOptionalFeatures(FalseOptionalFeatures):
 
     def __init__(self) -> None:
         self.result: list[Any] = []
-        self.feature_model: Optional[FeatureModel] = None
         self.solver = Solver(name='glucose3')
 
-    def execute(self, model: VariabilityModel) -> 'Glucose3FalseOptionalFeatures':
-        if self.feature_model is None:
-            raise FlamaException('The feature model is not setted')
-
+    def execute(self, model: VariabilityModel) -> 'PySATFalseOptionalFeatures':
         model = cast(PySATModel, model)
 
-        self.result = self._get_false_optional_features(model, self.feature_model)
+        self.result = self._get_false_optional_features(model)
         return self
 
     def get_false_optional_features(self) -> list[list[Any]]:
@@ -31,8 +30,12 @@ class Glucose3FalseOptionalFeatures(FalseOptionalFeatures):
     def get_result(self) -> list[Any]:
         return self.result
 
-    def _get_false_optional_features(self, sat_model: PySATModel,
-                                     feature_model: FeatureModel) -> list[Any]:
+    def _get_false_optional_features(self, sat_model: PySATModel) -> list[Any]:
+        try:
+            feature_model=cast(FeatureModel,sat_model.original_model)
+        except FlamaException:
+            LOGGER.exception("The transformation didn't attach the source model, which is required for this operation." )
+        
         real_optional_features = [f for f in feature_model.get_features()
                                   if not f.is_root() and not f.is_mandatory()]
 

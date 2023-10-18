@@ -8,7 +8,7 @@ from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.core.models import VariabilityModel
 
 
-class Glucose3Filter(Filter):
+class PySATFilter(Filter):
 
     def __init__(self) -> None:
         self.filter_products: list[list[Any]] = []
@@ -24,7 +24,7 @@ class Glucose3Filter(Filter):
     def set_configuration(self, configuration: Configuration) -> None:
         self.configuration = configuration
 
-    def execute(self, model: VariabilityModel) -> 'Glucose3Filter':
+    def execute(self, model: VariabilityModel) -> 'PySATFilter':
         model = cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos

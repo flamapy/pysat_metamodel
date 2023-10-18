@@ -8,7 +8,7 @@ from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.core.models import VariabilityModel
 
 
-class Glucose3Valid(Valid):
+class PySATValid(Valid):
 
     def __init__(self) -> None:
         self.result = False
@@ -20,7 +20,7 @@ class Glucose3Valid(Valid):
     def get_result(self) -> bool:
         return self.is_valid()
 
-    def execute(self, model: VariabilityModel) -> 'Glucose3Valid':
+    def execute(self, model: VariabilityModel) -> 'PySATValid':
         model = cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos

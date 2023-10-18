@@ -1,26 +1,26 @@
-from .glucose3_valid import Glucose3Valid
-from .glucose3_valid_configuration import Glucose3ValidConfiguration
-from .glucose3_valid_product import Glucose3ValidProduct
-from .glucose3_products import Glucose3Products
-from .glucose3_products_number import Glucose3ProductsNumber
-from .glucose3_commonality import Glucose3Commonality
-from .glucose3_filter import Glucose3Filter
-from .glucose3_core_features import Glucose3CoreFeatures
-from .glucose3_dead_features import Glucose3DeadFeatures
-from .glucose3_false_optional_features import Glucose3FalseOptionalFeatures
-from .glucose3_error_detection import Glucose3ErrorDetection
-
+from .pysat_valid import PySATValid
+from .pysat_valid_configuration import PySATValidConfiguration
+from .pysat_valid_product import PySATValidProduct
+from .pysat_products import PySATProducts
+from .pysat_products_number import PySATProductsNumber
+from .pysat_commonality import PySATCommonality
+from .pysat_filter import PySATFilter
+from .pysat_core_features import PySATCoreFeatures
+from .pysat_dead_features import PySATDeadFeatures
+from .pysat_false_optional_features import PySATFalseOptionalFeatures
+from .pysat_error_detection import PySATErrorDetection
+from .pysat_metrics import PySATMetrics
 
 __all__ = [
-    'Glucose3Valid',
-    'Glucose3ValidConfiguration',
-    'Glucose3ValidProduct',
-    'Glucose3Products',
-    'Glucose3ProductsNumber',
-    'Glucose3Commonality',
-    'Glucose3Filter',
-    'Glucose3CoreFeatures',
-    'Glucose3DeadFeatures',
-    'Glucose3FalseOptionalFeatures',
-    'Glucose3ErrorDetection',
+    'PySATValid',
+    'PySATValidConfiguration',
+    'PySATValidProduct',
+    'PySATProducts',
+    'PySATProductsNumber',
+    'PySATCommonality',
+    'PySATFilter',
+    'PySATCoreFeatures',
+    'PySATDeadFeatures',
+    'PySATFalseOptionalFeatures',
+    'PySATErrorDetection',
 ]

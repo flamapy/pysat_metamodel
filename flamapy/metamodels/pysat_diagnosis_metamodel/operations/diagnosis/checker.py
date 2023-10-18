@@ -8,7 +8,7 @@ from pysat.solvers import Solver
 
 
 class ConsistencyChecker:
-
+  
     def __init__(self, solver_name: str, set_kb: List[List[int]]) -> None:
         self.result = False
 
