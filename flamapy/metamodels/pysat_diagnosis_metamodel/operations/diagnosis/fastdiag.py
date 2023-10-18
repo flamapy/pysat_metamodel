@@ -5,8 +5,8 @@ https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java
 
 import logging
 
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.utils import split, diff
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.checker import ConsistencyChecker
+from .checker import ConsistencyChecker
+from .utils import split, diff
 
 
 class FastDiag:
@@ -20,7 +20,7 @@ class FastDiag:
     def __init__(self, checker: ConsistencyChecker) -> None:
         self.checker = checker
 
-    def findDiagnosis(self, C: list, B: list) -> list:
+    def find_diagnosis(self, set_c: list, set_b: list) -> list:
         """
         Activate FastDiag algorithm if there exists at least one constraint,
         which induces an inconsistency in B. Otherwise, it returns an empty set.
@@ -28,27 +28,28 @@ class FastDiag:
         // Func FastDiag(C, B) : Δ
         // if isEmpty(C) or consistent(B U C) return Φ
         // else return C \\ FD(Φ, C, B)
-        :param C: a consideration set of constraints
-        :param B: a background knowledge
+        :param set_c: a consideration set of constraints
+        :param set_b: a background knowledge
         :return: a diagnosis or an empty set
         """
-        logging.debug(f'fastDiag [C={C}, B={B}]')
+        logging.debug('fastDiag [C=%s, B=%s]', set_c, set_b)
         # print(f'fastDiag [C={C}, B={B}]')
 
         # if isEmpty(C) or consistent(B U C) return Φ
-        if len(C) == 0 or self.checker.is_consistent(B + C, []):
+        if len(set_c) == 0 or self.checker.is_consistent(set_b + set_c, []):
             logging.debug('return Φ')
             # print('return Φ')
             return []
-        else:  # return C \ FD(C, B, Φ)
-            mss = self.fd([], C, B)
-            diag = diff(C, mss)
 
-            logging.debug(f'return {diag}')
-            # print(f'return {diag}')
-            return diag
+        # return C \ FD(C, B, Φ)
+        mss = self._fd([], set_c, set_b)
+        diag = diff(set_c, mss)
 
-    def fd(self, Δ: list, C: list, B: list) -> list:
+        logging.debug('return %s', diag)
+        # print(f'return {diag}')
+        return diag
+
+    def _fd(self, delta: list, set_c: list, set_b: list) -> list:
         """
         The implementation of MSS-based FastDiag algorithm.
         The algorithm determines a maximal satisfiable subset MSS (Γ) of C U B.
@@ -61,33 +62,33 @@ class FastDiag:
         // Δ1 = FD(C2, C1, B);
         // Δ2 = FD(C1 - Δ1, C2, B U Δ1);
         // return Δ1 ∪ Δ2;
-        :param Δ: check to skip redundant consistency checks
-        :param C: a consideration set of constraints
-        :param B: a background knowledge
+        :param delta: check to skip redundant consistency checks
+        :param set_c: a consideration set of constraints
+        :param set_b: a background knowledge
         :return: a maximal satisfiable subset MSS of C U B
         """
-        logging.debug(f'>>> FD [Δ={Δ}, C={C}, B={B}]')
+        logging.debug('>>> FD [Δ=%s, C=%s, B=%s]', delta, set_c, set_b)
 
         # if Δ != Φ and consistent(B U C) return C;
-        if len(Δ) != 0 and self.checker.is_consistent(B + C, Δ):
-            logging.debug(f'<<< return {C}')
-            return C
+        if len(delta) != 0 and self.checker.is_consistent(set_b + set_c, delta):
+            logging.debug('<<< return %s', set_c)
+            return set_c
 
         # if singleton(C) return Φ;
-        if len(C) == 1:
+        if len(set_c) == 1:
             logging.debug('<<< return Φ')
             return []
 
         # C1 = {c1..ck}; C2 = {ck+1..cn};
-        C1, C2 = split(C)
+        set_c1, set_c2 = split(set_c)
 
         # Δ1 = FD(C2, C1, B);
-        Δ1 = self.fd(C2, C1, B)
+        delta1 = self._fd(set_c2, set_c1, set_b)
         # Δ2 = FD(C1 - Δ1, C2, B U Δ1);
-        C1withoutΔ1 = diff(C1, Δ1)
-        Δ2 = self.fd(C1withoutΔ1, C2, B + Δ1)
+        c1_without_delta1 = diff(set_c1, delta1)
+        delta2 = self._fd(c1_without_delta1, set_c2, set_b + delta1)
 
         logging.debug('<<< return [Δ1={Δ1} ∪ Δ2={Δ2}]')
 
         # return Δ1 + Δ2
-        return Δ1 + Δ2
+        return delta1 + delta2

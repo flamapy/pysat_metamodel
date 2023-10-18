@@ -5,17 +5,17 @@ https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java
 
 from dataclasses import dataclass
 
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.checker import ConsistencyChecker
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.fastdiag import FastDiag
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.hsdag.labeler.labeler import IHSLabelable, LabelerType, AbstractHSParameters
+from .labeler import IHSLabelable, LabelerType, AbstractHSParameters
+from ...checker import ConsistencyChecker
+from ...fastdiag import FastDiag
 
 
 @dataclass
 class FastDiagParameters(AbstractHSParameters):
-    B: list[int]
+    set_b: list[int]
 
     def __str__(self):
-        return f"FastDiagParameters{{C={self.C}, B={self.B}}}"
+        return f"FastDiagParameters{{C={self.set_c}, B={self.set_b}}}"
 
 
 class FastDiagLabeler(FastDiag, IHSLabelable):
@@ -37,32 +37,34 @@ class FastDiagLabeler(FastDiag, IHSLabelable):
         """
         Identifies a diagnosis
         """
-        assert isinstance(parameters, FastDiagParameters), "parameter must be an instance of FastDiagParameters"
-        neg_C = [-1 * item for item in parameters.C]
-        if len(parameters.C) >= 1 \
-                and (len(parameters.B) == 0 or self.checker.is_consistent(parameters.B + neg_C, [])):
+        assert isinstance(parameters, FastDiagParameters), \
+            "parameter must be an instance of FastDiagParameters"
+        neg_c = [-1 * item for item in parameters.set_c]
+        if len(parameters.set_c) >= 1 \
+                and (len(parameters.set_b) == 0
+                     or self.checker.is_consistent(parameters.set_b + neg_c, [])):
 
-            diag = self.findDiagnosis(parameters.C, parameters.B)
+            diag = self.find_diagnosis(parameters.set_c, parameters.set_b)
             if len(diag) != 0:
                 return [diag]
         return []
 
-    def identify_new_node_parameters(self, param_parent_node: AbstractHSParameters, arcLabel: int) \
-            -> AbstractHSParameters:
+    def identify_new_node_parameters(self, param_parent_node: AbstractHSParameters,
+                                     arc_label: int) -> AbstractHSParameters:
         """
         Identifies the new node's parameters on the basis of the parent node's parameters.
         """
-        assert isinstance(param_parent_node,
-                          FastDiagParameters), "parameter must be an instance of FastDiagParameters"
+        assert isinstance(param_parent_node, FastDiagParameters),\
+            "parameter must be an instance of FastDiagParameters"
 
-        C = param_parent_node.C.copy()
-        C.remove(arcLabel)
-        B = param_parent_node.B.copy()
-        B.append(arcLabel)
+        new_c = param_parent_node.set_c.copy()
+        new_c.remove(arc_label)
+        new_b = param_parent_node.set_b.copy()
+        new_b.append(arc_label)
         # D = param_parent_node.D.copy()
         # D.append(arcLabel)
 
-        return FastDiagParameters(C, [], B)
+        return FastDiagParameters(new_c, [], new_b)
 
     def get_instance(self, checker: ConsistencyChecker):
         return FastDiagLabeler(checker, self.initial_parameters)

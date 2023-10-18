@@ -2,42 +2,42 @@
 """Provides utility functions."""
 
 
-def split(C: list) -> (list, list):
+def split(clauses: list) -> (list, list):
     """
     Splits the given list of constraints/clauses into two parts.
-    :param C: a list of clauses
+    :param clauses: a list of clauses
     :return: a tuple of two lists
     """
-    half_size = len(C) // 2
-    return C[:half_size], C[half_size:]
+    half_size = len(clauses) // 2
+    return clauses[:half_size], clauses[half_size:]
 
 
-def diff(x: list, y: list) -> list:
+def diff(list_x: list, list_y: list) -> list:
     """
     Returns the difference of two lists.
-    :param x: list
-    :param y: list
+    :param list_x: list
+    :param list_y: list
     :return: list
     """
-    return [item for item in x if item not in y]
+    return [item for item in list_x if item not in list_y]
 
 
-def get_hashcode(C: list) -> str:
+def get_hashcode(clauses: list) -> str:
     """
     Returns the hashcode of the given CNF formula.
-    :param C: a list of clauses
+    :param clauses: a list of clauses
     :return: the hashcode of the given CNF formula
     """
-    C = sorted(C, key=lambda x: x[0])
-    return str(C)
+    clauses = sorted(clauses, key=lambda x: x[0])
+    return str(clauses)
 
 
-def hasIntersection(list1: list, list2: list) -> bool:
+def has_intersection(list1: list, list2: list) -> bool:
     return any(i in list1 for i in list2)
 
 
-def contains(listofList: list, aList: list) -> bool:
-    return any(aList == x for x in listofList)
+def contains(list_of_lists: list, a_list: list) -> bool:
+    return any(a_list == x for x in list_of_lists)
 
 
 def contains_all(greater: list, smaller: list) -> bool:

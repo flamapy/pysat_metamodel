@@ -1,19 +1,19 @@
-from typing import Any
+from typing import Any, cast
 
+from flamapy.core.models import VariabilityModel
 from flamapy.core.operations import Operation
 from flamapy.metamodels.configuration_metamodel.models import Configuration
-from flamapy.core.models import VariabilityModel
 
-from flamapy.metamodels.pysat_diagnosis_metamodel.models.pysat_diagnosis_model import DiagnosisModel
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.hsdag.hsdag import HSDAG
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.hsdag.labeler.quickxplain_labeler import \
-    QuickXPlainParameters, QuickXPlainLabeler
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.checker import ConsistencyChecker
+from .diagnosis.checker import ConsistencyChecker
+from .diagnosis.hsdag.hsdag import HSDAG
+from .diagnosis.hsdag.labeler.quickxplain_labeler import QuickXPlainParameters, QuickXPlainLabeler
+from ..models.pysat_diagnosis_model import DiagnosisModel
 
 
 class Glucose3Conflict(Operation):
     """
-    An operation that computes conflicts and diagnoses using the combination of HSDAG and QuickXPlain algorithms.
+    An operation that computes conflicts and diagnoses
+    using the combination of HSDAG and QuickXPlain algorithms.
     Four optional inputs:
     - configuration - a configuration to be diagnosed
     - test_case - a test case to be used for diagnosis
@@ -21,11 +21,12 @@ class Glucose3Conflict(Operation):
     - max_depth - specify the maximum depth of the HSDAG to be computed
     """
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self) -> None:
         self.result = False
         self.configuration = None
         self.test_case = None
-        self.solverName = 'glucose3'
+        self.solver_name = 'glucose3'
         self.diagnosis_messages: list[str] = []
 
         self.checker = None
@@ -51,18 +52,21 @@ class Glucose3Conflict(Operation):
         return self.diagnosis_messages
 
     def execute(self, model: VariabilityModel) -> 'Glucose3Conflict':
+        model = cast(DiagnosisModel, model)
+
         # transform model to diagnosis model
         model.prepare_diagnosis_task(configuration=self.configuration, test_case=self.test_case)
 
         # print(f'C: {diag_model.get_C()}')
         # print(f'B: {diag_model.get_B()}')
 
-        C = model.get_C()
+        set_c = model.get_c()
         # if self.configuration is None:
-        #     C.reverse()  # reverse the list to get the correct order of constraints in the diagnosis messages
+        # reverse the list to get the correct order of constraints in the diagnosis messages
+        #     C.reverse()
 
-        checker = ConsistencyChecker(self.solverName, model.get_KB())
-        parameters = QuickXPlainParameters(C, [], model.get_B())
+        checker = ConsistencyChecker(self.solver_name, model.get_kb())
+        parameters = QuickXPlainParameters(set_c, [], model.get_b())
         quickxplain = QuickXPlainLabeler(checker, parameters)
         hsdag = HSDAG(quickxplain)
         hsdag.max_number_conflicts = self.max_conflicts
@@ -76,19 +80,19 @@ class Glucose3Conflict(Operation):
         if len(diagnoses) == 0:
             diag_mess = 'No diagnosis found'
         elif len(diagnoses) == 1:
-            diag_mess = f'Diagnosis: '
+            diag_mess = 'Diagnosis: '
             diag_mess += model.get_pretty_diagnoses(diagnoses)
         else:
-            diag_mess = f'Diagnoses: '
+            diag_mess = 'Diagnoses: '
             diag_mess += model.get_pretty_diagnoses(diagnoses)
 
         if len(conflicts) == 0:
             cs_mess = 'No conflicts found'
         elif len(conflicts) == 1:
-            cs_mess = f'Conflict: '
+            cs_mess = 'Conflict: '
             cs_mess += model.get_pretty_diagnoses(conflicts)
         else:
-            cs_mess = f'Conflicts: '
+            cs_mess = 'Conflicts: '
             cs_mess += model.get_pretty_diagnoses(conflicts)
 
         self.diagnosis_messages.append(cs_mess)

@@ -1,15 +1,15 @@
-import itertools
 from typing import Any, List
 
-from flamapy.core.transformations import ModelToModel
 from flamapy.metamodels.fm_metamodel.models.feature_model import (
     FeatureModel,
     Constraint,
     Feature,
     Relation,
 )
-from flamapy.metamodels.pysat_diagnosis_metamodel.models.pysat_diagnosis_model import DiagnosisModel
+
 from flamapy.metamodels.pysat_metamodel.transformations.fm_to_pysat import FmToPysat
+from ..models.pysat_diagnosis_model import DiagnosisModel
+
 
 class FmToDiagPysat(FmToPysat):
     @staticmethod
@@ -31,12 +31,14 @@ class FmToDiagPysat(FmToPysat):
         #self.r_cnf.append([self.destination_model.variables.get(feature.name)])
         self.destination_model.add_clause([self.destination_model.variables.get(feature.name)])
         # print(self.destination_model.__class__)
-        self.destination_model.add_clause_toMap(str(feature), [[self.destination_model.variables.get(feature.name)]])
+        (self.destination_model
+         .add_clause_to_map(str(feature),
+                            [[self.destination_model.variables.get(feature.name)]]))
 
-    def _store_constraint_relation(self, relation: Relation, clauses:List[List[int]]) -> None:
+    def _store_constraint_relation(self, relation: Relation, clauses: List[List[int]]) -> None:
         for clause in clauses:
             self.destination_model.add_clause(clause)
-        self.destination_model.add_clause_toMap(str(relation), clauses)
+        self.destination_model.add_clause_to_map(str(relation), clauses)
 
     def add_constraint(self, ctc: Constraint) -> None:
         def get_term_variable(term: Any) -> int:
@@ -52,4 +54,4 @@ class FmToDiagPysat(FmToPysat):
             ctc_clauses.append(clause_variables)
             self.destination_model.add_clause(clause_variables)
 
-        self.destination_model.add_clause_toMap(str(ctc), ctc_clauses)
+        self.destination_model.add_clause_to_map(str(ctc), ctc_clauses)

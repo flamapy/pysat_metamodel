@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.checker import ConsistencyChecker
+from ...checker import ConsistencyChecker
 
 
 class LabelerType(Enum):
@@ -17,8 +17,8 @@ class LabelerType(Enum):
 
 @dataclass
 class AbstractHSParameters:
-    C: list[int]
-    D: list[int]
+    set_c: list[int]
+    set_d: list[int]
 
 
 class IHSLabelable(ABC):
@@ -39,8 +39,8 @@ class IHSLabelable(ABC):
         pass
 
     @abstractmethod
-    def identify_new_node_parameters(self, param_parent_node: AbstractHSParameters, arcLabel: int) \
-            -> AbstractHSParameters:
+    def identify_new_node_parameters(self, param_parent_node: AbstractHSParameters,
+                                     arc_label: int) -> AbstractHSParameters:
         pass
 
     @abstractmethod

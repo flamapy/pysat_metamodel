@@ -3,11 +3,10 @@ A Java version of this implementation is available at:
 https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java/at/tugraz/ist/ase/cacdr/algorithms/hs/HSDAG.java
 """
 
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis import utils
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.hsdag.labeler.labeler import IHSLabelable, LabelerType, \
-    AbstractHSParameters
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.hsdag.node import Node, NodeStatus
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.utils import diff, contains
+from .labeler.labeler import IHSLabelable, LabelerType, AbstractHSParameters
+from .node import Node, NodeStatus
+from .. import utils
+from ..utils import diff, contains
 
 
 class HSDAG:
@@ -16,6 +15,7 @@ class HSDAG:
     IHSLabeler algorithms could return labels (conflict or diagnosis) which are not minimal.
     """
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, labeler: IHSLabelable) -> None:
         self.labeler = labeler  # could be FastDiag or QuickXPlain
 
@@ -28,7 +28,8 @@ class HSDAG:
 
         self.root = None  # root node of the HS-dag
         self.open_nodes = []  # list of open nodes
-        self.label_nodes_map = {}  # Map of <label, list of nodes which have the label as its label>
+        # Map of <label, list of nodes which have the label as its label>
+        self.label_nodes_map = {}
         self.nodes_lookup = {}  # Map of <pathLabel, Node>
 
     def get_conflicts(self):
@@ -37,8 +38,7 @@ class HSDAG:
         """
         if self.labeler.get_type() == LabelerType.CONFLICT:
             return self.node_labels
-        else:
-            return self.path_labels
+        return self.path_labels
 
     def get_diagnoses(self):
         """
@@ -46,12 +46,13 @@ class HSDAG:
         """
         if self.labeler.get_type() == LabelerType.CONFLICT:
             return self.path_labels
-        else:
-            return self.node_labels
+        return self.node_labels
 
     def should_stop_construction(self) -> bool:
-        condition1 = self.max_number_diagnoses != -1 and self.max_number_diagnoses <= len(self.get_diagnoses())
-        condition2 = self.max_number_conflicts != -1 and self.max_number_conflicts <= len(self.get_conflicts())
+        condition1 = (self.max_number_diagnoses != -1
+                      and self.max_number_diagnoses <= len(self.get_diagnoses()))
+        condition2 = (self.max_number_conflicts != -1
+                      and self.max_number_conflicts <= len(self.get_conflicts()))
         return condition1 or condition2
 
     def construct(self):
@@ -128,20 +129,20 @@ class HSDAG:
         else:  # found a path label
             self.found_a_path_label_at_node(node)
 
-    def expand(self, nodeToExpand: Node):
+    def expand(self, node_to_expand: Node):
         """
         Creates children of a node.
         """
-        for arcLabel in nodeToExpand.label:
-            param_parent_node = nodeToExpand.parameters
-            new_param = self.labeler.identify_new_node_parameters(param_parent_node, arcLabel)
+        for arc_label in node_to_expand.label:
+            param_parent_node = node_to_expand.parameters
+            new_param = self.labeler.identify_new_node_parameters(param_parent_node, arc_label)
 
             # rule 1.a - reuse node
-            node = self.get_reusable_node(nodeToExpand.path_label, arcLabel)
+            node = self.get_reusable_node(node_to_expand.path_label, arc_label)
             if node is not None:
-                node.add_parent(nodeToExpand)
+                node.add_parent(node_to_expand)
             else:  # rule 1.b - generate a new node
-                node = Node(parent=nodeToExpand, arc_label=arcLabel, parameters=new_param)
+                node = Node(parent=node_to_expand, arc_label=arc_label, parameters=new_param)
                 hashcode = sum(node.path_label)
                 self.nodes_lookup[hashcode] = node
 
@@ -153,7 +154,7 @@ class HSDAG:
         Adds a node to the label_nodes_map.
         """
         hashcode = sum(label)
-        if hashcode in self.label_nodes_map.keys():
+        if hashcode in self.label_nodes_map:
             self.label_nodes_map[hashcode].append(node)
         else:
             self.label_nodes_map[hashcode] = node
@@ -173,9 +174,9 @@ class HSDAG:
 
     def found_a_path_label_at_node(self, node: Node):
         node.status = NodeStatus.CHECKED
-        pathLabel = node.path_label.copy()
+        path_label = node.path_label.copy()
 
-        self.path_labels.append(pathLabel)
+        self.path_labels.append(path_label)
 
     @staticmethod
     def select_label(labels):
@@ -195,20 +196,21 @@ class HSDAG:
         condition1 = self.max_depth != 0 and self.max_depth < node.level
         return node.status != NodeStatus.OPEN or condition1 or self.can_prune(node)
 
-    def can_prune(self, node: Node):
+    def can_prune(self, node_2prime: Node):
         # 3.i - if n is checked, and n'' is such that H(n) ⊆ H(n'), then close the node n''
         # n is a diagnosis
         for path_label in self.path_labels:
             # if node.path_label.containsAll(path_label):
-            if all(elem in path_label for elem in node.path_label):
-                node.status = NodeStatus.CLOSED
+            if all(elem in path_label for elem in node_2prime.path_label):
+                node_2prime.status = NodeStatus.CLOSED
                 return True
 
-        # 3.ii - if n has been generated and node n'' is such that H(n') = H(n), then close node n''
-        for n in self.open_nodes:
-            if len(n.path_label) == len(node.path_label) \
-                    and len(diff(n.path_label, node.path_label)) == 0:
-                node.status = NodeStatus.CLOSED
+        # 3.ii - if n has been generated and node n'' is such that H(n') = H(n),
+        # then close node n''
+        for node in self.open_nodes:
+            if len(node.path_label) == len(node_2prime.path_label) \
+                    and len(diff(node.path_label, node_2prime.path_label)) == 0:
+                node_2prime.status = NodeStatus.CLOSED
                 return True
         return False
 
@@ -216,65 +218,63 @@ class HSDAG:
         labels = []
         for label in self.node_labels:
             # H(node) ∩ S = {}
-            if not utils.hasIntersection(node.path_label, label):
+            if not utils.has_intersection(node.path_label, label):
                 labels.append(label)
         return labels
 
     def get_reusable_node(self, path_labels, arc_label):
         if path_labels is None:
-            h = [arc_label]
+            new_path_labels = [arc_label]
         else:
-            h = path_labels.copy()
-            h.append(arc_label)
-        hashcode = sum(h)
+            new_path_labels = path_labels.copy()
+            new_path_labels.append(arc_label)
+        hashcode = sum(new_path_labels)
         return self.nodes_lookup.get(hashcode)
 
     def process_labels(self, labels):
-        if len(labels) > 0:
-            # check existing and obtained labels for subset-relations
-            non_min_labels = []
+        # check existing and obtained labels for subset-relations
+        if len(labels) <= 0:
+            return
 
-            for fs in self.node_labels:
-                if contains(non_min_labels, fs):
+        non_min_labels = []
+        for first_label in self.node_labels:
+            if contains(non_min_labels, first_label):
+                continue
+
+            for second_label in labels:
+                if contains(non_min_labels, second_label):
                     continue
 
-                for cs in labels:
-                    if contains(non_min_labels, cs):
-                        continue
+                greater = first_label if len(first_label) > len(second_label) else second_label
+                smaller = second_label if len(first_label) > len(second_label) else first_label
+                if not utils.contains_all(greater, smaller):
+                    continue
 
-                    greater = fs if len(fs) > len(cs) else cs
-                    smaller = cs if len(fs) > len(cs) else fs
+                non_min_labels.append(greater)
+                # update the DAG
+                nodes = self.label_nodes_map.get(greater)
+                # get a list of nodes which have the status OPEN
+                open_nodes = [n for n in nodes if n.get_status() == NodeStatus.OPEN]
 
-                    if utils.contains_all(greater, smaller):
-                        non_min_labels.append(greater)
+                for node in open_nodes:
+                    node.set_label(smaller)  # relabel the node with smaller
+                    # add new label to the map
+                    self.add_item_to_label_nodes_map(smaller, node)
+                    delete = diff(greater, smaller)
 
-                        if len(greater) > len(smaller):
-                            # update the DAG
-                            nodes = self.label_nodes_map.get(greater)
+                    for label in delete:
+                        child = node.get_children().get(label)
+                        child.parents.remove(node)
+                        node.get_children().remove(label)
+                        self.clean_up_nodes(child)
 
-                            if nodes is not None:
-                                for nd in nodes:
-                                    if nd.get_status() == NodeStatus.OPEN:
-                                        nd.set_label(smaller)  # relabel the node with smaller
-                                        self.add_item_to_label_nodes_map(smaller, nd)  # add new label to the map
+        # remove the known non - minimal conflicts
+        for label in non_min_labels:
+            labels.remove(label)  # labels.removeAll(non_min_labels)
+            del self.label_nodes_map[label]  # non_min_labels.forEach(label_nodesMap::remove)
 
-                                        delete = diff(greater, smaller)
-                                        for label in delete:
-                                            child = nd.get_children().get(label)
-
-                                            if child is not None:
-                                                child.parents.remove(nd)
-                                                nd.get_children().remove(label)
-                                                self.clean_up_nodes(child)
-
-            # remove the known non - minimal conflicts
-            for label in non_min_labels:
-                labels.remove(label)  # labels.removeAll(non_min_labels)
-                del self.label_nodes_map[label]  # non_min_labels.forEach(label_nodesMap::remove)
-
-            # add new labels to the list of labels
-            self.add_node_labels(labels)
-            # hsdag.addNodeLabels(labels)
+        # add new labels to the list of labels
+        self.add_node_labels(labels)
 
     def clean_up_nodes(self, node: Node):
         del self.nodes_lookup[node.path_label]
@@ -283,7 +283,7 @@ class HSDAG:
             node.status = NodeStatus.PRUNED
 
         # downward clean up
-        for arcLabel in node.children.keys():
-            child = node.children.get(arcLabel)
+        for arc_label in node.children.keys():
+            child = node.children.get(arc_label)
             if child is not None:
                 self.clean_up_nodes(child)
