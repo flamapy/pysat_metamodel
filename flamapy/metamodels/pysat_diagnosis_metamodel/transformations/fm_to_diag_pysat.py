@@ -30,10 +30,26 @@ class FmToDiagPysat(FmToPysat):
     def add_root(self, feature: Feature) -> None:
         #self.r_cnf.append([self.destination_model.variables.get(feature.name)])
         self.destination_model.add_clause([self.destination_model.variables.get(feature.name)])
-        print(self.destination_model.__class__)
+        # print(self.destination_model.__class__)
         self.destination_model.add_clause_toMap(str(feature), [[self.destination_model.variables.get(feature.name)]])
 
     def _store_constraint_relation(self, relation: Relation, clauses:List[List[int]]) -> None:
         for clause in clauses:
             self.destination_model.add_clause(clause)
-            self.destination_model.add_clause_toMap(str(relation), clauses)
+        self.destination_model.add_clause_toMap(str(relation), clauses)
+
+    def add_constraint(self, ctc: Constraint) -> None:
+        def get_term_variable(term: Any) -> int:
+            if term.startswith('-'):
+                return -self.destination_model.variables.get(term[1:])
+
+            return self.destination_model.variables.get(term)
+
+        ctc_clauses = []
+        clauses = ctc.ast.get_clauses()
+        for clause in clauses:
+            clause_variables = list(map(get_term_variable, clause))
+            ctc_clauses.append(clause_variables)
+            self.destination_model.add_clause(clause_variables)
+
+        self.destination_model.add_clause_toMap(str(ctc), ctc_clauses)
