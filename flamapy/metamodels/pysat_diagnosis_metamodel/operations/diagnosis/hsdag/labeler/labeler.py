@@ -6,8 +6,9 @@ https://github.com/HiConfiT/hiconfit-core/tree/main/ca-cdr-package/src/main/java
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
+from typing import List
 
-from flamapy.metamodels.pysat_diagnosis_metamodel.operations.diagnosis.checker import ConsistencyChecker
+from ...checker import ConsistencyChecker
 
 
 class LabelerType(Enum):
@@ -17,8 +18,8 @@ class LabelerType(Enum):
 
 @dataclass
 class AbstractHSParameters:
-    C: list[int]
-    D: list[int]
+    set_c: List[int]
+    set_d: List[int]
 
 
 class IHSLabelable(ABC):
@@ -35,14 +36,14 @@ class IHSLabelable(ABC):
         pass
 
     @abstractmethod
-    def get_label(self, parameters: AbstractHSParameters) -> list:
+    def get_label(self, parameters: AbstractHSParameters) -> List[List[int]]:
         pass
 
     @abstractmethod
-    def identify_new_node_parameters(self, param_parent_node: AbstractHSParameters, arcLabel: int) \
-            -> AbstractHSParameters:
+    def identify_new_node_parameters(self, param_parent_node: AbstractHSParameters,
+                                     arc_label: int) -> AbstractHSParameters:
         pass
 
     @abstractmethod
-    def get_instance(self, checker: ConsistencyChecker):
+    def get_instance(self, checker: ConsistencyChecker) -> 'IHSLabelable':
         pass

@@ -1,6 +1,7 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 from flamapy.metamodels.configuration_metamodel.models import Configuration
+
 from flamapy.metamodels.pysat_metamodel.models import PySATModel
 
 
@@ -32,27 +33,30 @@ class DiagnosisModel(PySATModel):
 
     def __init__(self) -> None:
         super().__init__()
-        self.C = None  # set of constraints which could be faulty
-        self.B = None  # background knowledge (i.e., the knowledge that is known to be true)
+        # set of constraints which could be faulty
+        self.set_c: List[int] = []
+        # background knowledge (i.e., the knowledge that is known to be true)
+        self.set_b: List[int] = []
+        # set of all CNF with added assumptions
+        self.set_kb: List[List[int]] = []
+        # map clauses to relationships/constraint
+        self.constraint_map: Dict[str, List[List[int]]] = {}
+        # map id of assumptions to relationships/constraint
+        self.constraint_assumption_map: Dict[int, str] = {}
 
-        self.KB = None  # set of all CNF with added assumptions
-        self.constraint_map: list[(str, list[list[int]])] = []  # map clauses to relationships/constraint
+    def add_clause_to_map(self, description: str, clauses: List[List[int]]) -> None:
+        self.constraint_map[description] = clauses
 
-        self.constraint_assumption_map = None
+    def get_c(self) -> List[int]:
+        return self.set_c
 
-    def add_clause_toMap(self, description: str, clauses: list[list[int]]) -> None:
-        self.constraint_map.append((description, clauses))
+    def get_b(self) -> List[int]:
+        return self.set_b
 
-    def get_C(self) -> list:
-        return self.C
+    def get_kb(self) -> List[List[int]]:
+        return self.set_kb
 
-    def get_B(self) -> list:
-        return self.B
-
-    def get_KB(self) -> list:
-        return self.KB
-
-    def get_pretty_diagnoses(self, assumptions: list[list[int]]) -> str:
+    def get_pretty_diagnoses(self, assumptions: List[List[int]]) -> str:
         diagnoses = []
         for ass in assumptions:
             diag = []
@@ -63,7 +67,8 @@ class DiagnosisModel(PySATModel):
 
         return ','.join(diagnoses)
 
-    def prepare_diagnosis_task(self, configuration: Configuration = None, test_case: Configuration = None) -> None:
+    def prepare_diagnosis_task(self, configuration: Configuration = None,
+                               test_case: Configuration = None) -> None:
         """
         Execute this method after the model is built.
         If a configuration is given:
@@ -83,19 +88,18 @@ class DiagnosisModel(PySATModel):
         if configuration is not None:
             # C = configuration
             # B = {f0 = true} + CF (i.e., = PySATModel)
-            self.C, self.B, self.KB, self.constraint_assumption_map = \
-                self.prepare_assumptions(configuration=configuration)
+            self._prepare_assumptions(configuration=configuration)
         else:
             if test_case is None:
                 # Diagnosis the feature model
                 # C = CF (i.e., = PySATModel - {f0 = true})
                 # B = {f0 = true}
-                self.C, self.B, self.KB, self.constraint_assumption_map = self.prepare_assumptions()
+                self._prepare_assumptions()
             else:
                 # Diagnosis the error
                 # C = CF (i.e., = PySATModel - {f0 = true})
                 # B = {f0 = true} + test_case
-                self.C, self.B, self.KB, self.constraint_assumption_map = self.prepare_assumptions(test_case=test_case)
+                self._prepare_assumptions(test_case=test_case)
 
     def prepare_redundancy_detection_task(self) -> None:
         """
@@ -105,76 +109,68 @@ class DiagnosisModel(PySATModel):
         B = {}
         """
         # C = CF (i.e., = PySATModel - {f0 = true})
-        self.C = self.prepare_assumptions
-        self.B = []  # B = {}
+        # self.set_c = self._prepare_assumptions
+        # self.set_b = []  # B = {}
         # ToDo: TBD
 
-    def prepare_assumptions(self, configuration: Configuration = None, test_case: Configuration = None) \
-            -> Tuple[List, List, List, Dict]:
-        assumption = []
-        KB = []
-        constraint_assumption_map = {}
+    def _prepare_assumptions(self, configuration: Configuration = None,
+                             test_case: Configuration = None) -> None:
+        assumption: List[int] = []
 
         id_assumption = len(self.variables) + 1
-        id_assumption = self.prepare_assumptions_for_KB(KB, assumption, constraint_assumption_map, id_assumption)
+        id_assumption = self._prepare_assumptions_for_kb(assumption, id_assumption)
 
         start_id_configuration = len(assumption)
         if configuration is not None:
-            constraint_assumption_map = {}  # reset the map
-            id_assumption = self.prepare_assumptions_for_configuration(KB, assumption, configuration,
-                                                                       constraint_assumption_map,
-                                                                       id_assumption)
+            self.constraint_assumption_map = {}  # reset the map
+            id_assumption = self._prepare_assumptions_for_configuration(assumption,
+                                                                        configuration,
+                                                                        id_assumption)
 
         start_id_test_case = len(assumption)
         if test_case is not None:
-            self.prepare_assumptions_for_configuration(KB, assumption, test_case,
-                                                       constraint_assumption_map,
-                                                       id_assumption)
+            self._prepare_assumptions_for_configuration(assumption, test_case,
+                                                        id_assumption)
 
         if configuration is not None:
-            B = assumption[:start_id_configuration]
-            C = assumption[start_id_configuration:]
+            self.set_b = assumption[:start_id_configuration]
+            self.set_c = assumption[start_id_configuration:]
         else:
             if test_case is not None:
-                B = [assumption[0]] + assumption[start_id_test_case:]
-                C = assumption[1:start_id_test_case]
+                self.set_b = [assumption[0]] + assumption[start_id_test_case:]
+                self.set_c = assumption[1:start_id_test_case]
             else:
-                B = [assumption[0]]
-                C = assumption[1:]
+                self.set_b = [assumption[0]]
+                self.set_c = assumption[1:]
 
-        return C, B, KB, constraint_assumption_map
-
-    def prepare_assumptions_for_KB(self, KB, assumption, constraint_assumption_map, id_assumption):
-        c_map = self.constraint_map
+    def _prepare_assumptions_for_kb(self, assumption: List[int], id_assumption: int) -> int:
+        cstr_map = self.constraint_map
         # loop through all tuples in the constraint map
-        for i in range(len(c_map)):
-            # get description
-            desc = c_map[i][0]
+        for _, key in enumerate(cstr_map):
             # get clauses
-            clauses = c_map[i][1]
+            clauses = cstr_map[key]
             # loop through all variables in the constraint
-            for j in range(len(clauses)):
-                # get each clause
-                clause = clauses[j]
+            for _, clause in enumerate(clauses):
                 # add the assumption variable to the clause
                 # assumption => clause
                 # i.e., -assumption v clause
                 clause.append(-1 * id_assumption)
 
             assumption.append(id_assumption)
-            KB.extend(clauses)
-            constraint_assumption_map[id_assumption] = desc
+            self.set_kb.extend(clauses)
+            self.constraint_assumption_map[id_assumption] = key
 
             id_assumption += 1
 
         return id_assumption
 
-    def prepare_assumptions_for_configuration(self, KB, assumption, configuration, constraint_assumption_map,
-                                              id_assumption):
+    def _prepare_assumptions_for_configuration(self, assumption: List[int],
+                                               configuration: Configuration,
+                                               id_assumption: int) -> int:
         config = [feat.name for feat in configuration.elements]
         for feat in config:
             if feat not in self.variables.keys():
-                raise Exception(f'Feature {feat} is not in the model.')
+                raise KeyError(f'Feature {feat} is not in the model.')
 
         for feat in configuration.elements.items():
             desc = ''
@@ -188,8 +184,8 @@ class DiagnosisModel(PySATModel):
                 clause = [-1 * self.variables[feat[0].name], -1 * id_assumption]
 
             assumption.append(id_assumption)
-            KB.append(clause)
-            constraint_assumption_map[id_assumption] = desc
+            self.set_kb.append(clause)
+            self.constraint_assumption_map[id_assumption] = desc
 
             id_assumption += 1
 
