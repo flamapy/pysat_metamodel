@@ -136,7 +136,6 @@ class FmToPysat(ModelToModel):
             self.destination_model.add_clause(clause)
     
     def add_relation(self, relation: Relation) -> None:  # noqa: MC0001
-        
         if relation.is_mandatory():
             clauses = self._add_mandatory_relation(relation)
         elif relation.is_optional():
