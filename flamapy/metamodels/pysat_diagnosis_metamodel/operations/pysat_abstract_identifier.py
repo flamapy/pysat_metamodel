@@ -35,7 +35,7 @@ def _execute_hsdag(model: DiagnosisModel, hsdag: HSDAG) -> Tuple[str, str]:
     return cs_mess, diag_mess
 
 
-class Glucose3AbstractIdentifier(Operation):
+class PySATAbstractIdentifier(Operation):
     """
     An abstract operation for computes conflicts or diagnoses.
     Four optional inputs:
@@ -66,7 +66,7 @@ class Glucose3AbstractIdentifier(Operation):
     def get_result(self) -> List[str]:
         return self.result_messages
 
-    def execute(self, model: VariabilityModel) -> 'Glucose3AbstractIdentifier':
+    def execute(self, model: VariabilityModel) -> 'PySATAbstractIdentifier':
         model = cast(DiagnosisModel, model)
 
         checker, labeler = self.prepare_hsdag(model)

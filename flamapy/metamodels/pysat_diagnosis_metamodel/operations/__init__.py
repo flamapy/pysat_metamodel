@@ -1,10 +1,10 @@
-from .glucose3_abstract_identifier import Glucose3AbstractIdentifier
-from .glucose3_conflict import Glucose3Conflict
-from .glucose3_diagnosis import Glucose3Diagnosis
+from .pysat_abstract_identifier import PySATAbstractIdentifier
+from .pysat_conflict import PySATConflict
+from .pysat_diagnosis import PySATDiagnosis
 
 
 __all__ = [
-    'Glucose3AbstractIdentifier',
-    'Glucose3Diagnosis',
-    'Glucose3Conflict'
+    'PySATAbstractIdentifier',
+    'PySATDiagnosis',
+    'PySATConflict'
 ]

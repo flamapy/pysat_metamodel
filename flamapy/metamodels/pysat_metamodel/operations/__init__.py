@@ -8,7 +8,6 @@ from .pysat_filter import PySATFilter
 from .pysat_core_features import PySATCoreFeatures
 from .pysat_dead_features import PySATDeadFeatures
 from .pysat_false_optional_features import PySATFalseOptionalFeatures
-from .pysat_error_detection import PySATErrorDetection
 from .pysat_metrics import PySATMetrics
 
 __all__ = [
@@ -22,5 +21,4 @@ __all__ = [
     'PySATCoreFeatures',
     'PySATDeadFeatures',
     'PySATFalseOptionalFeatures',
-    'PySATErrorDetection',
 ]
