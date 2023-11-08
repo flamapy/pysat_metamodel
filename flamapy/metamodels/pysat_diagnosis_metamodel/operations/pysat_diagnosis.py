@@ -7,7 +7,7 @@ from .diagnosis.hsdag.hsdag import HSDAG
 from .diagnosis.hsdag.labeler.fastdiag_labeler import FastDiagParameters, FastDiagLabeler
 
 
-class PySAT3Diagnosis(PySATAbstractIdentifier):
+class PySATDiagnosis(PySATAbstractIdentifier):
     """
     An operation that computes diagnoses and conflict sets
     using the combination of HSDAG and FastDiag algorithms.
