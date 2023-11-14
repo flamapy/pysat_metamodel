@@ -7,20 +7,6 @@ from flamapy.metamodels.pysat_diagnosis_metamodel.transformations import FmToDia
 from flamapy.metamodels.pysat_diagnosis_metamodel.operations import PySATDiagnosis, PySATConflict
 
 
-# def test_with_DiscoverMetamodels():
-#     """
-#     Won't work because the configuration is not set
-#     We want an optional configuration
-#     In fact, Glucose3FastDiag implements ValidConfiguration, so it requires a configuration.
-#     """
-#     dm = DiscoverMetamodels()
-#     result = dm.use_operation_from_file("Glucose3FastDiag", "./tests/resources/smartwatch_inconsistent.fide")
-#     print(result)
-#     result = dm.use_operation_from_file("Glucose3FastDiag", "./tests/resources/smartwatch_consistent.fide")
-#     print(result)
-#     assert result == ['Diagnosis: [[-8, -4]]']
-
-
 def test_fastdiag_all():
     """
     Identify all diagnoses
