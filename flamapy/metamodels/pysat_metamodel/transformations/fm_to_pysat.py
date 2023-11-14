@@ -1,6 +1,6 @@
 import itertools
 from typing import Any, List
-
+import logging
 from flamapy.core.transformations import ModelToModel
 from flamapy.metamodels.fm_metamodel.models.feature_model import (
     FeatureModel,

@@ -2,27 +2,24 @@
 from flamapy.metamodels.configuration_metamodel.models import Configuration
 from flamapy.metamodels.fm_metamodel.models import Feature
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from flamapy.metamodels.pysat_metamodel.operations.glucose3_core_features import (
-    Glucose3CoreFeatures,
+from flamapy.metamodels.pysat_metamodel.operations.pysat_core_features import (
+    PySATCoreFeatures,
 )
-from flamapy.metamodels.pysat_metamodel.operations.glucose3_dead_features import (
-    Glucose3DeadFeatures,
+from flamapy.metamodels.pysat_metamodel.operations.pysat_dead_features import (
+    PySATDeadFeatures,
 )
-from flamapy.metamodels.pysat_metamodel.operations.glucose3_error_detection import (
-    Glucose3ErrorDetection,
+from flamapy.metamodels.pysat_metamodel.operations.pysat_false_optional_features import (
+    PySATFalseOptionalFeatures,
 )
-from flamapy.metamodels.pysat_metamodel.operations.glucose3_false_optional_features import (
-    Glucose3FalseOptionalFeatures,
+from flamapy.metamodels.pysat_metamodel.operations.pysat_products import (
+    PySATProducts,
 )
-from flamapy.metamodels.pysat_metamodel.operations.glucose3_products import (
-    Glucose3Products,
+from flamapy.metamodels.pysat_metamodel.operations.pysat_products_number import (
+    PySATProductsNumber,
 )
-from flamapy.metamodels.pysat_metamodel.operations.glucose3_products_number import (
-    Glucose3ProductsNumber,
-)
-from flamapy.metamodels.pysat_metamodel.operations.glucose3_valid import Glucose3Valid
-from flamapy.metamodels.pysat_metamodel.operations.glucose3_valid_product import (
-    Glucose3ValidProduct,
+from flamapy.metamodels.pysat_metamodel.operations.pysat_valid import PySATValid
+from flamapy.metamodels.pysat_metamodel.operations.pysat_valid_product import (
+    PySATValidProduct,
 )
 
 
@@ -41,50 +38,45 @@ def run(
 ) -> None:
 
     if expected_core_features is not None:
-        core_features = Glucose3CoreFeatures()
+        core_features = PySATCoreFeatures()
         core_features.execute(model)
         assert core_features.get_result() == expected_core_features
 
     if expected_dead_features is not None:
-        dead_features = Glucose3DeadFeatures()
+        dead_features = PySATDeadFeatures()
         dead_features.execute(model)
         assert dead_features.get_result() == expected_dead_features
 
-    if expected_error_detection is not None:
-        error_detection = Glucose3ErrorDetection()
-        error_detection.execute(model)
-        assert error_detection.get_result() == expected_error_detection
-
     if expected_false_optional_features is not None:
-        false_optional_features = Glucose3FalseOptionalFeatures()
+        false_optional_features = PySATFalseOptionalFeatures()
         false_optional_features.execute(model)
         assert false_optional_features.get_result() == expected_false_optional_features
 
     if expected_products_number is not None:
-        products_number = Glucose3ProductsNumber()
+        products_number = PySATProductsNumber()
         products_number.execute(model)
         assert products_number.get_result() == expected_products_number
 
     if expected_products is not None:
-        products = Glucose3Products()
+        products = PySATProducts()
         products.execute(model)
         assert products.get_result() == expected_products
 
     if expected_valid is not None:
-        valid = Glucose3Valid()
+        valid = PySATValid()
         valid.execute(model)
         assert valid.result == expected_valid
 
     if expected_valid_product_list is not None:
         for product in expected_valid_product_list:
-            valid_product = Glucose3ValidProduct()
+            valid_product = PySATValidProduct()
             valid_product.set_configuration(product)
             valid_product.execute(model)
             assert valid_product.result
 
     if expected_non_valid_product_list is not None:
         for product in expected_non_valid_product_list:
-            valid_product = Glucose3ValidProduct()
+            valid_product = PySATValidProduct()
             valid_product.set_configuration(product)
             valid_product.execute(model)
             assert not valid_product.result
