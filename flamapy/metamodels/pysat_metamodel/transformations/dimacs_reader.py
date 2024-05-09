@@ -21,13 +21,11 @@ class DimacsReader(TextToModel):
             features_lines = []
             clauses_lines = []
             for line in lines:
-                if line == '':  # Empty line
-                    pass  # Ignore it
-                elif line.startswith('c'):
+                if line.startswith('c'):
                     features_lines.append(line)
                 elif line.startswith('p'):
                     problem = line
-                else:
+                elif line != '':
                     clauses_lines.append(line)
             if problem is None:
                 raise FlamaException(f'Incorrect Dimacs format of {self.path}. '
