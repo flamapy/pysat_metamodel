@@ -2,18 +2,17 @@ from typing import cast
 
 from pysat.solvers import Solver
 
+from flamapy.core.models import VariabilityModel
 from flamapy.core.operations import ValidProduct
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
-
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
-from flamapy.core.models import VariabilityModel
 
 
 class PySATValidProduct(ValidProduct):
 
     def __init__(self) -> None:
         self.result = False
-        self.configuration = Configuration({})
+        self.configuration = Configuration(elements={})
         self.solver = Solver(name='glucose3')
 
     def is_valid(self) -> bool:
@@ -26,27 +25,22 @@ class PySATValidProduct(ValidProduct):
         self.configuration = configuration
 
     def execute(self, model: VariabilityModel) -> 'PySATValidProduct':
-        model = cast(PySATModel, model)
+        sat_model = cast(PySATModel, model)
 
-        for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
+        if any(feature not in sat_model.variables.keys() 
+               for feature in self.configuration.elements.keys()):
+            self.result = False
+            return self
+
+        for clause in sat_model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint
 
         assumptions = []
-
-        config: list[str] = []
-        if self.configuration is not None:
-            config = [feat.name for feat in self.configuration.elements]
-
-        for feat in config:
-            if feat not in model.variables.keys():
-                self.result = False
-                return self
-
-        for feat in model.features.values():
-            if feat in config:
-                assumptions.append(model.variables[feat])
+        for feature in sat_model.features.values():
+            if feature in self.configuration.elements and self.configuration.elements[feature]:
+                assumptions.append(sat_model.variables[feature])
             else:
-                assumptions.append(-model.variables[feat])
+                assumptions.append(-sat_model.variables[feature])
 
         self.result = self.solver.solve(assumptions=assumptions)
         self.solver.delete()

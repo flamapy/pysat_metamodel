@@ -15,16 +15,20 @@ class PySATValid(Valid):
         self.solver = Solver(name='glucose3')
 
     def is_valid(self) -> bool:
-        return self.result
+        return self.get_result()
 
     def get_result(self) -> bool:
-        return self.is_valid()
+        return self.result
 
     def execute(self, model: VariabilityModel) -> 'PySATValid':
-        model = cast(PySATModel, model)
-
-        for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
-            self.solver.add_clause(clause)  # añadimos la constraint
-        self.result = self.solver.solve()
-        self.solver.delete()
+        sat_model = cast(PySATModel, model)
+        self.result = valid(self.solver, sat_model)
         return self
+
+
+def valid(solver: Solver, model: PySATModel) -> bool:
+    for clause in model.get_all_clauses():
+        solver.add_clause(clause)
+    result = solver.solve()
+    solver.delete()
+    return result

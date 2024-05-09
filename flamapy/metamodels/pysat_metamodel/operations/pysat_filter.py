@@ -32,7 +32,7 @@ class PySATFilter(Filter):
 
         assumptions = []
         for feat in self.configuration.elements.items():
-            variable = model.variables.get(feat[0].name)
+            variable = model.variables.get(feat[0])
             if variable is not None:
                 if feat[1]:
                     assumptions.append(variable)

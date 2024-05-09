@@ -37,7 +37,7 @@ class PySATFalseOptionalFeatures(FalseOptionalFeatures):
             LOGGER.exception("The transformation didn't attach the source model, " 
                              "which is required for this operation.")
 
-        real_optional_features = [f for f in feature_model.get_features()
+        real_optional_features = [f.name for f in feature_model.get_features()
                                   if not f.is_root() and not f.is_mandatory()]
 
         result = []
