@@ -25,16 +25,17 @@ class DimacsReader(TextToModel):
                     features_lines.append(line)
                 elif line.startswith('p'):
                     problem = line
-                else:
+                elif line != '':
                     clauses_lines.append(line)
             if problem is None:
-                raise FlamaException(f'Incorrect Dimacs format of {self.path}. No problem statement.')
+                raise FlamaException(f'Incorrect Dimacs format of {self.path}. '
+                                     f'No problem statement.')
 
             problem_list = problem.split()
-            n_features = int(problem_list[2])
             n_clauses = int(problem_list[3])
             if n_clauses != len(clauses_lines):
-                raise FlamaException(f'Incorrect Dimacs format of {self.path}. Inconsistent number of clauses.')
+                raise FlamaException(f'Incorrect Dimacs format of {self.path}. '
+                                     f'Inconsistent number of clauses.')
         features, variables = self._parse_features_variables(features_lines)
         sat_model = PySATModel()
         sat_model.features = features

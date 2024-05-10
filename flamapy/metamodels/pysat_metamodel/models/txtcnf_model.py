@@ -1,5 +1,6 @@
 from typing import Optional
 from enum import Enum, auto
+
 from flamapy.core.exceptions import FlamaException
 
 

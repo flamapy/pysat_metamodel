@@ -30,16 +30,19 @@ class PySATFilter(Filter):
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint
 
-        assumptions = [
-            model.variables.get(feat[0].name) if feat[1]
-            else -model.variables.get(feat[0].name)
-            for feat in self.configuration.elements.items()
-        ]
+        assumptions = []
+        for feat in self.configuration.elements.items():
+            variable = model.variables.get(feat[0])
+            if variable is not None:
+                if feat[1]:
+                    assumptions.append(variable)
+                else:
+                    assumptions.append(-variable)
 
         for solution in self.solver.enum_models(assumptions=assumptions):
             product = []
             for variable in solution:
-                if variable > 0:
+                if variable is not None and variable > 0:
                     product.append(model.features.get(variable))
             self.filter_products.append(product)
         self.solver.delete()

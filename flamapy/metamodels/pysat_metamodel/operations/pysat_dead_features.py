@@ -10,13 +10,13 @@ from flamapy.core.models import VariabilityModel
 class PySATDeadFeatures(DeadFeatures):
 
     def __init__(self) -> None:
-        self.dead_features: list[list[Any]] = []
+        self.dead_features: list[Any] = []
         self.solver = Solver(name='glucose3')
 
-    def get_dead_features(self) -> list[list[Any]]:
+    def get_dead_features(self) -> list[Any]:
         return self.dead_features
 
-    def get_result(self) -> list[list[Any]]:
+    def get_result(self) -> list[Any]:
         return self.get_dead_features()
 
     def execute(self, model: VariabilityModel) -> 'PySATDeadFeatures':

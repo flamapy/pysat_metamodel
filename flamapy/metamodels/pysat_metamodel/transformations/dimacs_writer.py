@@ -15,8 +15,9 @@ class DimacsWriter(ModelToText):
 
     def transform(self) -> str:
         dimacs_str = pysat_to_dimacs(self.source_model)
-        with open(self.path, 'w', encoding='utf8') as file:
-            file.write(dimacs_str)
+        if self.path is not None:
+            with open(self.path, 'w', encoding='utf8') as file:
+                file.write(dimacs_str)
         return dimacs_str
 
 

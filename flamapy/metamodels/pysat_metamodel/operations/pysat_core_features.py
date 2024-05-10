@@ -10,13 +10,13 @@ from flamapy.core.models import VariabilityModel
 class PySATCoreFeatures(CoreFeatures):
 
     def __init__(self) -> None:
-        self.core_features: list[list[Any]] = []
+        self.core_features: list[Any] = []
         self.solver = Solver(name='glucose3')
 
-    def get_core_features(self) -> list[list[Any]]:
+    def get_core_features(self) -> list[Any]:
         return self.core_features
 
-    def get_result(self) -> list[list[Any]]:
+    def get_result(self) -> list[Any]:
         return self.get_core_features()
 
     def execute(self, model: VariabilityModel) -> 'PySATCoreFeatures':

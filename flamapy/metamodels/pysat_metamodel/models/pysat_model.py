@@ -14,7 +14,7 @@ class PySATModel(VariabilityModel):
         self.variables: dict[str, int] = {}  # feature's name -> id
         self.features: dict[int, str] = {}  # id -> feature's name
         self.original_model: VariabilityModel
-        
+
     def add_clause(self, clause: list[int]) -> None:
         self._cnf.append(clause)
 

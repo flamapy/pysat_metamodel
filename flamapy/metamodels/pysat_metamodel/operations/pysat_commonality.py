@@ -5,32 +5,31 @@ from flamapy.metamodels.pysat_metamodel.operations.pysat_products import PySATPr
 
 
 class PySATCommonality(Commonality):
+
     def __init__(self) -> None:
-        self.commonality: float = 0
+        self.result: float = 0
         self.configuration = Configuration({})
 
     def set_configuration(self, configuration: Configuration) -> None:
         self.configuration = configuration
 
     def get_commonality(self) -> float:
-        return self.commonality
+        return self.get_result()
 
     def get_result(self) -> float:
-        return self.get_commonality()
+        return self.result
 
     def execute(self, model: VariabilityModel) -> 'PySATCommonality':
-        glucose3products = PySATProducts()
-        glucose3products.execute(model)
-
-        products = glucose3products.get_result()
+        pysat_products_op = PySATProducts()
+        pysat_products_op.execute(model)
+        products = pysat_products_op.get_result()
 
         feature = list(self.configuration.elements.keys())[0]
 
         count = 0
         for product in products:
-            count = count + \
-                1 if feature.name in product else count
+            count = count + 1 if feature in product else count
 
-        self.commonality = count / len(products)
+        self.result = count / len(products)
 
         return self

@@ -10,6 +10,7 @@ from .pysat_dead_features import PySATDeadFeatures
 from .pysat_false_optional_features import PySATFalseOptionalFeatures
 from .pysat_metrics import PySATMetrics
 
+
 __all__ = [
     'PySATValid',
     'PySATValidConfiguration',
@@ -21,4 +22,5 @@ __all__ = [
     'PySATCoreFeatures',
     'PySATDeadFeatures',
     'PySATFalseOptionalFeatures',
+    'PySATMetrics',
 ]
