@@ -11,15 +11,15 @@ from flamapy.metamodels.pysat_metamodel.operations.pysat_dead_features import (
 from flamapy.metamodels.pysat_metamodel.operations.pysat_false_optional_features import (
     PySATFalseOptionalFeatures,
 )
-from flamapy.metamodels.pysat_metamodel.operations.pysat_products import (
-    PySATProducts,
+from pysat_metamodel.flamapy.metamodels.pysat_metamodel.operations.pysat_configurations import (
+    PySATConfigurations,
 )
-from flamapy.metamodels.pysat_metamodel.operations.pysat_products_number import (
-    PySATProductsNumber,
+from pysat_metamodel.flamapy.metamodels.pysat_metamodel.operations.pysat_configurations_number import (
+    PySATConfigurationsNumber,
 )
-from flamapy.metamodels.pysat_metamodel.operations.pysat_valid import PySATValid
-from flamapy.metamodels.pysat_metamodel.operations.pysat_valid_product import (
-    PySATValidProduct,
+from flamapy.metamodels.pysat_metamodel.operations.pysat_satisfiabjle import PySATSatisfiable
+from flamapy.metamodels.pysat_metamodel.operations.pysat_satisfiable_configuraiton import (
+    PySATSatisfiableConfiguration,
 )
 
 

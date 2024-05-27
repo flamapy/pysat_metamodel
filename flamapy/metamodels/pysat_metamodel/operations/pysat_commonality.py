@@ -1,7 +1,7 @@
 from flamapy.core.operations import Commonality
 from flamapy.core.models import VariabilityModel
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
-from flamapy.metamodels.pysat_metamodel.operations.pysat_products import PySATProducts
+from .pysat_configurations import PySATConfigurations
 
 
 class PySATCommonality(Commonality):
@@ -20,7 +20,7 @@ class PySATCommonality(Commonality):
         return self.result
 
     def execute(self, model: VariabilityModel) -> 'PySATCommonality':
-        pysat_products_op = PySATProducts()
+        pysat_products_op = PySATConfigurations()
         pysat_products_op.execute(model)
         products = pysat_products_op.get_result()
 

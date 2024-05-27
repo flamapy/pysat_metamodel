@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="flamapy-sat",
-    version="1.6.0.dev0",
+    version="2.0.0.dev0",
     author="Flamapy",
     author_email="flamapy@us.es",
     description="flamapy-sat is a plugin to flamapy module",
@@ -22,8 +22,8 @@ setuptools.setup(
     ],
     python_requires='>=3.9',
     install_requires=[
-        'flamapy~=1.6.0.dev0',
-        'flamapy-fm~=1.6.0.dev0',
+        'flamapy-fw~=2.0.0.dev0',
+        'flamapy-fm~=2.0.0.dev0',
         'python-sat>=0.1.7.dev6'
     ],
     extras_require={
