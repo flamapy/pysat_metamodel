@@ -36,22 +36,23 @@ class PySATSatisfiableConfiguration(SatisfiableConfiguration):
             assumptions = []
             for feature, selected in self.configuration.elements.items():
                 if selected:
-                    assumptions.append(sat_model.variables[feature.name])
+                    assumptions.append(sat_model.variables[feature])
                 else:
-                    assumptions.append(-sat_model.variables[feature.name])
+                    assumptions.append(-sat_model.variables[feature])
         else:
-            missing_features = [feature for feature in self.configuration.elements.keys() if feature.name not in sat_model.variables.keys()]
+            missing_features = [feature for feature in self.configuration.elements.keys() if feature not in sat_model.variables.keys()]
             
             if missing_features:
-                print("The features that are missing are:", [feature.name for feature in missing_features])
+                print("The features that are missing are:", [feature for feature in missing_features])
                 print("The feature model contains the following features:", list(sat_model.variables.keys()))
                 self.result = False
                 return self
-                   
-            print(self.configuration.elements.items())
+            
+
             assumptions = []
             for feature in sat_model.features.values():
-                if self.configuration.has(feature):
+                
+                if feature in self.configuration.elements.keys():
                     assumptions.append(sat_model.variables[feature])
                 else:
                     assumptions.append(-sat_model.variables[feature])
