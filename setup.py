@@ -4,10 +4,19 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+def read_requirements(file):
+    with open(file, "r") as fh:
+        return fh.read().splitlines()
+
+# Read requirements from the requirements.txt file
+requirements = read_requirements("requirements.txt")
+
+# Read development requirements from the dev-requirements.txt file
+dev_requirements = read_requirements("requirements-dev.txt")
 
 setuptools.setup(
     name="flamapy-sat",
-    version="2.0.0.dev1",
+    version="2.0.0.dev2",
     author="Flamapy",
     author_email="flamapy@us.es",
     description="flamapy-sat is a plugin to flamapy module",
@@ -21,21 +30,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.9',
-    install_requires=[
-        'flamapy-fw~=2.0.0.dev1',
-        'flamapy-fm~=2.0.0.dev1',
-        'python-sat>=0.1.7.dev1'
-    ],
+    install_requires=requirements,
     extras_require={
-        'dev': [
-            'pytest',
-            'pytest-mock',
-            'prospector',
-            'mypy',
-            'coverage',
-        ]
-    },
-    dependency_links=[
-        'flamapy~=2.0.0.dev1',
-    ]
+        'dev':dev_requirements
+    }
 )
