@@ -55,13 +55,13 @@ class PySATMetrics(Metrics):
         return [method() for method in metric_methods]
 
     @metric_method
-    def valid(self) -> dict[str, Any]:
-        """A feature model is valid if it represents at least one configuration."""
+    def satisfiable(self) -> dict[str, Any]:
+        """A feature model is satisfiable if it represents at least one configuration."""
         if self.model is None:
             raise FlamaException('Model not initialized.')
-        name = "Valid (not void)"
-        _valid = sat_operations.PySATValid().execute(self.model).get_result()
-        result = self.construct_result(name=name, doc=self.valid.__doc__, result=_valid)
+        name = "Satisfiable"
+        _satisfiable = sat_operations.PySATSatisfiable().execute(self.model).get_result()
+        result = self.construct_result(name=name, doc=self.satisfiable.__doc__, result=_satisfiable)
         return result
 
     @metric_method
@@ -154,7 +154,7 @@ class PySATMetrics(Metrics):
         if self.model is None:
             raise FlamaException('Model not initialized.')
         name = "Configurations"
-        _configurations = sat_operations.PySATProducts().execute(self.model).get_result()
+        _configurations = sat_operations.PySATConfigurations().execute(self.model).get_result()
         result = self.construct_result(name=name,
                                        doc=self.configurations.__doc__,
                                        result=_configurations,
