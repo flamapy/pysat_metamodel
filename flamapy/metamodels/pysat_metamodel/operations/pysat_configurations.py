@@ -7,7 +7,6 @@ from flamapy.metamodels.configuration_metamodel.models.configuration import Conf
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.core.models import VariabilityModel
 
-
 class PySATConfigurations(Configurations):
 
     def __init__(self) -> None:

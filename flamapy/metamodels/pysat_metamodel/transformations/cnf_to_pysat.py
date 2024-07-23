@@ -61,7 +61,7 @@ class CNFReader(TextToModel):
             clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]
 
         for _c in clauses:
-            tokens = flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils.split(' ')
+            tokens = flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils.split(' ')  # type: ignore[name-defined] # noqa: F821, E501
             tokens = list(filter(lambda t: t != cnf_notation.value[CNFLogicConnective.OR], tokens))
             logic_not = False
             cnf_clause = []

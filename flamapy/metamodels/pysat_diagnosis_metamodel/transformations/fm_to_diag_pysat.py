@@ -23,11 +23,8 @@ class FmToDiagPysat(FmToPysat):
     def __init__(self, source_model: FeatureModel) -> None:
         super().__init__(source_model)
         self.destination_model = DiagnosisModel()
-        
 
     def add_root(self, feature: Feature) -> None:
-        #self.r_cnf.append([self.destination_model.variables.get(feature.name)])
-        
         var = self.destination_model.variables.get(feature.name)
         if var is None:
             raise KeyError(f'Feature {feature.name} not found in the model')
@@ -48,7 +45,7 @@ class FmToDiagPysat(FmToPysat):
                 negated = True
 
             var = self.destination_model.get_variable(term)
-            
+
             if negated:
                 return -var
             return var
@@ -61,4 +58,3 @@ class FmToDiagPysat(FmToPysat):
             self.destination_model.add_clause(clause_variables)
 
         self.destination_model.add_clause_to_map(str(ctc), ctc_clauses)
-

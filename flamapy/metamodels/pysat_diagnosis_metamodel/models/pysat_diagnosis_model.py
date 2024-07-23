@@ -3,7 +3,7 @@ from typing import List, Dict
 from flamapy.metamodels.configuration_metamodel.models import Configuration
 
 from flamapy.metamodels.pysat_metamodel.models import PySATModel
-
+from flamapy.metamodels.fm_metamodel.models.feature_model import Feature
 
 class DiagnosisModel(PySATModel):
     """
@@ -164,9 +164,14 @@ class DiagnosisModel(PySATModel):
 
         return id_assumption
 
+    def _convert_keys_to_features(self, configuration: 'Configuration') -> 'Configuration':
+        new_elements = {Feature(key) if isinstance(key, str) else key: value for key, value in configuration.elements.items()}
+        return Configuration(new_elements)
+    
     def _prepare_assumptions_for_configuration(self, assumption: List[int],
                                                configuration: Configuration,
                                                id_assumption: int) -> int:
+        configuration = self._convert_keys_to_features(configuration)
         config = [feat.name for feat in configuration.elements]
         for feat in config:
             if feat not in self.variables.keys():

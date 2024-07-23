@@ -28,10 +28,10 @@ class PySATSatisfiableConfiguration(SatisfiableConfiguration):
 
     def execute(self, model: VariabilityModel) -> 'PySATSatisfiableConfiguration':
         sat_model = cast(PySATModel, model)
-        
+
         for clause in sat_model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint
-    
+
         if not self.is_full:
             assumptions = []
             for feature, selected in self.configuration.elements.items():
@@ -40,18 +40,19 @@ class PySATSatisfiableConfiguration(SatisfiableConfiguration):
                 else:
                     assumptions.append(-sat_model.variables[feature])
         else:
-            missing_features = [feature for feature in self.configuration.elements.keys() if feature not in sat_model.variables.keys()]
-            
+            missing_features = [feature for feature in self.configuration.elements.keys() 
+                                if feature not in sat_model.variables.keys()]
+
             if missing_features:
-                print("The features that are missing are:", [feature for feature in missing_features])
-                print("The feature model contains the following features:", list(sat_model.variables.keys()))
+                print("The features that are missing are:", list(missing_features))
+                print("The feature model contains the following features:", 
+                      list(sat_model.variables.keys()))
                 self.result = False
                 return self
-            
 
             assumptions = []
             for feature in sat_model.features.values():
-                
+
                 if feature in self.configuration.elements.keys():
                     assumptions.append(sat_model.variables[feature])
                 else:

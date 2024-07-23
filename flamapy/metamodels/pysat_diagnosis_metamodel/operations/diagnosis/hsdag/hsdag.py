@@ -2,7 +2,7 @@
 A Java version of this implementation is available at:
 https://github.com/HiConfiT/hiconfit-core/blob/main/ca-cdr-package/src/main/java/at/tugraz/ist/ase/cacdr/algorithms/hs/HSDAG.java
 """
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 
 from .labeler.labeler import IHSLabelable, LabelerType, AbstractHSParameters
 from .node import Node, NodeStatus
@@ -234,7 +234,7 @@ class HSDAG:
                 labels.append(label)
         return labels
 
-    def get_reusable_node(self, path_labels: List[int], arc_label: int) -> Node | None:
+    def get_reusable_node(self, path_labels: List[int], arc_label: int) -> Union[Node, None]:
         if len(path_labels) == 0:
             new_path_labels = [arc_label]
         else:

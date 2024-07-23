@@ -107,15 +107,14 @@ def test_quickxplain_two():
 def test_fastdiag_with_configuration():
     feature_model = FeatureIDEReader("./tests/resources/smartwatch_consistent.fide").transform()
     model = FmToDiagPysat(feature_model).transform()
-
     configuration = ConfigurationBasicReader("./tests/resources/smartwatch_nonvalid.csvconf").transform()
-
+    
     hsdag_fastdiag = PySATDiagnosis()
     hsdag_fastdiag.set_configuration(configuration)
+
     hsdag_fastdiag.execute(model)
     result = hsdag_fastdiag.get_result()
 
-    print(result)
     assert result == ['Diagnoses: [E-ink = true],[Analog = true]',
                       'Conflict: [E-ink = true, Analog = true]']
 

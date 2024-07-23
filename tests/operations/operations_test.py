@@ -11,14 +11,14 @@ from flamapy.metamodels.pysat_metamodel.operations.pysat_dead_features import (
 from flamapy.metamodels.pysat_metamodel.operations.pysat_false_optional_features import (
     PySATFalseOptionalFeatures,
 )
-from pysat_metamodel.flamapy.metamodels.pysat_metamodel.operations.pysat_configurations import (
+from flamapy.metamodels.pysat_metamodel.operations.pysat_configurations import (
     PySATConfigurations,
 )
-from pysat_metamodel.flamapy.metamodels.pysat_metamodel.operations.pysat_configurations_number import (
+from flamapy.metamodels.pysat_metamodel.operations.pysat_configurations_number import (
     PySATConfigurationsNumber,
 )
-from flamapy.metamodels.pysat_metamodel.operations.pysat_satisfiabjle import PySATSatisfiable
-from flamapy.metamodels.pysat_metamodel.operations.pysat_satisfiable_configuraiton import (
+from flamapy.metamodels.pysat_metamodel.operations.pysat_satisfiable import PySATSatisfiable
+from flamapy.metamodels.pysat_metamodel.operations.pysat_satisfiable_configuration import (
     PySATSatisfiableConfiguration,
 )
 
@@ -40,46 +40,46 @@ def run(
     if expected_core_features is not None:
         core_features = PySATCoreFeatures()
         core_features.execute(model)
-        assert core_features.get_result() == expected_core_features
+        assert str(core_features.get_result()) == str(expected_core_features)
 
     if expected_dead_features is not None:
         dead_features = PySATDeadFeatures()
         dead_features.execute(model)
-        assert dead_features.get_result() == expected_dead_features
+        assert str(dead_features.get_result()) == str(expected_dead_features)
 
     if expected_false_optional_features is not None:
         false_optional_features = PySATFalseOptionalFeatures()
         false_optional_features.execute(model)
-        assert false_optional_features.get_result() == expected_false_optional_features
+        assert str(false_optional_features.get_result()) == str(expected_false_optional_features)
 
     if expected_products_number is not None:
-        products_number = PySATProductsNumber()
+        products_number = PySATConfigurationsNumber()
         products_number.execute(model)
-        assert products_number.get_result() == expected_products_number
+        assert str(products_number.get_result()) == str(expected_products_number)
 
     if expected_products is not None:
-        products = PySATProducts()
+        products = PySATConfigurations()
         products.execute(model)
-        assert products.get_result() == expected_products
+        assert str(products.get_result()) == str(expected_products)
 
     if expected_valid is not None:
-        valid = PySATValid()
+        valid = PySATSatisfiable()
         valid.execute(model)
         assert valid.result == expected_valid
 
     if expected_valid_product_list is not None:
         for product in expected_valid_product_list:
-            valid_product = PySATValidProduct()
-            valid_product.set_configuration(product)
+            valid_product = PySATSatisfiableConfiguration()
+            valid_product.set_configuration(configuration = product, is_full = True)
             valid_product.execute(model)
-            assert valid_product.result
+            assert valid_product.is_satisfiable()
 
     if expected_non_valid_product_list is not None:
         for product in expected_non_valid_product_list:
-            valid_product = PySATValidProduct()
-            valid_product.set_configuration(product)
+            valid_product = PySATSatisfiableConfiguration()
+            valid_product.set_configuration(configuration = product, is_full = True)
             valid_product.execute(model)
-            assert not valid_product.result
+            assert not valid_product.is_satisfiable()
 
 
 def test_error_guessing_core_features_case_1() -> None:
@@ -336,474 +336,6 @@ def test_error_guessing_core_features_case_6() -> None:
     )
 
 
-# def test_error_guessing_dead_features_1() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
-#     r_cnf_clauses = [[1], [-1, 2], [-2, 1], [-1, 3],
-#                            [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3]]
-#     ctc_cnf_clauses = [[-4, -2]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = ['D']
-#     expected_error_detection = ["Dead features: ['D']",
-#                                 "False optional features: ['E']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_dead_features_2() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
-#     r_cnf_clauses = [[1], [-1, 2], [-2, 1], [-1, 3],
-#                            [-3, 1], [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3]]
-#     ctc_cnf_clauses = [[-2, 4]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = ['E']
-#     expected_error_detection = ["Dead features: ['E']",
-#                                 "False optional features: ['D']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_dead_features_3() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
-#     r_cnf_clauses = [[1], [-1, 2], [-2, 1], [-1, 3],
-#                            [-3, 1], [-3, 4, 5], [-4, 3], [-5, 3]]
-#     ctc_cnf_clauses = [[-4, -2]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = ['D']
-#     expected_error_detection = ["Dead features: ['D']",
-#                                 "False optional features: ['E']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_dead_features_4() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3}
-#     r_cnf_clauses = [[1], [-1, 2], [-2, 1], [-3, 1]]
-#     ctc_cnf_clauses = [[-2, -3]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = ["C"]
-#     expected_error_detection = ["Dead features: ['C']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_dead_features_5() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3}
-#     r_cnf_clauses = [[1], [-1, 2], [-2, 1], [-1, 3], [-3, 1]]
-#     ctc_cnf_clauses = [[-2, -3]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = ['A', 'B', 'C']
-#     expected_error_detection = ["The model is void, so have not any product"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = False
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_dead_features_6() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3}
-#     r_cnf_clauses = [[1], [-1, 2, 3],
-#                            [-2, -3], [-2, 1], [-3, 1]]
-#     ctc_cnf_clauses = [[-2, 3]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-
-#     expected_core_features = None
-#     expected_dead_features = ['B']
-#     expected_error_detection = ["Dead features: ['B']",
-#                                 "False optional features: ['C']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_dead_features_7() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3}
-#     r_cnf_clauses = [[1], [-1, 2], [-2, 1], [-2, 3], [-3, 2]]
-#     ctc_cnf_clauses = [[-2, -3]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = ['A', 'B', 'C']
-#     expected_error_detection = ['The model is void, so have not any product']
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = False
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_dead_features_8() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3}
-#     r_cnf_clauses = [[1], [-2, 1], [-3, 1]]
-#     ctc_cnf_clauses = [[-2, -3], [-2, 3]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = ['B']
-#     expected_error_detection = ["Dead features: ['B']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_false_optional_features_1() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3}
-#     r_cnf_clauses = [[1], [-1, 2], [-2, 1], [-3, 1]]
-#     ctc_cnf_clauses = [[-2, 3]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = None
-#     expected_error_detection = [
-#         "False optional features: ['C']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = ['C']
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_false_optional_features_2() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
-#     r_cnf_clauses = [[1], [-1, 2], [-2, 1], [-3, 1],
-#                            [-3, 4, 5], [-4, -5], [-4, 3], [-5, 3]]
-#     ctc_cnf_clauses = [[-2, 4]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = None
-#     expected_error_detection = ["Dead features: ['E']",
-#                                 "False optional features: ['C', 'D']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = ['C', 'D']
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_false_optional_features_3() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D', 5: 'E'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5}
-#     r_cnf_clauses = [[1], [-1, 2], [-2, 1],
-#                            [-3, 1], [-3, 4, 5], [-4, 3], [-5, 3]]
-#     ctc_cnf_clauses = [[-2, 4]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = None
-#     expected_error_detection = [
-#         "False optional features: ['C', 'D']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = ['C', 'D']
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_false_optional_features_4() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3}
-#     r_cnf_clauses = [[1], [-1, 2, 3],
-#                            [-2, -3], [-2, 1], [-3, 1]]
-#     ctc_cnf_clauses = [[-2, 3]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = None
-#     expected_error_detection = ["Dead features: ['B']",
-#                                 "False optional features: ['C']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = ['C']
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_false_optional_features_5() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3}
-#     r_cnf_clauses = [[1], [-1, 2, 3], [-2, 1], [-3, 1]]
-#     ctc_cnf_clauses = [[-2, 3]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = None
-#     expected_error_detection = [
-#         "False optional features: ['C']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = ['C']
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_false_optional_features_6() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'E', 5: 'F', 6: 'D'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3, 'E': 4, 'F': 5, 'D': 6}
-#     r_cnf_clauses = [[1], [-2, 1], [-1, 3], [-3, 1], [-3, 4, 5],
-#                            [-4, -5], [-4, 3], [-5, 3], [-1, 6], [-6, 1]]
-#     ctc_cnf_clauses = [[-4, 2], [-6, -5]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = None
-#     expected_error_detection = ["Dead features: ['F']",
-#                                 "False optional features: ['B', 'E']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = ['B', 'E']
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_redundancies_case_1() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3}
-#     r_cnf_clauses = [[1], [-2, 1], [-1, 3], [-3, 1]]
-#     ctc_cnf_clauses = [[-2, 3]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = None
-#     expected_error_detection = ["Redundancies: ['B requires C']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
-# def test_error_guessing_redundancies_case_2() -> None:
-
-#     model = PySATModel()
-
-#     model.features = {1: 'A', 2: 'B', 3: 'C', 4: 'D'}
-#     model.variables = {'A': 1, 'B': 2, 'C': 3, 'D': 4}
-#     r_cnf_clauses = [[1], [-2, 1], [-1, 3], [-3, 1], [-1, 4], [-4, 1]]
-#     ctc_cnf_clauses = [[-3, 2], [-4, 2]]
-#     for clause in r_cnf_clauses:
-#         model.add_clause(clause)
-#     for clause in ctc_cnf_clauses:
-#         model.add_clause(clause)
-
-#     expected_core_features = None
-#     expected_dead_features = None
-#     expected_error_detection = ["False optional features: ['B']",
-#                                 "Redundancies: ['D requires B']"]
-#     expected_error_diagnosis = None
-#     expected_false_optional_features = None
-#     expected_products_number = None
-#     expected_products = None
-#     expected_valid = True
-#     expected_valid_products = None
-#     expected_non_valid_products = None
-
-#     run(model, expected_core_features, expected_dead_features, expected_error_detection, expected_error_diagnosis, expected_false_optional_features,
-#         expected_products_number, expected_products, expected_valid, expected_valid_products, expected_non_valid_products)
-
-
 def test_refinement_alternative_no_or() -> None:
 
     model = PySATModel()
@@ -886,7 +418,7 @@ def test_refinement_alternative_no_parent_last_child() -> None:
     expected_valid_products = None
     expected_non_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("D", []): True, Feature("E", []): True}
+            {"A": True, "D": True, "E": True}
         )
     ]
 
@@ -952,11 +484,11 @@ def test_refinement_alternative_odd_children() -> None:
     expected_non_valid_products = [
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("E", []): True,
-                Feature("G", []): True,
-                Feature("H", []): True,
+                "A": True,
+                "B": True,
+                "E": True,
+                "G": True,
+                "H": True,
             }
         )
     ]
@@ -1049,7 +581,7 @@ def test_refinement_optional_alternative_valid_p() -> None:
     expected_valid_products = None
     expected_non_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("C", []): True, Feature("D", []): True}
+            {"A": True, "C": True, "D": True}
         )
     ]
 
@@ -1148,38 +680,38 @@ def test_relationships_allrelationships() -> None:
     expected_false_optional_features = None
     expected_products_number = 4
     expected_products = [
-        ["A", "B", "D"],
-        ["A", "B", "D", "C", "F"],
-        ["A", "B", "E", "C", "F"],
-        ["A", "B", "E", "C", "F", "G"],
+        Configuration({"A":True, "B":True, "D":True}),
+        Configuration({"A":True, "B":True, "D":True, "C":True, "F":True}),
+        Configuration({"A":True, "B":True, "E":True, "C":True, "F":True}),
+        Configuration({"A":True,"B":True, "E":True, "C":True, "F":True, "G":True}),
     ]
     expected_valid = True
     expected_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("D", []): True}
+            {"A": True, "B": True, "D": True}
         ),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("C", []): True,
-                Feature("E", []): True,
-                Feature("F", []): True,
-                Feature("G", []): True,
+                "A": True,
+                "B": True,
+                "C": True,
+                "E": True,
+                "F": True,
+                "G": True,
             }
         ),
     ]
     expected_non_valid_products = [
-        Configuration({Feature("A", []): True, Feature("B", []): True}),
+        Configuration({"A": True, "B": True}),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("C", []): True,
-                Feature("D", []): True,
-                Feature("E", []): True,
-                Feature("F", []): True,
-                Feature("G", []): True,
+                "A": True,
+                "B": True,
+                "C": True,
+                "D": True,
+                "E": True,
+                "F": True,
+                "G": True,
             }
         ),
     ]
@@ -1218,16 +750,19 @@ def test_relationships_alternative() -> None:
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = 2
-    expected_products = [["A", "B"], ["A", "C"]]
+    expected_products = [
+        Configuration({"A": True, "B": True}), 
+        Configuration({"A": True, "C": True}), 
+        ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("B", []): True})
+        Configuration({"A": True, "B": True})
     ]
     expected_non_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         ),
-        Configuration({Feature("A", []): True}),
+        Configuration({"A": True}),
     ]
 
     run(
@@ -1265,14 +800,18 @@ def test_relationships_alternative_excludes() -> None:
     expected_false_optional_features = None
     expected_products_number = 2
     expected_products = [["A", "B"], ["A", "C"]]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("B", []): True})
+        Configuration({"A": True, "B": True})
     ]
     expected_non_valid_products = [
-        Configuration({Feature("A", []): True}),
+        Configuration({"A": True}),
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         ),
     ]
 
@@ -1311,14 +850,18 @@ def test_relationships_alternative_requires() -> None:
     expected_false_optional_features = None
     expected_products_number = 1
     expected_products = [["A", "C"]]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("C", []): True})
+        Configuration({"A": True, "C": True})
     ]
     expected_non_valid_products = [
-        Configuration({Feature("A", []): True}),
+        Configuration({"A": True}),
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         ),
     ]
 
@@ -1357,14 +900,18 @@ def test_relationships_excludes() -> None:
     expected_false_optional_features = None
     expected_products_number = 3
     expected_products = [["A"], ["A", "C"], ["A", "B"]]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True}),
-        Configuration({Feature("A", []): True, Feature("C", []): True}),
+        Configuration({"A": True}),
+        Configuration({"A": True, "C": True}),
     ]
     expected_non_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         )
     ]
 
@@ -1403,11 +950,15 @@ def test_relationships_mandatory() -> None:
     expected_false_optional_features = None
     expected_products_number = 1
     expected_products = [["A", "B"]]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("B", []): True})
+        Configuration({"A": True, "B": True})
     ]
-    expected_non_valid_products = [Configuration({Feature("A", []): True})]
+    expected_non_valid_products = [Configuration({"A": True})]
 
     run(
         model,
@@ -1463,38 +1014,42 @@ def test_relationships_mandatory_alternative() -> None:
         ["A", "B", "F", "C", "G"],
         ["A", "B", "F", "D"],
     ]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("D", []): True,
-                Feature("E", []): True,
+                "A": True,
+                "B": True,
+                "D": True,
+                "E": True,
             }
         ),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("C", []): True,
-                Feature("E", []): True,
-                Feature("G", []): True,
+                "A": True,
+                "B": True,
+                "C": True,
+                "E": True,
+                "G": True,
             }
         ),
     ]
     expected_non_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("F", []): True}
+            {"A": True, "B": True, "F": True}
         ),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("C", []): True,
-                Feature("D", []): True,
-                Feature("E", []): True,
-                Feature("G", []): True,
+                "A": True,
+                "B": True,
+                "C": True,
+                "D": True,
+                "E": True,
+                "G": True,
             }
         ),
     ]
@@ -1578,20 +1133,24 @@ def test_relationships_mandatory_optional() -> None:
         ["A", "B", "D", "C", "E"],
         ["A", "B", "D"],
     ]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("B", []): True}),
+        Configuration({"A": True, "B": True}),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("C", []): True,
-                Feature("D", []): True,
-                Feature("E", []): True,
+                "A": True,
+                "B": True,
+                "C": True,
+                "D": True,
+                "E": True,
             }
         ),
     ]
-    expected_non_valid_products = [Configuration({Feature("A", []): True})]
+    expected_non_valid_products = [Configuration({"A": True})]
 
     run(
         model,
@@ -1650,31 +1209,35 @@ def test_relationships_mandatory_or() -> None:
         ["A", "B", "F", "C", "D", "G"],
         ["A", "B", "F", "D", "G"],
     ]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("C", []): True,
-                Feature("F", []): True,
+                "A": True,
+                "B": True,
+                "C": True,
+                "F": True,
             }
         ),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("C", []): True,
-                Feature("D", []): True,
-                Feature("E", []): True,
-                Feature("F", []): True,
-                Feature("G", []): True,
+                "A": True,
+                "B": True,
+                "C": True,
+                "D": True,
+                "E": True,
+                "F": True,
+                "G": True,
             }
         ),
     ]
     expected_non_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         )
     ]
 
@@ -1713,15 +1276,19 @@ def test_relationships_mandatory_requires() -> None:
     expected_false_optional_features = None
     expected_products_number = 1
     expected_products = [["A", "B", "C"]]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         )
     ]
     expected_non_valid_products = [
-        Configuration({Feature("A", []): True}),
-        Configuration({Feature("A", []): True, Feature("B", []): True}),
+        Configuration({"A": True}),
+        Configuration({"A": True, "B": True}),
     ]
 
     run(
@@ -1759,14 +1326,18 @@ def test_relationships_optional() -> None:
     expected_false_optional_features = None
     expected_products_number = 2
     expected_products = [["A"], ["A", "B"]]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("B", []): True}),
-        Configuration({Feature("A", []): True}),
+        Configuration({"A": True, "B": True}),
+        Configuration({"A": True}),
     ]
     expected_non_valid_products = [
-        Configuration({Feature("B", []): True}),
-        Configuration({Feature("A", []): True, Feature("H", []): True}),
+        Configuration({"B": True}),
+        Configuration({"A": True, "H": True}),
     ]  # TODO: Fix products with non-existent features being calculated as valid
 
     run(
@@ -1826,29 +1397,33 @@ def test_relationships_optional_alternative() -> None:
         ["A", "D", "G"],
         ["A", "B", "F", "C"],
     ]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("C", []): True}),
+        Configuration({"A": True, "C": True}),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("D", []): True,
-                Feature("F", []): True,
-                Feature("G", []): True,
+                "A": True,
+                "B": True,
+                "D": True,
+                "F": True,
+                "G": True,
             }
         ),
     ]
     expected_non_valid_products = [
-        Configuration({Feature("A", []): True}),
+        Configuration({"A": True}),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("D", []): True,
-                Feature("E", []): True,
-                Feature("F", []): True,
-                Feature("G", []): True,
+                "A": True,
+                "B": True,
+                "D": True,
+                "E": True,
+                "F": True,
+                "G": True,
             }
         ),
     ]
@@ -1919,22 +1494,26 @@ def test_relationships_optional_or() -> None:
         ["A", "B", "E", "F", "C", "D", "G"],
         ["A", "D"],
     ]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("C", []): True}),
+        Configuration({"A": True, "C": True}),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("C", []): True,
-                Feature("D", []): True,
-                Feature("E", []): True,
-                Feature("F", []): True,
-                Feature("G", []): True,
+                "A": True,
+                "B": True,
+                "C": True,
+                "D": True,
+                "E": True,
+                "F": True,
+                "G": True,
             }
         ),
     ]
-    expected_non_valid_products = [Configuration({Feature("A", []): True})]
+    expected_non_valid_products = [Configuration({"A": True})]
 
     run(
         model,
@@ -1971,14 +1550,18 @@ def test_relationships_or() -> None:
     expected_false_optional_features = None
     expected_products_number = 3
     expected_products = [["A", "B"], ["A", "B", "C"], ["A", "C"]]
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("B", []): True}),
+        Configuration({"A": True, "B": True}),
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         ),
     ]
-    expected_non_valid_products = [Configuration({Feature("A", []): True})]
+    expected_non_valid_products = [Configuration({"A": True})]
 
     run(
         model,
@@ -2072,35 +1655,40 @@ def test_relationships_or_alternative() -> None:
         ["A", "B", "G", "E", "H"],
         ["A", "B", "G", "D", "E", "H"],
     ]
+    #This is a tranlation of the expected products to Configuration objects
+    expected_products = [
+        Configuration({feature: True for feature in string_list})
+            for string_list in expected_products
+    ]
     expected_valid = True
     expected_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("C", []): True, Feature("D", []): True}
+            {"A": True, "C": True, "D": True}
         ),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("D", []): True,
-                Feature("E", []): True,
-                Feature("F", []): True,
-                Feature("G", []): True,
-                Feature("H", []): True,
+                "A": True,
+                "B": True,
+                "D": True,
+                "E": True,
+                "F": True,
+                "G": True,
+                "H": True,
             }
         ),
     ]
     expected_non_valid_products = [
-        Configuration({Feature("A", []): True, Feature("C", []): True}),
+        Configuration({"A": True, "C": True}),
         Configuration(
             {
-                Feature("A", []): True,
-                Feature("B", []): True,
-                Feature("D", []): True,
-                Feature("E", []): True,
-                Feature("F", []): True,
-                Feature("G", []): True,
-                Feature("H", []): True,
-                Feature("I", []): True,
+                "A": True,
+                "B": True,
+                "D": True,
+                "E": True,
+                "F": True,
+                "G": True,
+                "H": True,
+                "I": True,
             }
         ),
     ]
@@ -2142,12 +1730,12 @@ def test_relationships_or_excludes() -> None:
     expected_products = None
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True, Feature("B", []): True})
+        Configuration({"A": True, "B": True})
     ]
     expected_non_valid_products = [
-        Configuration({Feature("A", []): True}),
+        Configuration({"A": True}),
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         ),
     ]
 
@@ -2185,17 +1773,20 @@ def test_relationships_or_requires() -> None:
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = 2
-    expected_products = [["A", "B", "C"], ["A", "C"]]
+    expected_products = [
+        Configuration( {"A": True, "B": True, "C": True}), 
+        Configuration({"A": True, "C": True},)
+                      ]
     expected_valid = True
     expected_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("C", []): True},
+            {"A": True, "C": True},
         ),
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         ),
     ]
-    expected_non_valid_products = [Configuration({Feature("A", []): True})]
+    expected_non_valid_products = [Configuration({"A": True})]
 
     run(
         model,
@@ -2231,12 +1822,14 @@ def test_relationships_requires() -> None:
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = 3
-    expected_products = [["A"], ["A", "C"], ["A", "B", "C"]]
+    expected_products = [Configuration({"A":True}), 
+                         Configuration({"A":True, "C":True}), 
+                         Configuration({"A":True, "B":True, "C":True})]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True}),
+        Configuration({"A": True}),
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         ),
     ]
     expected_non_valid_products = None
@@ -2275,15 +1868,15 @@ def test_relationships_requires_excludes() -> None:
     expected_error_diagnosis = None
     expected_false_optional_features = None
     expected_products_number = 2
-    expected_products = [["A"], ["A", "C"]]
+    expected_products = [Configuration({"A": True}), Configuration({"A": True, "C":True})]
     expected_valid = True
     expected_valid_products = [
-        Configuration({Feature("A", []): True}),
-        Configuration({Feature("A", []): True, Feature("C", []): True}),
+        Configuration({"A": True}),
+        Configuration({"A": True, "C": True}),
     ]
     expected_non_valid_products = [
         Configuration(
-            {Feature("A", []): True, Feature("B", []): True, Feature("C", []): True}
+            {"A": True, "B": True, "C": True}
         )
     ]
 

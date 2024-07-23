@@ -7,7 +7,7 @@ from flamapy.metamodels.pysat_metamodel.models import PySATModel
 from flamapy.metamodels.pysat_metamodel import operations as sat_operations
 
 
-def metric_method(func: Callable) -> Callable:
+def metric_method(func: Callable[..., Any]) -> Callable[..., Any]:
     """Decorator to mark a method as a metric method.
     It has the value of the measure, it can also have a size and a ratio.
     Example:
@@ -61,7 +61,8 @@ class PySATMetrics(Metrics):
             raise FlamaException('Model not initialized.')
         name = "Satisfiable"
         _satisfiable = sat_operations.PySATSatisfiable().execute(self.model).get_result()
-        result = self.construct_result(name=name, doc=self.satisfiable.__doc__, result=_satisfiable)
+        result = self.construct_result(name=name, 
+                                       doc=self.satisfiable.__doc__, result=_satisfiable)
         return result
 
     @metric_method

@@ -201,8 +201,8 @@ def extract_variables(cnf_formula: str) -> list[str]:
     if ')' in clauses[len(clauses) - 1]:
         clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]
 
-    for clause in clauses:
-        tokens = flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils.split(' ')
+    for _clause in clauses: 
+        tokens = flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils.split(' ')  # type: ignore[name-defined] # pylint: disable=undefined-variable  # noqa: F821, E501
         tokens = list(filter(lambda t: t != cnf_notation.value[CNFLogicConnective.OR], tokens))
         for feature in tokens:
             if feature == cnf_notation.value[CNFLogicConnective.NOT]:
