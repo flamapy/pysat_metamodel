@@ -55,4 +55,4 @@ jobs:
           pip install pytest==5.4.3
       - name: Running test
         run: |
-          python -m pytest tests/unit_tests/diagnosis_test.py::test_fastdiag_with_configuration
+          python -m pytest

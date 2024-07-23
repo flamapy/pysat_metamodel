@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 
 from flamapy.metamodels.fm_metamodel.models.feature_model import (
     FeatureModel,
@@ -36,7 +36,6 @@ class FmToDiagPysat(FmToPysat):
     #    for clause in clauses:
     #        self.destination_model.add_clause(clause)
     #    self.destination_model.add_clause_to_map(str(relation), clauses)
-
     def add_relation(self, relation: Relation) -> None:
         if relation.is_mandatory():
             clauses = self._add_mandatory_relation(relation)
@@ -50,7 +49,7 @@ class FmToDiagPysat(FmToPysat):
             clauses = self._add_constraint_relation(relation)
         self._store_constraint_clauses(clauses)
         self.destination_model.add_clause_to_map(str(relation), clauses)
-    
+
     def add_constraint(self, ctc: Constraint) -> None:
         def get_term_variable(term: Any) -> int:
             negated = False
