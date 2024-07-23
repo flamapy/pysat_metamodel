@@ -32,11 +32,25 @@ class FmToDiagPysat(FmToPysat):
         self.destination_model.add_clause([var])
         self.destination_model.add_clause_to_map(str(feature), [[var]])
 
-    def _store_constraint_relation(self, relation: Relation, clauses: List[List[int]]) -> None:
-        for clause in clauses:
-            self.destination_model.add_clause(clause)
-        self.destination_model.add_clause_to_map(str(relation), clauses)
+    #def _store_constraint_relation(self, relation: Relation, clauses: List[List[int]]) -> None:
+    #    for clause in clauses:
+    #        self.destination_model.add_clause(clause)
+    #    self.destination_model.add_clause_to_map(str(relation), clauses)
 
+    def add_relation(self, relation: Relation) -> None:
+        if relation.is_mandatory():
+            clauses = self._add_mandatory_relation(relation)
+        elif relation.is_optional():
+            clauses = self._add_optional_relation(relation)
+        elif relation.is_or():
+            clauses = self._add_or_relation(relation)
+        elif relation.is_alternative():
+            clauses = self._add_alternative_relation(relation)
+        else:
+            clauses = self._add_constraint_relation(relation)
+        self._store_constraint_clauses(clauses)
+        self.destination_model.add_clause_to_map(str(relation), clauses)
+    
     def add_constraint(self, ctc: Constraint) -> None:
         def get_term_variable(term: Any) -> int:
             negated = False

@@ -183,10 +183,10 @@ class DiagnosisModel(PySATModel):
 
             if value:
                 desc = f'{feat.name} = true'
-                clause = [self.variables[feat[0].name], -1 * id_assumption]
+                clause = [self.variables[feat.name], -1 * id_assumption]
             else:
                 desc = f'{feat.name} = false'
-                clause = [-1 * self.variables[feat[0].name], -1 * id_assumption]
+                clause = [-1 * self.variables[feat.name], -1 * id_assumption]
 
             assumption.append(id_assumption)
             self.set_kb.append(clause)
