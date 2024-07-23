@@ -12,8 +12,6 @@ def test_fastdiag_all():
     Identify all diagnoses
     """
     feature_model = FeatureIDEReader("./tests/resources/smartwatch_inconsistent.fide").transform()
-    print("numer of feats " + str(len(feature_model.get_features())))
-    print(feature_model)
     model = FmToDiagPysat(feature_model).transform()
 
     hsdag_fastdiag = PySATDiagnosis()
@@ -77,7 +75,6 @@ def test_quickxplain_all():
 def test_quickxplain_one():
     feature_model = FeatureIDEReader("./tests/resources/smartwatch_inconsistent.fide").transform()
     model = FmToDiagPysat(feature_model).transform()
-
     hsdag_quickxplain = PySATConflict()
     hsdag_quickxplain.max_conflicts = 1
     hsdag_quickxplain.execute(model)
@@ -108,11 +105,16 @@ def test_fastdiag_with_configuration():
     feature_model = FeatureIDEReader("./tests/resources/smartwatch_consistent.fide").transform()
     model = FmToDiagPysat(feature_model).transform()
     configuration = ConfigurationBasicReader("./tests/resources/smartwatch_nonvalid.csvconf").transform()
-    
+    print( "kb:"+ str(model.get_kb()))
+
     hsdag_fastdiag = PySATDiagnosis()
     hsdag_fastdiag.set_configuration(configuration)
 
     hsdag_fastdiag.execute(model)
+    print(feature_model)
+    print(hsdag_fastdiag.configuration)
+    print(model.constraint_map)
+    print(model.set_c)
     result = hsdag_fastdiag.get_result()
 
     assert result == ['Diagnoses: [E-ink = true],[Analog = true]',

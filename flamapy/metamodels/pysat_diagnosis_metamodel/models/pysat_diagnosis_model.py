@@ -177,15 +177,15 @@ class DiagnosisModel(PySATModel):
             if feat not in self.variables.keys():
                 raise KeyError(f'Feature {feat} is not in the model.')
 
-        for feat in configuration.elements.items():
+        for feat, value in configuration.elements.items():
             desc = ''
             clause = []
 
-            if feat[1]:
-                desc = f'{feat[0].name} = true'
+            if value:
+                desc = f'{feat.name} = true'
                 clause = [self.variables[feat[0].name], -1 * id_assumption]
-            elif not feat[1]:
-                desc = f'{feat[0].name} = false'
+            else:
+                desc = f'{feat.name} = false'
                 clause = [-1 * self.variables[feat[0].name], -1 * id_assumption]
 
             assumption.append(id_assumption)
