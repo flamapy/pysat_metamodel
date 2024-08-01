@@ -29,10 +29,18 @@ class PySATMetrics(Metrics):
         super().__init__()
         self.model: Optional[VariabilityModel] = None
         self.result: list[dict[str, Any]] = []
-        self.model_type_extension = "pysat"
+        self._model_type_extension = "pysat"
         self._features: dict[int, str] = {}
         self._common_features: list[Any] = []
         self._dead_features: list[Any] = []
+
+    @property
+    def model_type_extension(self) -> str:
+        return self._model_type_extension
+    
+    @model_type_extension.setter
+    def model_type_extension(self, ext: str) -> None:
+        self._model_type_extension = ext
 
     def get_result(self) -> list[dict[str, Any]]:
         return self.result
