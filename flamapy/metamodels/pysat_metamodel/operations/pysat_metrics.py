@@ -130,7 +130,7 @@ class PySATMetrics(Metrics):
                     seen_once.add(feature)
 
         # Step 3: Find features that are in seen_once but not in seen_multiple
-        _unique_features = seen_once - seen_multiple
+        _unique_features = list(seen_once - seen_multiple)
 
         result = self.construct_result(name=name,
                                        doc=self.unique_features.__doc__,
