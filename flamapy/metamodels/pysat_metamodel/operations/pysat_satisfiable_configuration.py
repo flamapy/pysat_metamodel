@@ -53,7 +53,7 @@ class PySATSatisfiableConfiguration(SatisfiableConfiguration):
             assumptions = []
             for feature in sat_model.features.values():
 
-                if feature in self.configuration.elements.keys():
+                if self.configuration.elements.get(feature, False):
                     assumptions.append(sat_model.variables[feature])
                 else:
                     assumptions.append(-sat_model.variables[feature])
