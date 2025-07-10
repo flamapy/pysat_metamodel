@@ -1,6 +1,5 @@
 
 from flamapy.metamodels.configuration_metamodel.models import Configuration
-from flamapy.metamodels.fm_metamodel.models import Feature
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.metamodels.pysat_metamodel.operations.pysat_core_features import (
     PySATCoreFeatures,

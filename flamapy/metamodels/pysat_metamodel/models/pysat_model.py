@@ -26,5 +26,7 @@ class PySATModel(VariabilityModel):
     def get_all_clauses(self) -> CNF:
         return self._cnf
     
-    def __eq__(self, other: 'PySATModel') -> bool:
+    def __eq__(self, other: object) -> bool:
+        if other is None or not isinstance(other, PySATModel):
+            return False
         return set(self.get_all_clauses().clauses) == set(other.get_all_clauses().clauses)
