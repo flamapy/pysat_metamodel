@@ -149,9 +149,9 @@ def test_fastdiag_with_test_case():
 
     print(result)
     assert result == ['Diagnoses: [(4) IMPLIES[Smartwatch][Analog]],'
-                      '[(alternative) Screen[1,1]Analog High Resolution E-ink ]',
+                      '[(alternative) Screen[1,1]Analog High Resolution E-ink]',
                       'Conflict: [(4) IMPLIES[Smartwatch][Analog], '
-                      '(alternative) Screen[1,1]Analog High Resolution E-ink ]']
+                      '(alternative) Screen[1,1]Analog High Resolution E-ink]']
 
 
 def test_quickxplain_with_testcase():
@@ -167,9 +167,9 @@ def test_quickxplain_with_testcase():
 
     print(result)
     assert result == ['Conflict: [(4) IMPLIES[Smartwatch][Analog], '
-                      '(alternative) Screen[1,1]Analog High Resolution E-ink ]',
+                      '(alternative) Screen[1,1]Analog High Resolution E-ink]',
                       'Diagnoses: [(4) IMPLIES[Smartwatch][Analog]],'
-                      '[(alternative) Screen[1,1]Analog High Resolution E-ink ]']
+                      '[(alternative) Screen[1,1]Analog High Resolution E-ink]']
 
 
 if __name__ == '__main__':
