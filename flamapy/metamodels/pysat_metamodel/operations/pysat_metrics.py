@@ -54,10 +54,10 @@ class PySATMetrics(Metrics):
         self._dead_features = sat_operations.PySATDeadFeatures().execute(self.model).get_result()
         # Get all methods that are marked with the metric_method decorator
         metric_methods = [getattr(self, method_name) for method_name in dir(self)
-                          if callable(getattr(self, method_name)) and 
+                          if callable(getattr(self, method_name)) and
                           hasattr(getattr(self, method_name), '_is_metric_method')]
         if self.filter is not None:
-            metric_methods = [method for method in metric_methods 
+            metric_methods = [method for method in metric_methods
                               if method.__name__ in self.filter]
 
         return [method() for method in metric_methods]
@@ -69,7 +69,7 @@ class PySATMetrics(Metrics):
             raise FlamaException('Model not initialized.')
         name = "Satisfiable"
         _satisfiable = sat_operations.PySATSatisfiable().execute(self.model).get_result()
-        result = self.construct_result(name=name, 
+        result = self.construct_result(name=name,
                                        doc=self.satisfiable.__doc__, result=_satisfiable)
         return result
 
@@ -89,8 +89,8 @@ class PySATMetrics(Metrics):
     def variant_features(self) -> dict[str, Any]:
         """Features that do not appear in all the configurations."""
         name = "Variant features"
-        _variant_features = [f for f in self._features.values() 
-                             if f not in self._common_features and 
+        _variant_features = [f for f in self._features.values()
+                             if f not in self._common_features and
                              f not in self._dead_features]
         result = self.construct_result(name=name,
                                        doc=self.variant_features.__doc__,
@@ -141,7 +141,7 @@ class PySATMetrics(Metrics):
 
     @metric_method
     def false_optional_features(self) -> dict[str, Any]:
-        """Features defined as optionals the selection of their parents make the feature itself 
+        """Features defined as optionals the selection of their parents make the feature itself
         selected as well."""
         if self.model is None:
             raise FlamaException('Model not initialized.')
@@ -156,7 +156,7 @@ class PySATMetrics(Metrics):
 
     @metric_method
     def configurations(self) -> dict[str, Any]:
-        """Number of configurations represented by the feature model. 
+        """Number of configurations represented by the feature model.
 
            If <= is shown, the number represents an upper estimation bound.
         """

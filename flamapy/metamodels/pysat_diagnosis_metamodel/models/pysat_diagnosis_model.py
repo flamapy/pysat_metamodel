@@ -90,17 +90,16 @@ class DiagnosisModel(PySATModel):
             # C = configuration
             # B = {f0 = true} + CF (i.e., = PySATModel)
             self._prepare_assumptions(configuration=configuration)
+        elif test_case is None:
+            # Diagnosis the feature model
+            # C = CF (i.e., = PySATModel - {f0 = true})
+            # B = {f0 = true}
+            self._prepare_assumptions()
         else:
-            if test_case is None:
-                # Diagnosis the feature model
-                # C = CF (i.e., = PySATModel - {f0 = true})
-                # B = {f0 = true}
-                self._prepare_assumptions()
-            else:
-                # Diagnosis the error
-                # C = CF (i.e., = PySATModel - {f0 = true})
-                # B = {f0 = true} + test_case
-                self._prepare_assumptions(test_case=test_case)
+            # Diagnosis the error
+            # C = CF (i.e., = PySATModel - {f0 = true})
+            # B = {f0 = true} + test_case
+            self._prepare_assumptions(test_case=test_case)
 
     def prepare_redundancy_detection_task(self) -> None:
         """
@@ -136,13 +135,12 @@ class DiagnosisModel(PySATModel):
         if configuration is not None:
             self.set_b = assumption[:start_id_configuration]
             self.set_c = assumption[start_id_configuration:]
+        elif test_case is not None:
+            self.set_b = [assumption[0], *assumption[start_id_test_case:]]
+            self.set_c = assumption[1:start_id_test_case]
         else:
-            if test_case is not None:
-                self.set_b = [assumption[0]] + assumption[start_id_test_case:]
-                self.set_c = assumption[1:start_id_test_case]
-            else:
-                self.set_b = [assumption[0]]
-                self.set_c = assumption[1:]
+            self.set_b = [assumption[0]]
+            self.set_c = assumption[1:]
 
     def _prepare_assumptions_for_kb(self, assumption: List[int], id_assumption: int) -> int:
         cstr_map = self.constraint_map
@@ -167,7 +165,7 @@ class DiagnosisModel(PySATModel):
 
     def _convert_keys_to_features(self, configuration: 'Configuration') -> 'Configuration':
         new_elements = {Feature(key) if isinstance(key, str)
-                        else key: value for key, value 
+                        else key: value for key, value
                         in configuration.elements.items()}
         return Configuration(new_elements)
 

@@ -11,14 +11,14 @@ from .pysat_metrics import PySATMetrics
 
 
 __all__ = [
-    'PySATSatisfiable',
-    'PySATSatisfiableConfiguration',
+    'PySATCommonality',
     'PySATConfigurations',
     'PySATConfigurationsNumber',
-    'PySATCommonality',
-    'PySATFilter',
     'PySATCoreFeatures',
     'PySATDeadFeatures',
     'PySATFalseOptionalFeatures',
+    'PySATFilter',
     'PySATMetrics',
+    'PySATSatisfiable',
+    'PySATSatisfiableConfiguration',
 ]

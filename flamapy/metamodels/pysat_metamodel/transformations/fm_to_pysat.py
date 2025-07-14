@@ -144,9 +144,9 @@ class FmToPysat(ModelToModel):
             clauses = self._add_mandatory_relation(relation)
         elif relation.is_optional():
             clauses = self._add_optional_relation(relation)
-        elif relation.is_or():  
+        elif relation.is_or():
             clauses = self._add_or_relation(relation)
-        elif relation.is_alternative():  
+        elif relation.is_alternative():
             clauses = self._add_alternative_relation(relation)
         else:
             clauses = self._add_constraint_relation(relation)

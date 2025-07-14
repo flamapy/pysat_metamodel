@@ -37,17 +37,17 @@ class PySATSampling(Sampling):
 
     def execute(self, model: VariabilityModel) -> 'PySATSampling':
         sat_model = cast(PySATModel, model)
-        self.result = sample(self.solver, 
-                             sat_model, 
-                             self.sample_size, 
-                             self.with_replacement, 
+        self.result = sample(self.solver,
+                             sat_model,
+                             self.sample_size,
+                             self.with_replacement,
                              self.partial_configuration)
         return self
 
 
 def sample(solver: Solver,
-           model: PySATModel, 
-           sample_size: int, 
+           model: PySATModel,
+           sample_size: int,
            with_replacement: bool,  # pylint: disable=unused-argument
            partial_configuration: Optional[Configuration]  # pylint: disable=unused-argument
            ) -> list[Configuration]:

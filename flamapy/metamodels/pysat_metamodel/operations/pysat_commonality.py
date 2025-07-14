@@ -24,7 +24,7 @@ class PySATCommonality(Commonality):
         pysat_products_op.execute(model)
         products = pysat_products_op.get_result()
 
-        feature = list(self.configuration.elements.keys())[0]
+        feature = next(iter(self.configuration.elements.keys()))
 
         count = 0
         for product in products:

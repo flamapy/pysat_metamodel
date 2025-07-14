@@ -195,14 +195,16 @@ def extract_variables(cnf_formula: str) -> list[str]:
 
     # Remove initial and final parenthesis
     and_symbol_pattern = ' ' + cnf_notation.value[CNFLogicConnective.AND] + ' '
-    clauses = list(map(lambda c: c[1:len(c) - 1], cnf_formula.split(and_symbol_pattern)))
-
+    clauses = [
+        clause[1:-1]
+        for clause in cnf_formula.split(and_symbol_pattern)
+    ]
     # Remove final parenthesis of last clause (because of the possible end of line: '\n')
     if ')' in clauses[len(clauses) - 1]:
         clauses[len(clauses) - 1] = clauses[len(clauses) - 1][:-1]
 
-    for _clause in clauses: 
-        tokens = flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils.split(' ')  # type: ignore[name-defined] # pylint: disable=undefined-variable  # noqa: F821, E501
+    for _clause in clauses:
+        tokens = flamapy.metamodels.pysat_metamodel.operations.diagnosis.utils.split(' ')  # type: ignore[name-defined] # pylint: disable=undefined-variable  # noqa: F821
         tokens = list(filter(lambda t: t != cnf_notation.value[CNFLogicConnective.OR], tokens))
         for feature in tokens:
             if feature == cnf_notation.value[CNFLogicConnective.NOT]:

@@ -34,7 +34,7 @@ class PySATFalseOptionalFeatures(FalseOptionalFeatures):
         try:
             feature_model = cast(FeatureModel, sat_model.original_model)
         except FlamaException:
-            LOGGER.exception("The transformation didn't attach the source model, " 
+            LOGGER.exception("The transformation didn't attach the source model, "
                              "which is required for this operation.")
 
         real_optional_features = [f for f in feature_model.get_features()

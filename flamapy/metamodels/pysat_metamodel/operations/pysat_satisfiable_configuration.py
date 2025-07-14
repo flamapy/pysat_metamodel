@@ -38,12 +38,12 @@ class PySATSatisfiableConfiguration(SatisfiableConfiguration):
                 else:
                     assumptions.append(-sat_model.variables[feature])
         else:
-            missing_features = [feature for feature in self.configuration.elements.keys() 
+            missing_features = [feature for feature in self.configuration.elements.keys()
                                 if feature not in sat_model.variables.keys()]
 
             if missing_features:
                 print("The features that are missing are:", list(missing_features))
-                print("The feature model contains the following features:", 
+                print("The feature model contains the following features:",
                       list(sat_model.variables.keys()))
                 self.result = False
                 return self

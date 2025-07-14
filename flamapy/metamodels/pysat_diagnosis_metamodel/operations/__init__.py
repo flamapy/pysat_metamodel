@@ -7,6 +7,6 @@ from .pysat_diagnosis import PySATDiagnosis
 
 __all__ = [
     'PySATAbstractIdentifier',
-    'PySATDiagnosis',
-    'PySATConflict'
+    'PySATConflict',
+    'PySATDiagnosis'
 ]
