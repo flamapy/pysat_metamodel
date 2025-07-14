@@ -12,6 +12,7 @@ from flamapy.metamodels.fm_metamodel.models.feature_model import (
 from flamapy.metamodels.fm_metamodel.transformations.refactorings import (
     FeatureCardinalityRefactoring
 )
+from flamapy.metamodels.fm_metamodel.transformations import FlatFM
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
@@ -164,20 +165,24 @@ class FmToPysat(ModelToModel):
             self.destination_model.add_clause(clause_variables)
 
     def transform(self) -> PySATModel:
+        # FlatFM if the feature model contains imports
+        feature_model = self.source_model
+        if feature_model.imports:
+            feature_model = FlatFM(feature_model).transform()
         # Apply the feature cardinality refactoring to the source model
-        if FeatureCardinalityRefactoring(self.source_model).is_applicable():
-            feature_model = copy.deepcopy(self.source_model)
-            self.source_model = FeatureCardinalityRefactoring(feature_model).transform()
+        if FeatureCardinalityRefactoring(feature_model).is_applicable():
+            feature_model = copy.deepcopy(feature_model)
+            feature_model = FeatureCardinalityRefactoring(feature_model).transform()
 
-        for feature in self.source_model.get_features():
+        for feature in feature_model.get_features():
             self.add_feature(feature)
 
-        self.add_root(self.source_model.root)
+        self.add_root(feature_model.root)
 
-        for relation in self.source_model.get_relations():
+        for relation in feature_model.get_relations():
             self.add_relation(relation)
 
-        for constraint in self.source_model.get_logical_constraints():
+        for constraint in feature_model.get_logical_constraints():
             self.add_constraint(constraint)
 
         return self.destination_model
