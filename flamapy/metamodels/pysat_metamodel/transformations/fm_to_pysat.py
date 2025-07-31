@@ -173,7 +173,8 @@ class FmToPysat(ModelToModel):
         if FeatureCardinalityRefactoring(feature_model).is_applicable():
             feature_model = copy.deepcopy(feature_model)
             feature_model = FeatureCardinalityRefactoring(feature_model).transform()
-
+        self.source_model = feature_model
+        
         for feature in feature_model.get_features():
             self.add_feature(feature)
 
