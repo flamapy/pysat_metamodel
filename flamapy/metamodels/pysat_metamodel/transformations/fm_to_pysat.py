@@ -170,9 +170,9 @@ class FmToPysat(ModelToModel):
         if feature_model.imports:
             feature_model = FlatFM(feature_model).transform()
         # Apply the feature cardinality refactoring to the source model
-        if FeatureCardinalityRefactoring(feature_model).is_applicable():
-            feature_model = copy.deepcopy(feature_model)
-            feature_model = FeatureCardinalityRefactoring(feature_model).transform()
+        #if FeatureCardinalityRefactoring(feature_model).is_applicable():
+        #    feature_model = copy.deepcopy(feature_model)
+        #    feature_model = FeatureCardinalityRefactoring(feature_model).transform()
         self.source_model = feature_model
         
         for feature in feature_model.get_features():
