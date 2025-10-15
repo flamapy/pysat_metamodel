@@ -1,5 +1,4 @@
 import itertools
-import copy
 from typing import Any, List
 
 from flamapy.core.transformations import ModelToModel
@@ -8,9 +7,6 @@ from flamapy.metamodels.fm_metamodel.models.feature_model import (
     Constraint,
     Feature,
     Relation,
-)
-from flamapy.metamodels.fm_metamodel.transformations.refactorings import (
-    FeatureCardinalityRefactoring
 )
 from flamapy.metamodels.fm_metamodel.transformations import FlatFM
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
@@ -169,10 +165,6 @@ class FmToPysat(ModelToModel):
         feature_model = self.source_model
         if feature_model.imports:
             feature_model = FlatFM(feature_model).transform()
-        # Apply the feature cardinality refactoring to the source model
-        #if FeatureCardinalityRefactoring(feature_model).is_applicable():
-        #    feature_model = copy.deepcopy(feature_model)
-        #    feature_model = FeatureCardinalityRefactoring(feature_model).transform()
         self.source_model = feature_model
         
         for feature in feature_model.get_features():
