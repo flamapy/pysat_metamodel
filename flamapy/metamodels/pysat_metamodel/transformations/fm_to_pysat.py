@@ -166,7 +166,7 @@ class FmToPysat(ModelToModel):
         if feature_model.imports:
             feature_model = FlatFM(feature_model).transform()
         self.source_model = feature_model
-        
+
         for feature in feature_model.get_features():
             self.add_feature(feature)
 
