@@ -8,7 +8,6 @@ from flamapy.metamodels.fm_metamodel.models.feature_model import (
     Feature,
     Relation,
 )
-from flamapy.metamodels.fm_metamodel.transformations import FlatFM
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
@@ -26,8 +25,6 @@ class FmToPysat(ModelToModel):
         self.counter = 1
         self.destination_model = PySATModel()
         self.destination_model.original_model = source_model
-        # self.r_cnf = self.destination_model.r_cnf
-        # self.ctc_cnf = self.destination_model.ctc_cnf
 
     def add_feature(self, feature: Feature) -> None:
         if feature.name not in self.destination_model.variables:
@@ -36,7 +33,6 @@ class FmToPysat(ModelToModel):
             self.counter += 1
 
     def add_root(self, feature: Feature) -> None:
-        # self.r_cnf.append([self.destination_model.variables.get(feature.name)])
         value = self.destination_model.get_variable(feature.name)
         self.destination_model.add_clause([value])
 
@@ -161,21 +157,15 @@ class FmToPysat(ModelToModel):
             self.destination_model.add_clause(clause_variables)
 
     def transform(self) -> PySATModel:
-        # FlatFM if the feature model contains imports
-        feature_model = self.source_model
-        if feature_model.imports:
-            feature_model = FlatFM(feature_model).transform()
-        self.source_model = feature_model
-
-        for feature in feature_model.get_features():
+        for feature in self.source_model.get_features():
             self.add_feature(feature)
 
-        self.add_root(feature_model.root)
+        self.add_root(self.source_model.root)
 
-        for relation in feature_model.get_relations():
+        for relation in self.source_model.get_relations():
             self.add_relation(relation)
 
-        for constraint in feature_model.get_logical_constraints():
+        for constraint in self.source_model.get_logical_constraints():
             self.add_constraint(constraint)
 
         return self.destination_model
