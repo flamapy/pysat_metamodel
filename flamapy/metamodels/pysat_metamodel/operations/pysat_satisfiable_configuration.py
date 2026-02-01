@@ -1,3 +1,4 @@
+import logging
 from typing import cast
 
 from pysat.solvers import Solver
@@ -6,6 +7,8 @@ from flamapy.core.models import VariabilityModel
 from flamapy.core.operations import SatisfiableConfiguration
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+
+logger = logging.getLogger(__name__)
 
 
 class PySATSatisfiableConfiguration(SatisfiableConfiguration):
@@ -42,9 +45,9 @@ class PySATSatisfiableConfiguration(SatisfiableConfiguration):
                                 if feature not in sat_model.variables.keys()]
 
             if missing_features:
-                print("The features that are missing are:", list(missing_features))
-                print("The feature model contains the following features:",
-                      list(sat_model.variables.keys()))
+                logger.warning("The features that are missing are: %s", list(missing_features))
+                logger.warning("The feature model contains the following features: %s",
+                               list(sat_model.variables.keys()))
                 self.result = False
                 return self
 
