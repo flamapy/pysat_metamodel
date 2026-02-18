@@ -1,3 +1,36 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flamapy-sat"
+version = "2.1.0.dev1"
+description = "flamapy-sat is a plugin to flamapy module"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+authors = [{ name = "Flamapy", email = "flamapy@us.es" }]
+requires-python = ">=3.9"
+dependencies = [
+    "flamapy-fw~=2.1.0.dev1",
+    "flamapy-fm~=2.1.0.dev1",
+    "python-sat~=0.1.7.dev1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-mock",
+    "prospector",
+    "mypy",
+    "coverage",
+]
+
+[project.urls]
+Homepage = "https://github.com/flamapy/pysat_metamodel"
+
+[tool.setuptools.packages.find]
+include = ["flamapy.*"]
+
 [tool.ruff]
 line-length = 100  # Matches max-line-length from pycodestyle
 target-version = "py39"
