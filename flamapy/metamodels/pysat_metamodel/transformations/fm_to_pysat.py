@@ -96,7 +96,7 @@ class FmToPysat(ModelToModel):
 
         # This is a _min to _max relationship
         _min = relation.card_min
-        _max = relation.card_max
+        _max = relation.card_max if relation.card_max != -1 else len(relation.children)
 
         clauses = []
 
