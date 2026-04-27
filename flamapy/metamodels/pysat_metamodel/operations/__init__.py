@@ -4,6 +4,7 @@ from .pysat_configurations import PySATConfigurations
 from .pysat_configurations_number import PySATConfigurationsNumber
 from .pysat_commonality import PySATCommonality
 from .pysat_filter import PySATFilter
+from .pysat_backbone import PySATBackbone
 from .pysat_core_features import PySATCoreFeatures
 from .pysat_dead_features import PySATDeadFeatures
 from .pysat_false_optional_features import PySATFalseOptionalFeatures
@@ -11,6 +12,7 @@ from .pysat_metrics import PySATMetrics
 
 
 __all__ = [
+    'PySATBackbone',
     'PySATCommonality',
     'PySATConfigurations',
     'PySATConfigurationsNumber',
