@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "flamapy-sat"
-version = "2.5.0"
+version = "2.6.0.dev0"
 description = "flamapy-sat is a plugin to flamapy module"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 authors = [{ name = "Flamapy", email = "flamapy@us.es" }]
 requires-python = ">=3.9"
 dependencies = [
-    "flamapy-fw~=2.5.0",
-    "flamapy-fm~=2.5.0",
+    "flamapy-fw~=2.6.0.dev0",
+    "flamapy-fm~=2.6.0.dev0",
     "python-sat~=0.1.7.dev1",
 ]
 
