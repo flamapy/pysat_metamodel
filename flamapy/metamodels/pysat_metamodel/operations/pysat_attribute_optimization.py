@@ -26,16 +26,16 @@ class PySATAttributeOptimization(AttributeOptimization):
         self._result: list[Configuration] = []
         self._optimum: dict[str, float] = {}
 
-    def set_attributes(self, attributes: dict) -> None:
+    def set_attributes(self, attributes: dict[str, OptimizationGoal]) -> None:
         self._attributes = attributes
 
-    def optimize(self) -> list:
+    def optimize(self) -> list[Configuration]:
         return self.get_result()
 
-    def get_result(self) -> list:
+    def get_result(self) -> list[Configuration]:
         return self._result
 
-    def get_optimum(self) -> dict:
+    def get_optimum(self) -> dict[str, float]:
         """The optimal objective value per attribute, e.g. ``{'Cost': 12.0}``."""
         return self._optimum
 
@@ -54,8 +54,12 @@ class PySATAttributeOptimization(AttributeOptimization):
             )
         weights = _feature_weights(cast(FeatureModel, feature_model), attr_name)
         config, optimum = _optimize(sat_model, weights, goal)
-        self._result = [] if config is None else [config]
-        self._optimum = {} if config is None else {attr_name: optimum}
+        if config is None or optimum is None:
+            self._result = []
+            self._optimum = {}
+        else:
+            self._result = [config]
+            self._optimum = {attr_name: optimum}
         return self
 
 
@@ -97,7 +101,7 @@ def _optimize(sat_model: PySATModel,
         variable = sat_model.variables.get(name)
         if variable is None:
             continue
-        int_weight = int(round(weight * scale))
+        int_weight = round(weight * scale)
         if int_weight > 0:
             # Cost paid when the feature is selected -> pushes it out to reduce the objective.
             wcnf.append([-variable], weight=int_weight)

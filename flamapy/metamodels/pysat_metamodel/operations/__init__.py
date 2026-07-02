@@ -26,7 +26,7 @@ __all__ = [
     'PySATFilter',
     'PySATMetrics',
     'PySATMinimumConfiguration',
-    'PySATTWiseSampling',
     'PySATSatisfiable',
     'PySATSatisfiableConfiguration',
+    'PySATTWiseSampling',
 ]

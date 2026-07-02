@@ -65,12 +65,7 @@ def sample(solver: Solver,
     for clause in model.get_all_clauses():
         solver.add_clause(clause)
 
-    assumptions = []
-    if partial_configuration is not None:
-        for name, value in partial_configuration.elements.items():
-            variable = model.variables.get(name)
-            if variable is not None:
-                assumptions.append(variable if value else -variable)
+    assumptions = _partial_configuration_assumptions(model, partial_configuration)
 
     products = []
     for solutions in solver.enum_models(assumptions=assumptions):
@@ -86,3 +81,16 @@ def sample(solver: Solver,
             return products
     solver.delete()
     return products
+
+
+def _partial_configuration_assumptions(
+    model: PySATModel, partial_configuration: Optional[Configuration]
+) -> list[int]:
+    """SAT assumptions fixing the features decided in a partial configuration."""
+    assumptions: list[int] = []
+    if partial_configuration is not None:
+        for name, value in partial_configuration.elements.items():
+            variable = model.variables.get(name)
+            if variable is not None:
+                assumptions.append(variable if value else -variable)
+    return assumptions

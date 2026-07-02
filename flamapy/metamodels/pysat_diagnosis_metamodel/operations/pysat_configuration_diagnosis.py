@@ -131,17 +131,19 @@ class PySATFeatureExplanation(Operation):
 
     def execute(self, model: VariabilityModel) -> 'PySATFeatureExplanation':
         sat_model = cast(PySATModel, model)
-        clauses, decisions = _clauses_and_decisions(sat_model, self._configuration)
-        variable = sat_model.variables.get(self._feature)
         self._forced_value = None
         self._result = []
+        if self._feature is None:
+            return self
+        clauses, decisions = _clauses_and_decisions(sat_model, self._configuration)
+        variable = sat_model.variables.get(self._feature)
         if variable is None:
             return self
 
         literals = [lit for lit, _, _ in decisions]
         checker = ConsistencyChecker('glucose3', clauses)
-        can_be_true = checker.is_consistent(literals + [variable], [])
-        can_be_false = checker.is_consistent(literals + [-variable], [])
+        can_be_true = checker.is_consistent([*literals, variable], [])
+        can_be_false = checker.is_consistent([*literals, -variable], [])
         if can_be_true and not can_be_false:
             self._forced_value = True
             forbidden = -variable

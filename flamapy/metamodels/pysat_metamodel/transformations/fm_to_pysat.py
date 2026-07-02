@@ -148,10 +148,10 @@ class FmToPysat(ModelToModel):
             clauses = self._add_constraint_relation(relation)
         self._store_constraint_clauses(clauses)
 
-    def _allocate_auxiliary(self, aux_names: list) -> dict:
+    def _allocate_auxiliary(self, aux_names: list[str]) -> dict[str, int]:
         """Assign a fresh SAT variable id to each Tseytin auxiliary name, recording it as
         a non-feature auxiliary variable so it is excluded from feature enumeration."""
-        aux_map = {}
+        aux_map: dict[str, int] = {}
         for name in aux_names:
             var = self.counter
             self.counter += 1
