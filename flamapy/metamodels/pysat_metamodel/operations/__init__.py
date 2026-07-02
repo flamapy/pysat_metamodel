@@ -11,6 +11,7 @@ from .pysat_false_optional_features import PySATFalseOptionalFeatures
 from .pysat_metrics import PySATMetrics
 from .pysat_attribute_optimization import PySATAttributeOptimization
 from .pysat_minimum_configuration import PySATMinimumConfiguration
+from .pysat_twise_sampling import PySATTWiseSampling
 
 
 __all__ = [
@@ -25,6 +26,7 @@ __all__ = [
     'PySATFilter',
     'PySATMetrics',
     'PySATMinimumConfiguration',
+    'PySATTWiseSampling',
     'PySATSatisfiable',
     'PySATSatisfiableConfiguration',
 ]
