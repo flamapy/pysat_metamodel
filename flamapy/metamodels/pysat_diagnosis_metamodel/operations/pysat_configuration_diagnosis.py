@@ -1,0 +1,160 @@
+"""Diagnosis-powered operations for interactive configuration.
+
+These turn the low-level QuickXPlain/FastDiag machinery into configuration-level answers
+that a configurator can surface directly:
+
+- ``PySATConfigurationConflict``: a minimal set of user decisions that together with the
+  model are inconsistent ("these choices clash").
+- ``PySATConfigurationRepair``: a minimal set of decisions to retract to restore
+  consistency ("undo one of these to continue").
+- ``PySATFeatureExplanation``: for a feature that is forced by the current decisions, the
+  minimal set of decisions responsible ("this feature is on because of these choices").
+
+Each consumes a ``PySATModel`` (the feature-model CNF) and a partial ``Configuration``.
+Decisions are returned as ``(feature_name, selected)`` pairs.
+"""
+from typing import Optional, cast
+
+from flamapy.core.models import VariabilityModel
+from flamapy.core.operations import Operation
+from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
+from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
+
+from .diagnosis.checker import ConsistencyChecker
+from .diagnosis.quickxplain import QuickXPlain
+from .diagnosis.fastdiag import FastDiag
+
+
+Decision = tuple[str, bool]
+
+
+def _clauses_and_decisions(
+    model: PySATModel, configuration: Configuration
+) -> tuple[list[list[int]], list[tuple[int, str, bool]]]:
+    clauses = [list(clause) for clause in model.get_all_clauses().clauses]
+    decisions: list[tuple[int, str, bool]] = []
+    for name, value in configuration.elements.items():
+        variable = model.variables.get(name)
+        if variable is None:
+            continue
+        selected = bool(value)
+        decisions.append((variable if selected else -variable, name, selected))
+    return clauses, decisions
+
+
+def _decisions_from_literals(
+    literals: list[int], decisions: list[tuple[int, str, bool]]
+) -> list[Decision]:
+    by_literal = {literal: (name, value) for literal, name, value in decisions}
+    return [by_literal[literal] for literal in literals if literal in by_literal]
+
+
+class PySATConfigurationConflict(Operation):
+    """Minimal subset of the user's decisions that is inconsistent with the model."""
+
+    def __init__(self) -> None:
+        self._configuration: Optional[Configuration] = None
+        self._result: list[Decision] = []
+
+    def set_configuration(self, configuration: Configuration) -> None:
+        self._configuration = configuration
+
+    def get_conflict(self) -> list[Decision]:
+        return self._result
+
+    def get_result(self) -> list[Decision]:
+        return self._result
+
+    def execute(self, model: VariabilityModel) -> 'PySATConfigurationConflict':
+        sat_model = cast(PySATModel, model)
+        clauses, decisions = _clauses_and_decisions(sat_model, self._configuration)
+        checker = ConsistencyChecker('glucose3', clauses)
+        conflict = QuickXPlain(checker).find_conflict([lit for lit, _, _ in decisions], [])
+        checker.delete()
+        self._result = _decisions_from_literals(conflict, decisions)
+        return self
+
+
+class PySATConfigurationRepair(Operation):
+    """Minimal subset of the user's decisions to retract to restore consistency."""
+
+    def __init__(self) -> None:
+        self._configuration: Optional[Configuration] = None
+        self._result: list[Decision] = []
+
+    def set_configuration(self, configuration: Configuration) -> None:
+        self._configuration = configuration
+
+    def get_repair(self) -> list[Decision]:
+        return self._result
+
+    def get_result(self) -> list[Decision]:
+        return self._result
+
+    def execute(self, model: VariabilityModel) -> 'PySATConfigurationRepair':
+        sat_model = cast(PySATModel, model)
+        clauses, decisions = _clauses_and_decisions(sat_model, self._configuration)
+        checker = ConsistencyChecker('glucose3', clauses)
+        diagnosis = FastDiag(checker).find_diagnosis([lit for lit, _, _ in decisions], [])
+        checker.delete()
+        self._result = _decisions_from_literals(diagnosis, decisions)
+        return self
+
+
+class PySATFeatureExplanation(Operation):
+    """Explain why a feature is forced by the current decisions.
+
+    ``get_forced_value()`` is the value the feature is forced to (or ``None`` if it is not
+    forced), and ``get_result()`` is the minimal set of decisions responsible.
+    """
+
+    def __init__(self) -> None:
+        self._configuration: Optional[Configuration] = None
+        self._feature: Optional[str] = None
+        self._forced_value: Optional[bool] = None
+        self._result: list[Decision] = []
+
+    def set_configuration(self, configuration: Configuration) -> None:
+        self._configuration = configuration
+
+    def set_feature(self, feature_name: str) -> None:
+        self._feature = feature_name
+
+    def get_forced_value(self) -> Optional[bool]:
+        return self._forced_value
+
+    def get_explanation(self) -> list[Decision]:
+        return self._result
+
+    def get_result(self) -> list[Decision]:
+        return self._result
+
+    def execute(self, model: VariabilityModel) -> 'PySATFeatureExplanation':
+        sat_model = cast(PySATModel, model)
+        clauses, decisions = _clauses_and_decisions(sat_model, self._configuration)
+        variable = sat_model.variables.get(self._feature)
+        self._forced_value = None
+        self._result = []
+        if variable is None:
+            return self
+
+        literals = [lit for lit, _, _ in decisions]
+        checker = ConsistencyChecker('glucose3', clauses)
+        can_be_true = checker.is_consistent(literals + [variable], [])
+        can_be_false = checker.is_consistent(literals + [-variable], [])
+        if can_be_true and not can_be_false:
+            self._forced_value = True
+            forbidden = -variable
+        elif can_be_false and not can_be_true:
+            self._forced_value = False
+            forbidden = variable
+        else:
+            checker.delete()  # not forced (or already contradictory) -> no explanation
+            return self
+
+        # The minimal decisions that, with the model, entail the forced value are those
+        # inconsistent with the model plus the opposite assignment.
+        explanation = QuickXPlain(checker).find_conflict(literals, [forbidden])
+        checker.delete()
+        self._result = _decisions_from_literals(explanation, decisions)
+        return self
