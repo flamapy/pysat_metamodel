@@ -9,9 +9,12 @@ from .pysat_core_features import PySATCoreFeatures
 from .pysat_dead_features import PySATDeadFeatures
 from .pysat_false_optional_features import PySATFalseOptionalFeatures
 from .pysat_metrics import PySATMetrics
+from .pysat_attribute_optimization import PySATAttributeOptimization
+from .pysat_minimum_configuration import PySATMinimumConfiguration
 
 
 __all__ = [
+    'PySATAttributeOptimization',
     'PySATBackbone',
     'PySATCommonality',
     'PySATConfigurations',
@@ -21,6 +24,7 @@ __all__ = [
     'PySATFalseOptionalFeatures',
     'PySATFilter',
     'PySATMetrics',
+    'PySATMinimumConfiguration',
     'PySATSatisfiable',
     'PySATSatisfiableConfiguration',
 ]
