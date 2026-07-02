@@ -62,7 +62,9 @@ def sample(solver: Solver,
         product: dict[Any, bool] = {}
         for variable in solutions:
             if variable > 0:
-                product[model.features.get(variable)] = True
+                name = model.features.get(variable)
+                if name is not None:  # skip auxiliary (Tseytin) variables
+                    product[name] = True
         products.append(Configuration(product))
         if len(products) == sample_size:
             solver.delete()

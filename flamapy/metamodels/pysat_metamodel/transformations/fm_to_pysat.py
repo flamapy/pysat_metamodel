@@ -20,9 +20,13 @@ class FmToPysat(ModelToModel):
     def get_destination_extension() -> str:
         return 'pysat'
 
-    def __init__(self, source_model: FeatureModel) -> None:
+    def __init__(self, source_model: FeatureModel, cnf_method: str = 'distributive') -> None:
         self.source_model = source_model
         self.counter = 1
+        # 'distributive' (default) or 'tseytin'. Tseytin keeps complex cross-tree
+        # constraints compact at the cost of auxiliary variables; it is a framework-only
+        # opt-in and is not exposed through the facade/CLI.
+        self.cnf_method = cnf_method
         self.destination_model = PySATModel()
         self.destination_model.original_model = source_model
 
@@ -144,14 +148,31 @@ class FmToPysat(ModelToModel):
             clauses = self._add_constraint_relation(relation)
         self._store_constraint_clauses(clauses)
 
+    def _allocate_auxiliary(self, aux_names: list) -> dict:
+        """Assign a fresh SAT variable id to each Tseytin auxiliary name, recording it as
+        a non-feature auxiliary variable so it is excluded from feature enumeration."""
+        aux_map = {}
+        for name in aux_names:
+            var = self.counter
+            self.counter += 1
+            aux_map[name] = var
+            self.destination_model.auxiliary_variables.add(var)
+        return aux_map
+
     def add_constraint(self, ctc: Constraint) -> None:
+        if self.cnf_method == 'tseytin':
+            clauses, aux_names = ctc.ast.get_clauses_with_aux(method='tseytin')
+            aux_map = self._allocate_auxiliary(aux_names)
+        else:
+            clauses = ctc.ast.get_clauses()
+            aux_map = {}
+
         def get_term_variable(term: Any) -> int:
-            if term.startswith('-'):
-                return -self.destination_model.get_variable(term[1:])
+            negated = term.startswith('-')
+            name = term[1:] if negated else term
+            var = aux_map[name] if name in aux_map else self.destination_model.get_variable(name)
+            return -var if negated else var
 
-            return self.destination_model.get_variable(term)
-
-        clauses = ctc.ast.get_clauses()
         for clause in clauses:
             clause_variables = list(map(get_term_variable, clause))
             self.destination_model.add_clause(clause_variables)

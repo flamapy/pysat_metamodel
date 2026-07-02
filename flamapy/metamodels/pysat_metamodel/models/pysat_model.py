@@ -13,6 +13,9 @@ class PySATModel(VariabilityModel):
         self._cnf = CNF()
         self.variables: dict[str, int] = {}  # feature's name -> id
         self.features: dict[int, str] = {}  # id -> feature's name
+        # Auxiliary (Tseytin) variable ids that are not features. They must be excluded
+        # from feature enumeration/counting; models over the features are unaffected.
+        self.auxiliary_variables: set[int] = set()
         self.original_model: VariabilityModel
 
     def add_clause(self, clause: list[int]) -> None:

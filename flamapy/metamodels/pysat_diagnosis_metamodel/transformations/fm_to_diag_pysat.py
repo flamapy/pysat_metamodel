@@ -20,8 +20,8 @@ class FmToDiagPysat(FmToPysat):
     def get_destination_extension() -> str:
         return 'pysat_diagnosis'
 
-    def __init__(self, source_model: FeatureModel) -> None:
-        super().__init__(source_model)
+    def __init__(self, source_model: FeatureModel, cnf_method: str = 'distributive') -> None:
+        super().__init__(source_model, cnf_method)
         self.destination_model = DiagnosisModel()
 
     def add_root(self, feature: Feature) -> None:
@@ -51,20 +51,20 @@ class FmToDiagPysat(FmToPysat):
         self.destination_model.add_clause_to_map(str(relation), clauses)
 
     def add_constraint(self, ctc: Constraint) -> None:
+        if self.cnf_method == 'tseytin':
+            clauses, aux_names = ctc.ast.get_clauses_with_aux(method='tseytin')
+            aux_map = self._allocate_auxiliary(aux_names)
+        else:
+            clauses = ctc.ast.get_clauses()
+            aux_map = {}
+
         def get_term_variable(term: Any) -> int:
-            negated = False
-            if term.startswith('-'):
-                term = term[1:]
-                negated = True
-
-            var = self.destination_model.get_variable(term)
-
-            if negated:
-                return -var
-            return var
+            negated = term.startswith('-')
+            name = term[1:] if negated else term
+            var = aux_map[name] if name in aux_map else self.destination_model.get_variable(name)
+            return -var if negated else var
 
         ctc_clauses = []
-        clauses = ctc.ast.get_clauses()
         for clause in clauses:
             clause_variables = list(map(get_term_variable, clause))
             ctc_clauses.append(clause_variables)
