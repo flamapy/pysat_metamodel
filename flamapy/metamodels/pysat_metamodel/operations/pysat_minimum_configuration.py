@@ -20,7 +20,7 @@ class PySATMinimumConfiguration(Operation):
 
     facade = OperationDescriptor(
         name='minimum_configuration', operation='PySATMinimumConfiguration',
-        default_backend='sat',
+        default_backend='sat', selectable_backend=True,
     )
 
     def __init__(self) -> None:

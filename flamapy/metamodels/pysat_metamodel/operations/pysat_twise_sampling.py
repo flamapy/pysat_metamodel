@@ -21,6 +21,7 @@ class PySATTWiseSampling(Operation):
 
     facade = OperationDescriptor(
         name='t_wise_sampling', operation='PySATTWiseSampling', default_backend='sat',
+        selectable_backend=True,
         inputs=(Input('t', int, default=2, setter='set_t'),),
     )
 
