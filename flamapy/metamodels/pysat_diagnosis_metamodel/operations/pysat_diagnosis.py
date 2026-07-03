@@ -1,6 +1,7 @@
 from typing import Tuple
 
 from flamapy.metamodels.pysat_diagnosis_metamodel.models import DiagnosisModel
+from flamapy.core.operations.descriptor import OperationDescriptor, Input
 from . import PySATAbstractIdentifier
 from .diagnosis.checker import ConsistencyChecker
 from .diagnosis.hsdag.hsdag import HSDAG
@@ -17,6 +18,17 @@ class PySATDiagnosis(PySATAbstractIdentifier):
     - max_diagnoses - specify the maximum number of diagnoses to be computed
     - max_depth - specify the maximum depth of the HSDAG to be computed
     """
+
+    facade = OperationDescriptor(
+        name='diagnosis', operation='PySATDiagnosis', default_backend='pysat_diagnosis',
+        inputs=(
+            Input('configuration_path', str, required=True, kind='configuration',
+                  setter='set_configuration'),
+            Input('test_case_path', str, default=None, kind='configuration',
+                  setter='set_test_case'),
+            Input('max_diagnoses', int, default=None, setter='set_max_diagnoses'),
+        ),
+    )
 
     def __init__(self) -> None:
         super().__init__()
