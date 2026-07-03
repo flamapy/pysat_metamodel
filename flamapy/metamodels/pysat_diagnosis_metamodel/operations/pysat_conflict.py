@@ -1,6 +1,7 @@
 from typing import Tuple
 
 from flamapy.metamodels.pysat_diagnosis_metamodel.models import DiagnosisModel
+from flamapy.core.operations.descriptor import OperationDescriptor, Input
 from . import PySATAbstractIdentifier
 from .diagnosis.checker import ConsistencyChecker
 from .diagnosis.hsdag.hsdag import HSDAG
@@ -17,6 +18,28 @@ class PySATConflict(PySATAbstractIdentifier):
     - max_conflicts - specify the maximum number of conflicts to be computed
     - max_depth - specify the maximum depth of the HSDAG to be computed
     """
+
+    facade = OperationDescriptor(
+        doc=(
+            'Returns a list of conflict sets: minimal subsets of the model constraints that\n'
+            'are inconsistent with the given configuration. Requires the pysat_diagnosis\n'
+            'plugin.\n'
+            '\n'
+            '``configuration_path`` accepts a configuration file path, a ``{feature:\n'
+            'value}`` mapping, or a Configuration object. ``test_case_path`` is optional\n'
+            'and, when given, looks for conflicts against that expected outcome instead;\n'
+            'same input types.'
+        ),
+        returns='Union[None, List[str]]',
+        name='conflict', operation='PySATConflict', default_backend='pysat_diagnosis',
+        inputs=(
+            Input('configuration_path', str, required=True, kind='configuration',
+                  setter='set_configuration'),
+            Input('test_case_path', str, default=None, kind='configuration',
+                  setter='set_test_case'),
+            Input('max_conflicts', int, default=None, setter='set_max_conflicts'),
+        ),
+    )
 
     def __init__(self) -> None:
         super().__init__()

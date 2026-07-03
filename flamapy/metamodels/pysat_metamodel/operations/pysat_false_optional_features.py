@@ -31,11 +31,11 @@ class PySATFalseOptionalFeatures(FalseOptionalFeatures):
         return self.result
 
     def _get_false_optional_features(self, sat_model: PySATModel) -> list[Any]:
-        try:
-            feature_model = cast(FeatureModel, sat_model.original_model)
-        except FlamaException:
-            LOGGER.exception("The transformation didn't attach the source model, "
-                             "which is required for this operation.")
+        original_model = getattr(sat_model, 'original_model', None)
+        if original_model is None:
+            raise FlamaException("The transformation didn't attach the source model, "
+                                 "which is required for this operation.")
+        feature_model = cast(FeatureModel, original_model)
 
         real_optional_features = [f for f in feature_model.get_features()
                                   if not f.is_root() and not f.is_mandatory()]

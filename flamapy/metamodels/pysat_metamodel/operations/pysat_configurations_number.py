@@ -25,6 +25,9 @@ class PySATConfigurationsNumber(ConfigurationsNumber):
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
             self.solver.add_clause(clause)  # añadimos la constraint
 
+        # Auxiliary (Tseytin) variables are functionally determined by their biconditional
+        # gate definitions, so each feature-level model has exactly one full model here;
+        # the count is unaffected by their presence.
         for _ in self.solver.enum_models():
             self.products_number += 1
         self.solver.delete()

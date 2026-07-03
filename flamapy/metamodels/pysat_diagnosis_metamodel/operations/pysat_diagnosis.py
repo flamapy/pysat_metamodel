@@ -1,6 +1,7 @@
 from typing import Tuple
 
 from flamapy.metamodels.pysat_diagnosis_metamodel.models import DiagnosisModel
+from flamapy.core.operations.descriptor import OperationDescriptor, Input
 from . import PySATAbstractIdentifier
 from .diagnosis.checker import ConsistencyChecker
 from .diagnosis.hsdag.hsdag import HSDAG
@@ -17,6 +18,29 @@ class PySATDiagnosis(PySATAbstractIdentifier):
     - max_diagnoses - specify the maximum number of diagnoses to be computed
     - max_depth - specify the maximum depth of the HSDAG to be computed
     """
+
+    facade = OperationDescriptor(
+        doc=(
+            'Returns a list of diagnoses explaining why a configuration is not valid\n'
+            'against the feature model: each diagnosis is a minimal set of constraints\n'
+            'whose removal would resolve the inconsistency. Requires the pysat_diagnosis\n'
+            'plugin.\n'
+            '\n'
+            '``configuration_path`` accepts a configuration file path, a ``{feature:\n'
+            'value}`` mapping, or a Configuration object. ``test_case_path`` is optional\n'
+            'and, when given, diagnoses against that expected outcome instead; it accepts\n'
+            'the same input types.'
+        ),
+        returns='Union[None, List[str]]',
+        name='diagnosis', operation='PySATDiagnosis', default_backend='pysat_diagnosis',
+        inputs=(
+            Input('configuration_path', str, required=True, kind='configuration',
+                  setter='set_configuration'),
+            Input('test_case_path', str, default=None, kind='configuration',
+                  setter='set_test_case'),
+            Input('max_diagnoses', int, default=None, setter='set_max_diagnoses'),
+        ),
+    )
 
     def __init__(self) -> None:
         super().__init__()

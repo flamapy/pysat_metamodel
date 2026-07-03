@@ -35,7 +35,9 @@ def configurations(solver: Solver, model: PySATModel) -> list[Configuration]:
         product: dict[Any, bool] = {}
         for variable in solutions:
             if variable > 0:
-                product[model.features.get(variable)] = True
+                name = model.features.get(variable)
+                if name is not None:  # skip auxiliary (Tseytin) variables
+                    product[name] = True
         result.append(Configuration(product))
     solver.delete()
     return result

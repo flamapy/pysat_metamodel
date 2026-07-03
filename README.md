@@ -1,16 +1,15 @@
-# pysat_metamodel
+# flamapy-sat
 
-This repository will host the pysat metamodel and its operation implementation
+SAT-based analysis for [flamapy](https://flamapy.org) feature models (PySAT
+backend, giving access to more than ten SAT solvers). Also ships the diagnosis
+metamodel (conflict detection and diagnosis).
 
+**Documentation:**
+- SAT plugin: https://docs.flamapy.org/framework/plugins/sat_plugin
+- Diagnosis plugin: https://docs.flamapy.org/framework/plugins/diagnosis_plugin
 
-## Install for development
+## Installation
 
-``` bash
-pip install -e .
-```
-
-## Make sure that you have installed python-dev 
-
-``` bash
-sudo apt install python-dev #python3-dev in Ubuntu derivatives
+```bash
+pip install flamapy-sat
 ```

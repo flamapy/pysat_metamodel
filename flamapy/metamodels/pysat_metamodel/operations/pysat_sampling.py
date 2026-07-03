@@ -49,23 +49,48 @@ def sample(solver: Solver,
            model: PySATModel,
            sample_size: int,
            with_replacement: bool,  # pylint: disable=unused-argument
-           partial_configuration: Optional[Configuration]  # pylint: disable=unused-argument
+           partial_configuration: Optional[Configuration]
            ) -> list[Configuration]:
+    """Return up to ``sample_size`` valid configurations by enumeration.
+
+    ``partial_configuration`` restricts the sample to configurations that fix the given
+    feature selections (applied as SAT assumptions). Note this is a deterministic
+    enumerator, not a uniform random sampler: it returns distinct configurations, so
+    ``with_replacement`` has no effect here — for almost-uniform random sampling use the
+    ``flamapy-sharpsat`` (UniGen) backend instead.
+    """
     if sample_size == 0:
         return []
 
     for clause in model.get_all_clauses():
         solver.add_clause(clause)
 
+    assumptions = _partial_configuration_assumptions(model, partial_configuration)
+
     products = []
-    for solutions in solver.enum_models():
+    for solutions in solver.enum_models(assumptions=assumptions):
         product: dict[Any, bool] = {}
         for variable in solutions:
             if variable > 0:
-                product[model.features.get(variable)] = True
+                name = model.features.get(variable)
+                if name is not None:  # skip auxiliary (Tseytin) variables
+                    product[name] = True
         products.append(Configuration(product))
         if len(products) == sample_size:
             solver.delete()
             return products
     solver.delete()
     return products
+
+
+def _partial_configuration_assumptions(
+    model: PySATModel, partial_configuration: Optional[Configuration]
+) -> list[int]:
+    """SAT assumptions fixing the features decided in a partial configuration."""
+    assumptions: list[int] = []
+    if partial_configuration is not None:
+        for name, value in partial_configuration.elements.items():
+            variable = model.variables.get(name)
+            if variable is not None:
+                assumptions.append(variable if value else -variable)
+    return assumptions

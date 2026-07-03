@@ -1,10 +1,25 @@
 from flamapy.core.operations import Commonality
+from flamapy.core.operations.descriptor import OperationDescriptor, Input
 from flamapy.core.models import VariabilityModel
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from .pysat_configurations import PySATConfigurations
 
 
 class PySATCommonality(Commonality):
+    facade = OperationDescriptor(
+        doc=(
+            'This is a measure of how often a feature appears in the products of a product\n'
+            "line. It's usually expressed as a percentage. A feature with 100 per cent\n"
+            'commonality is a core feature, as it appears in all products.\n'
+            '\n'
+            '``configuration_path`` accepts a configuration file path, a ``{feature:\n'
+            'value}`` mapping, or a Configuration object.'
+        ),
+        returns='Union[None, float]',
+        name='commonality', operation='PySATCommonality', default_backend='sat',
+        inputs=(Input('configuration_path', str, required=True, kind='configuration',
+                      setter='set_configuration'),),
+    )
 
     def __init__(self) -> None:
         self.result: float = 0
