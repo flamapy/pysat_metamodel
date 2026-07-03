@@ -17,6 +17,7 @@ from typing import Optional, cast
 
 from flamapy.core.models import VariabilityModel
 from flamapy.core.operations import Operation
+from flamapy.core.operations.descriptor import OperationDescriptor, Input
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
@@ -52,6 +53,19 @@ def _decisions_from_literals(
 class PySATConfigurationConflict(Operation):
     """Minimal subset of the user's decisions that is inconsistent with the model."""
 
+    facade = OperationDescriptor(
+        doc=(
+            'Returns a minimal subset of the configuration decisions that is inconsistent with\n'
+            'the feature model — the conflict explaining why the (partial) configuration cannot\n'
+            'be completed. Requires the pysat_diagnosis plugin.'
+        ),
+        returns='Union[None, List[Any]]',
+        name='configuration_conflict', operation='PySATConfigurationConflict',
+        default_backend='pysat_diagnosis',
+        inputs=(Input('configuration_path', str, required=True, kind='configuration',
+                      setter='set_configuration'),),
+    )
+
     def __init__(self) -> None:
         self._configuration: Optional[Configuration] = None
         self._result: list[Decision] = []
@@ -77,6 +91,19 @@ class PySATConfigurationConflict(Operation):
 
 class PySATConfigurationRepair(Operation):
     """Minimal subset of the user's decisions to retract to restore consistency."""
+
+    facade = OperationDescriptor(
+        doc=(
+            'Returns a minimal subset of the configuration decisions to retract in order to\n'
+            'restore consistency with the feature model — how to repair an over-constrained\n'
+            'configuration. Requires the pysat_diagnosis plugin.'
+        ),
+        returns='Union[None, List[Any]]',
+        name='configuration_repair', operation='PySATConfigurationRepair',
+        default_backend='pysat_diagnosis',
+        inputs=(Input('configuration_path', str, required=True, kind='configuration',
+                      setter='set_configuration'),),
+    )
 
     def __init__(self) -> None:
         self._configuration: Optional[Configuration] = None
@@ -107,6 +134,22 @@ class PySATFeatureExplanation(Operation):
     ``get_forced_value()`` is the value the feature is forced to (or ``None`` if it is not
     forced), and ``get_result()`` is the minimal set of decisions responsible.
     """
+
+    facade = OperationDescriptor(
+        doc=(
+            'Explains why a feature is forced (selected or deselected) by the current\n'
+            'configuration: returns the minimal set of decisions responsible. ``feature_name``\n'
+            'is the feature to explain. Requires the pysat_diagnosis plugin.'
+        ),
+        returns='Union[None, List[Any]]',
+        name='feature_explanation', operation='PySATFeatureExplanation',
+        default_backend='pysat_diagnosis',
+        inputs=(
+            Input('configuration_path', str, required=True, kind='configuration',
+                  setter='set_configuration'),
+            Input('feature_name', str, required=True, setter='set_feature'),
+        ),
+    )
 
     def __init__(self) -> None:
         self._configuration: Optional[Configuration] = None
