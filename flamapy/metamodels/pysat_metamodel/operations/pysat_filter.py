@@ -11,6 +11,15 @@ from flamapy.core.models import VariabilityModel
 
 class PySATFilter(Filter):
     facade = OperationDescriptor(
+        doc=(
+            'This operation selects a subset of the products of a product line based on\n'
+            'certain criteria. For example, you might filter the products to only include\n'
+            'those that contain a certain feature.\n'
+            '\n'
+            '``configuration_path`` accepts a configuration file path, a ``{feature:\n'
+            'value}`` mapping, or a Configuration object.'
+        ),
+        returns='Union[None, List[Configuration]]',
         name='filter', operation='PySATFilter', default_backend='sat',
         inputs=(Input('configuration_path', str, required=True, kind='configuration',
                       setter='set_configuration'),),

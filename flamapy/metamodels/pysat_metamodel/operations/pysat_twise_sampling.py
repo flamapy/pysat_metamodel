@@ -20,6 +20,15 @@ class PySATTWiseSampling(Operation):
     """
 
     facade = OperationDescriptor(
+        doc=(
+            'Returns a t-wise (combinatorial) sample: a set of valid configurations that\n'
+            'covers every satisfiable combination of ``t`` feature selections (pairwise for\n'
+            '``t = 2``).\n'
+            '\n'
+            '``backend`` selects the analysis plugin; only "sat" implements t-wise\n'
+            'sampling.'
+        ),
+        returns='Union[None, List[Configuration]]',
         name='t_wise_sampling', operation='PySATTWiseSampling', default_backend='sat',
         selectable_backend=True,
         inputs=(Input('t', int, default=2, setter='set_t'),),

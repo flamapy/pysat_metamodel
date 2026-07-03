@@ -19,6 +19,13 @@ class PySATMinimumConfiguration(Operation):
     """
 
     facade = OperationDescriptor(
+        doc=(
+            'Returns a valid configuration with the fewest selected features (the minimum\n'
+            'working configuration).\n'
+            '\n'
+            '``backend`` selects the analysis plugin; only "sat" implements this operation.'
+        ),
+        returns='Union[None, Configuration]',
         name='minimum_configuration', operation='PySATMinimumConfiguration',
         default_backend='sat', selectable_backend=True,
     )

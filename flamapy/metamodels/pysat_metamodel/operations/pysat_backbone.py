@@ -10,6 +10,12 @@ from flamapy.core.models import VariabilityModel
 
 class PySATBackbone(Operation):
     facade = OperationDescriptor(
+        doc=(
+            'Returns the backbone of the feature model: the set of features that must\n'
+            'always be selected (core) and those that must never be selected (dead) across\n'
+            "all valid configurations, grouped under 'core' and 'dead' keys."
+        ),
+        returns='Union[None, Dict[str, List[Any]]]',
         name='backbone', operation='PySATBackbone', default_backend='sat'
     )
 

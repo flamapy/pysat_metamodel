@@ -20,6 +20,18 @@ class PySATDiagnosis(PySATAbstractIdentifier):
     """
 
     facade = OperationDescriptor(
+        doc=(
+            'Returns a list of diagnoses explaining why a configuration is not valid\n'
+            'against the feature model: each diagnosis is a minimal set of constraints\n'
+            'whose removal would resolve the inconsistency. Requires the pysat_diagnosis\n'
+            'plugin.\n'
+            '\n'
+            '``configuration_path`` accepts a configuration file path, a ``{feature:\n'
+            'value}`` mapping, or a Configuration object. ``test_case_path`` is optional\n'
+            'and, when given, diagnoses against that expected outcome instead; it accepts\n'
+            'the same input types.'
+        ),
+        returns='Union[None, List[str]]',
         name='diagnosis', operation='PySATDiagnosis', default_backend='pysat_diagnosis',
         inputs=(
             Input('configuration_path', str, required=True, kind='configuration',

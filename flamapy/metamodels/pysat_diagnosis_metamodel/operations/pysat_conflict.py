@@ -20,6 +20,17 @@ class PySATConflict(PySATAbstractIdentifier):
     """
 
     facade = OperationDescriptor(
+        doc=(
+            'Returns a list of conflict sets: minimal subsets of the model constraints that\n'
+            'are inconsistent with the given configuration. Requires the pysat_diagnosis\n'
+            'plugin.\n'
+            '\n'
+            '``configuration_path`` accepts a configuration file path, a ``{feature:\n'
+            'value}`` mapping, or a Configuration object. ``test_case_path`` is optional\n'
+            'and, when given, looks for conflicts against that expected outcome instead;\n'
+            'same input types.'
+        ),
+        returns='Union[None, List[str]]',
         name='conflict', operation='PySATConflict', default_backend='pysat_diagnosis',
         inputs=(
             Input('configuration_path', str, required=True, kind='configuration',
