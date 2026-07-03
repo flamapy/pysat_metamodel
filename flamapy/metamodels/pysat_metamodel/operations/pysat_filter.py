@@ -4,11 +4,17 @@ from pysat.solvers import Solver
 
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.core.operations import Filter
+from flamapy.core.operations.descriptor import OperationDescriptor, Input
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.core.models import VariabilityModel
 
 
 class PySATFilter(Filter):
+    facade = OperationDescriptor(
+        name='filter', operation='PySATFilter', default_backend='sat',
+        inputs=(Input('configuration_path', str, required=True, kind='configuration',
+                      setter='set_configuration'),),
+    )
 
     def __init__(self) -> None:
         self.filter_products: list[list[Any]] = []

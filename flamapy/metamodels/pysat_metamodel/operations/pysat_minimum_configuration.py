@@ -5,6 +5,7 @@ from pysat.examples.rc2 import RC2
 
 from flamapy.core.models import VariabilityModel
 from flamapy.core.operations import Operation
+from flamapy.core.operations.descriptor import OperationDescriptor
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
@@ -16,6 +17,11 @@ class PySATMinimumConfiguration(Operation):
     optimum is a valid configuration minimizing the number of selected features (the
     minimum working configuration).
     """
+
+    facade = OperationDescriptor(
+        name='minimum_configuration', operation='PySATMinimumConfiguration',
+        default_backend='sat',
+    )
 
     def __init__(self) -> None:
         self._result: Optional[Configuration] = None

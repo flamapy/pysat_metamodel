@@ -3,11 +3,15 @@ from typing import Any, cast
 from pysat.solvers import Solver
 
 from flamapy.core.operations import Operation
+from flamapy.core.operations.descriptor import OperationDescriptor
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 from flamapy.core.models import VariabilityModel
 
 
 class PySATBackbone(Operation):
+    facade = OperationDescriptor(
+        name='backbone', operation='PySATBackbone', default_backend='sat'
+    )
 
     def __init__(self) -> None:
         self._result: dict[str, list[Any]] = {"core": [], "dead": []}

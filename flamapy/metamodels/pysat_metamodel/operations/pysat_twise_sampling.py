@@ -5,6 +5,7 @@ from pysat.solvers import Solver
 
 from flamapy.core.models import VariabilityModel
 from flamapy.core.operations import Operation
+from flamapy.core.operations.descriptor import OperationDescriptor, Input
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
@@ -17,6 +18,11 @@ class PySATTWiseSampling(Operation):
     each configuration is grown to cover as many still-uncovered feature combinations as
     the constraints allow.
     """
+
+    facade = OperationDescriptor(
+        name='t_wise_sampling', operation='PySATTWiseSampling', default_backend='sat',
+        inputs=(Input('t', int, default=2, setter='set_t'),),
+    )
 
     def __init__(self, t: int = 2) -> None:
         self.t = t
