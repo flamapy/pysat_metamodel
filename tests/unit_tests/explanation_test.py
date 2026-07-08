@@ -88,3 +88,74 @@ def test_explanation_str_renders_numbered_lines():
     assert rendered.splitlines()[0].startswith('1. ')
     assert len(rendered.splitlines()) == len(explanation.items)
     assert str(Explanation()) == 'No conflict found.'
+
+
+def _uvl_diag_model(path):
+    from flamapy.metamodels.fm_metamodel.transformations import UVLReader
+    return FmToDiagPysat(UVLReader(path).transform()).transform()
+
+
+def test_explain_false_optional():
+    from flamapy.metamodels.pysat_diagnosis_metamodel.operations import (
+        PySATExplainFalseOptional,
+    )
+    model = _uvl_diag_model("./tests/resources/false_optional.uvl")
+    operation = PySATExplainFalseOptional()
+    operation.set_feature('B')
+    explanation = operation.execute(model).get_result()
+    assert explanation
+    descriptions = explanation.descriptions()
+    assert any('IMPLIES' in description for description in descriptions)
+    assert any(item.kind == 'constraint' for item in explanation.items)
+
+
+def test_explain_false_optional_on_truly_optional_feature_is_empty():
+    from flamapy.metamodels.pysat_diagnosis_metamodel.operations import (
+        PySATExplainFalseOptional,
+    )
+    model = _diag_model("./tests/resources/smartwatch_consistent.fide")
+    operation = PySATExplainFalseOptional()
+    operation.set_feature('Analog')
+    assert not operation.execute(model).get_result()
+
+
+def test_explain_false_optional_root_raises():
+    from flamapy.metamodels.pysat_diagnosis_metamodel.operations import (
+        PySATExplainFalseOptional,
+    )
+    model = _uvl_diag_model("./tests/resources/false_optional.uvl")
+    operation = PySATExplainFalseOptional()
+    operation.set_feature('Root')
+    with pytest.raises(FlamaException):
+        operation.execute(model)
+
+
+def test_minimal_corrections_on_void_model():
+    from flamapy.metamodels.pysat_diagnosis_metamodel.operations import (
+        PySATMinimalCorrections,
+    )
+    model = _diag_model("./tests/resources/smartwatch_inconsistent.fide")
+    corrections = PySATMinimalCorrections().execute(model).get_result()
+    assert {frozenset(c.descriptions()) for c in corrections} == {
+        frozenset({'(5) IMPLIES[Smartwatch][Analog]'}),
+        frozenset({'(4) IMPLIES[Smartwatch][Cellular]'}),
+        frozenset({'(3) OR[NOT[Analog][]][NOT[Cellular][]]'}),
+    }
+
+
+def test_minimal_corrections_respects_the_limit():
+    from flamapy.metamodels.pysat_diagnosis_metamodel.operations import (
+        PySATMinimalCorrections,
+    )
+    model = _diag_model("./tests/resources/smartwatch_inconsistent.fide")
+    operation = PySATMinimalCorrections()
+    operation.set_max_corrections(1)
+    assert len(operation.execute(model).get_result()) == 1
+
+
+def test_minimal_corrections_on_consistent_model_is_empty():
+    from flamapy.metamodels.pysat_diagnosis_metamodel.operations import (
+        PySATMinimalCorrections,
+    )
+    model = _diag_model("./tests/resources/smartwatch_consistent.fide")
+    assert PySATMinimalCorrections().execute(model).get_result() == []

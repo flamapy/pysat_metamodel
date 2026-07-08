@@ -8,7 +8,12 @@ from .pysat_configuration_diagnosis import (
     PySATConfigurationRepair,
     PySATFeatureExplanation,
 )
-from .pysat_explanations import PySATExplainDeadFeature, PySATExplainVoidModel
+from .pysat_explanations import (
+    PySATExplainDeadFeature,
+    PySATExplainFalseOptional,
+    PySATExplainVoidModel,
+    PySATMinimalCorrections,
+)
 
 
 __all__ = [
@@ -18,6 +23,8 @@ __all__ = [
     'PySATConflict',
     'PySATDiagnosis',
     'PySATExplainDeadFeature',
+    'PySATExplainFalseOptional',
     'PySATExplainVoidModel',
     'PySATFeatureExplanation',
+    'PySATMinimalCorrections',
 ]
