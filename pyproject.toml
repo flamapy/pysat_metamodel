@@ -25,6 +25,10 @@ dev = [
     "coverage",
 ]
 
+[project.entry-points."flamapy.plugins"]
+pysat = "flamapy.metamodels.pysat_metamodel"
+pysat_diagnosis = "flamapy.metamodels.pysat_diagnosis_metamodel"
+
 [project.urls]
 Homepage = "https://github.com/flamapy/pysat_metamodel"
 
