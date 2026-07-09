@@ -1,4 +1,4 @@
-"""Moved to flamapy.core.reasoning in 2.8; this shim is removed in 3.1."""
+"""Moved to flamapy.core.reasoning in 2.8; this shim is removed in 3.0."""
 from flamapy.core.reasoning.hsdag.labeler.quickxplain_labeler import (  # noqa: F401
     QuickXPlainLabeler,
     QuickXPlainParameters,
