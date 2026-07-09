@@ -9,6 +9,7 @@ t-wise coverage it already has. The two directions verify each other: a covering
 must measure 100% coverage.
 """
 import random
+import threading
 from pathlib import Path
 from typing import Any, Optional, cast
 
@@ -93,6 +94,10 @@ class PySATCoveringArray(Operation):
         self.t = t
         self.seed = seed
         self.result: list[Configuration] = []
+        self._interrupt_event: Optional[threading.Event] = None
+
+    def set_interrupt_event(self, event: threading.Event) -> None:
+        self._interrupt_event = event
 
     def set_t(self, t: int) -> None:
         self.t = t
@@ -114,6 +119,8 @@ class PySATCoveringArray(Operation):
 
             configurations: list[Configuration] = []
             while uncovered:
+                if self._interrupt_event is not None and self._interrupt_event.is_set():
+                    break  # cooperative cancellation: return the partial array
                 current: set[int] = set(uncovered[0])
                 for target in uncovered[1:]:
                     if any(-literal in current for literal in target):
