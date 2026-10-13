@@ -32,6 +32,10 @@ class PySATMinimumConfiguration(Operation):
 
     def __init__(self) -> None:
         self._result: Optional[Configuration] = None
+        self.partial_configuration: Configuration = None
+
+    def set_partial_configuration(self, partial_configuration: Optional[Configuration]) -> None:
+        self.partial_configuration = partial_configuration
 
     def get_result(self) -> Optional[Configuration]:
         return self._result
@@ -44,6 +48,12 @@ class PySATMinimumConfiguration(Operation):
         wcnf = WCNF()
         for clause in sat_model.get_all_clauses():
             wcnf.append(list(clause))  # hard clauses
+        
+        # Partial configuration: each decision becomes a hard unit clause
+        if self.partial_configuration is not None:
+            for literal in _partial_configuration_assumptions(sat_model, self.partial_configuration):
+                wcnf.append([literal])
+
         for variable in sat_model.features:  # one unit soft clause per feature variable
             wcnf.append([-variable], weight=1)
 
@@ -60,3 +70,16 @@ class PySATMinimumConfiguration(Operation):
                         elements[feature_name] = True
             self._result = Configuration(elements)
         return self
+
+
+def _partial_configuration_assumptions(
+    model: PySATModel, partial_configuration: Optional[Configuration]
+) -> list[int]:
+    """Literals fixing the features decided in a partial configuration."""
+    literals: list[int] = []
+    if partial_configuration is not None:
+        for name, value in partial_configuration.elements.items():
+            variable = model.variables.get(name)
+            if variable is not None:
+                literals.append(variable if value else -variable)
+    return literals
