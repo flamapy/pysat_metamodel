@@ -12,6 +12,7 @@ from .pysat_metrics import PySATMetrics
 from .pysat_attribute_optimization import PySATAttributeOptimization
 from .pysat_minimum_configuration import PySATMinimumConfiguration
 from .pysat_twise_sampling import PySATTWiseSampling
+from .pysat_sampling import PySATSampling
 from .pysat_testing import (
     PySATCoverage,
     PySATCoveringArray,
@@ -37,4 +38,5 @@ __all__ = [
     'PySATSatisfiable',
     'PySATSatisfiableConfiguration',
     'PySATTWiseSampling',
+    'PySATSampling',
 ]
