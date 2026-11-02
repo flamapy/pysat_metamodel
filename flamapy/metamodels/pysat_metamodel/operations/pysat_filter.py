@@ -39,7 +39,7 @@ class PySATFilter(Filter):
     def set_configuration(self, configuration: Configuration) -> None:
         self.configuration = configuration
 
-    def execute(self, model: VariabilityModel) -> 'PySATFilter': # noqa C901
+    def execute(self, model: VariabilityModel) -> 'PySATFilter':
         model = cast(PySATModel, model)
 
         for clause in model.get_all_clauses():  # AC es conjunto de conjuntos
@@ -66,11 +66,9 @@ class PySATFilter(Filter):
                 else:
                     assumptions.append(-model.variables[feature])
 
-        for solution in self.solver.enum_models(assumptions=assumptions):
-            product = []
-            for variable in solution:
-                if variable is not None and variable > 0:
-                    product.append(model.features.get(variable))
-            self.filter_products.append(product)
+        # Products are reported over the features: auxiliary (Tseytin) variables are neither
+        # listed nor allowed to split one product into several.
+        for solution in model.enum_feature_models(self.solver, assumptions):
+            self.filter_products.append(model.selected_features(solution))
         self.solver.delete()
         return self

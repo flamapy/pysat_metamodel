@@ -30,6 +30,7 @@ class FmToDiagPysat(FmToPysat):
         model.variables = dict(clause_set.variables)
         model.features = dict(clause_set.features)
         model.auxiliary_variables = set(clause_set.auxiliary_variables)
+        model.cnf_method = self.cnf_method
         model.original_model = self.source_model
         # Clause → constraint mapping (root feature / relations / cross-tree constraints).
         for description, clauses in clause_set.clause_groups:

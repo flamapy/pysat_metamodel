@@ -68,13 +68,8 @@ def sample(solver: Solver,
     assumptions = _partial_configuration_assumptions(model, partial_configuration)
 
     products = []
-    for solutions in solver.enum_models(assumptions=assumptions):
-        product: dict[Any, bool] = {}
-        for variable in solutions:
-            if variable > 0:
-                name = model.features.get(variable)
-                if name is not None:  # skip auxiliary (Tseytin) variables
-                    product[name] = True
+    for solutions in model.enum_feature_models(solver, assumptions):
+        product: dict[Any, bool] = dict.fromkeys(model.selected_features(solutions), True)
         products.append(Configuration(product))
         if len(products) == sample_size:
             solver.delete()

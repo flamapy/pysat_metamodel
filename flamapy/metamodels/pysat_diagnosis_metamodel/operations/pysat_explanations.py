@@ -45,7 +45,9 @@ def _prepared_model(
     input model is never prepared directly: we re-encode from ``original_model``.
     """
     original = getattr(model, 'original_model', None)
-    working = FmToDiagPysat(original).transform() if original is not None else model
+    cnf_method = getattr(model, 'cnf_method', 'distributive')
+    working = (FmToDiagPysat(original, cnf_method=cnf_method).transform()
+               if original is not None else model)
     working.prepare_diagnosis_task(test_case=test_case)
     return working
 

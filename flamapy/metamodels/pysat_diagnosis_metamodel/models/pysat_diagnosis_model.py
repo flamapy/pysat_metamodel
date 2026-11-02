@@ -117,7 +117,10 @@ class DiagnosisModel(PySATModel):
                              test_case: Configuration = None) -> None:
         assumption: List[int] = []
 
-        id_assumption = len(self.variables) + 1
+        # Assumption selectors start above every variable of the encoding: with Tseytin
+        # ('tseytin'/'auto') the ids after the features belong to auxiliary variables.
+        # Without auxiliary variables this is len(self.variables) + 1, as before.
+        id_assumption = self.top_variable() + 1
         id_assumption = self._prepare_assumptions_for_kb(assumption, id_assumption)
 
         start_id_configuration = len(assumption)

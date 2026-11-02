@@ -53,15 +53,11 @@ def iter_configurations(
     for clause in model.get_all_clauses():
         solver.add_clause(clause)
     try:
-        for solutions in solver.enum_models():
+        # one model per distinct feature assignment (auxiliary variables projected out)
+        for solutions in model.enum_feature_models(solver):
             if interrupt_event is not None and interrupt_event.is_set():
                 break
-            product: dict[Any, bool] = {}
-            for variable in solutions:
-                if variable > 0:
-                    name = model.features.get(variable)
-                    if name is not None:  # skip auxiliary (Tseytin) variables
-                        product[name] = True
+            product: dict[Any, bool] = dict.fromkeys(model.selected_features(solutions), True)
             yield Configuration(product)
     finally:
         solver.delete()

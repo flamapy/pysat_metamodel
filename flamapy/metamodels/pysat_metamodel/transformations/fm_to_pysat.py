@@ -21,7 +21,7 @@ class FmToPysat(ModelToModel):
 
     def __init__(self, source_model: FeatureModel, cnf_method: str = 'distributive') -> None:
         self.source_model = source_model
-        # 'distributive' (default) or 'tseytin'; forwarded to the shared CNF encoder.
+        # 'distributive' (default), 'tseytin' or 'auto'; forwarded to the shared CNF encoder.
         self.cnf_method = cnf_method
         self.destination_model = PySATModel()
         self.destination_model.original_model = source_model
@@ -34,4 +34,5 @@ class FmToPysat(ModelToModel):
         model.variables = dict(clause_set.variables)
         model.features = dict(clause_set.features)
         model.auxiliary_variables = set(clause_set.auxiliary_variables)
+        model.cnf_method = self.cnf_method
         return model
