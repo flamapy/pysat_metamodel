@@ -35,8 +35,8 @@ __all__ = [
     'PySATMetrics',
     'PySATMinimumConfiguration',
     'PySATSampleReduction',
+    'PySATSampling',
     'PySATSatisfiable',
     'PySATSatisfiableConfiguration',
     'PySATTWiseSampling',
-    'PySATSampling',
 ]

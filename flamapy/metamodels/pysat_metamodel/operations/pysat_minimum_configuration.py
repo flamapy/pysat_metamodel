@@ -48,10 +48,11 @@ class PySATMinimumConfiguration(Operation):
         wcnf = WCNF()
         for clause in sat_model.get_all_clauses():
             wcnf.append(list(clause))  # hard clauses
-        
+
         # Partial configuration: each decision becomes a hard unit clause
         if self.partial_configuration is not None:
-            for literal in _partial_configuration_assumptions(sat_model, self.partial_configuration):
+            for literal in _partial_configuration_assumptions(sat_model,
+                                                              self.partial_configuration):
                 wcnf.append([literal])
 
         for variable in sat_model.features:  # one unit soft clause per feature variable
