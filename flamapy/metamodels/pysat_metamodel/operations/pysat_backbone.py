@@ -35,49 +35,56 @@ class PySATBackbone(Operation):
         return self
 
 
+def set_phases(solver: Solver, literals: list[int]) -> None:
+    """Ask the solver to try these literals first (a heuristic: results never depend on it)."""
+    try:
+        solver.set_phases(literals)
+    except NotImplementedError:  # a PySAT solver without phase selection
+        pass
+
+
 def get_backbone(model: PySATModel) -> dict[str, list[Any]]:
-    # B <- Ø
-    backbone_core = []
-    backbone_dead = []
+    """Core and dead features: the backbone of the formula restricted to the feature variables.
 
+    The candidates are the feature literals of a first model; every other model prunes the
+    candidates it falsifies. Each round asks for a model that falsifies at least one candidate
+    (the clause -c1 v ... v -ck, guarded by a selector so that it can be retired); when that is
+    unsatisfiable, every remaining candidate belongs to the backbone, in a single call
+    (Marques-Silva, Janota and Lynce, 2010, the iterative algorithm with the complement of the
+    backbone estimate). Two preliminary models, with every feature preferred selected and then
+    deselected, and solver phases set against the candidates make each model prune as many
+    candidates as possible; FeatureIDE's core/dead analysis uses the same extreme models. With
+    phase saving alone (the solver's default) consecutive models differ in a handful of literals
+    and large models need one call per feature.
+    """
     id_to_name = model.features
-    relevant_ids = set(id_to_name.keys())
-
-    solver = Solver(name='glucose3')
-    for clause in model.get_all_clauses().clauses:
-        solver.add_clause(clause)
-
-    # (out, C) <- SAT(phi)
-    if not solver.solve():
+    features = model.feature_variables()
+    solver = Solver(name='glucose3', bootstrap_with=model.get_all_clauses().clauses)
+    try:
+        set_phases(solver, features)
+        if not solver.solve():
+            return {"core": [], "dead": list(id_to_name.values())}
+        candidates = {lit for lit in solver.get_model() if abs(lit) in id_to_name}
+        set_phases(solver, [-var for var in features])
+        solver.solve()
+        candidates &= set(solver.get_model())
+        backbone = _backbone_literals(solver, candidates, model.top_variable())
+    finally:
         solver.delete()
-        return {"core": [], "dead": list(id_to_name.values())}
+    return {"core": [id_to_name[lit] for lit in sorted(backbone) if lit > 0],
+            "dead": [id_to_name[-lit] for lit in sorted(backbone, reverse=True) if lit < 0]}
 
-    # 3. C <- filter(C)
-    initial_model = solver.get_model()
-    candidates = {lit for lit in initial_model if abs(lit) in relevant_ids}
 
-    # while C != Ø do
+def _backbone_literals(solver: Solver, candidates: set[int], top_variable: int) -> set[int]:
+    """The candidates that hold in every model; `solver` holds the formula and keeps its clauses."""
     while candidates:
-        # l <- pick a literal from C
-        literal = next(iter(candidates))
-
-        # (out, S) <- SAT(phi U {not l})
-        if not solver.solve(assumptions=[-literal]):
-            # out = unsat -> l is in the backbone
-            name = id_to_name[abs(literal)]
-            if literal > 0:
-                backbone_core.append(name)
-            else:
-                backbone_dead.append(name)
-
-            # C <- C \ {l}
-            candidates.remove(literal)
-
-            # phi <- phi U {l}
-            solver.add_clause([literal])
-        else:
-            new_model_set = set(solver.get_model())
-            # C <- C ∩ S
-            candidates &= new_model_set
-    solver.delete()
-    return {"core": backbone_core, "dead": backbone_dead}
+        top_variable += 1
+        selector = top_variable
+        solver.add_clause([-lit for lit in candidates] + [selector])
+        set_phases(solver, [-lit for lit in candidates])
+        satisfiable = solver.solve(assumptions=[-selector])
+        solver.add_clause([selector])  # retire the clause of this round
+        if not satisfiable:
+            return candidates
+        candidates &= set(solver.get_model())
+    return candidates
