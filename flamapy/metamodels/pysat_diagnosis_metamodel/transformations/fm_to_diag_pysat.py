@@ -18,7 +18,7 @@ class FmToDiagPysat(FmToPysat):
     def get_destination_extension() -> str:
         return 'pysat_diagnosis'
 
-    def __init__(self, source_model: FeatureModel, cnf_method: str = 'distributive') -> None:
+    def __init__(self, source_model: FeatureModel, cnf_method: str = 'auto') -> None:
         super().__init__(source_model, cnf_method)
         self.destination_model = DiagnosisModel()
 

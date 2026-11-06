@@ -20,9 +20,9 @@ class PySATModel(VariabilityModel):
         # Auxiliary (Tseytin) variable ids that are not features. They must be excluded
         # from feature enumeration/counting; models over the features are unaffected.
         self.auxiliary_variables: set[int] = set()
-        # The ClauseSet encoding the clauses come from ('distributive', 'tseytin' or 'auto').
+        # The ClauseSet encoding the clauses come from ('auto', 'distributive' or 'tseytin').
         # Operations that re-encode the feature model use it to keep the same encoding.
-        self.cnf_method: str = 'distributive'
+        self.cnf_method: str = 'auto'
         self.original_model: VariabilityModel
 
     def add_clause(self, clause: list[int]) -> None:

@@ -86,7 +86,7 @@ def test_cnf_method_is_recorded(method):
 
 def test_auto_and_tseytin_introduce_auxiliary_variables():
     fm = _fm(_UVL)
-    assert not FmToPysat(fm).transform().auxiliary_variables
+    assert not FmToPysat(fm, cnf_method='distributive').transform().auxiliary_variables
     assert FmToPysat(fm, cnf_method='tseytin').transform().auxiliary_variables
     assert FmToPysat(fm, cnf_method='auto').transform().auxiliary_variables
 
@@ -104,14 +104,14 @@ def test_projection_helpers():
 
 
 def test_top_variable_without_auxiliary_variables_is_the_feature_count():
-    model = FmToPysat(_fm(_UVL)).transform()
+    model = FmToPysat(_fm(_UVL), cnf_method='distributive').transform()
     assert model.top_variable() == len(model.variables)
 
 
 @pytest.mark.parametrize('method', METHODS)
 def test_configurations_count_and_sampling_match_distributive(method):
     fm = _fm(_UVL)
-    reference = FmToPysat(fm).transform()
+    reference = FmToPysat(fm, cnf_method='distributive').transform()
     model = FmToPysat(fm, cnf_method=method).transform()
     expected = _configs(PySATConfigurations().execute(reference).get_result())
     assert _configs(PySATConfigurations().execute(model).get_result()) == expected
