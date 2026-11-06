@@ -3,6 +3,7 @@ from typing import Any, cast, Callable, Optional
 from flamapy.core.models import VariabilityModel
 from flamapy.core.exceptions import FlamaException
 from flamapy.core.operations.metrics_operation import Metrics
+from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.metamodels.pysat_metamodel.models import PySATModel
 from flamapy.metamodels.pysat_metamodel import operations as sat_operations
 
@@ -33,6 +34,7 @@ class PySATMetrics(Metrics):
         self._features: dict[int, str] = {}
         self._common_features: list[Any] = []
         self._dead_features: list[Any] = []
+        self._configurations: Optional[list[Configuration]] = None
 
     @property
     def model_type_extension(self) -> str:
@@ -48,10 +50,13 @@ class PySATMetrics(Metrics):
     def calculate_metamodel_metrics(self, model: VariabilityModel) -> list[dict[str, Any]]:
         self.model = cast(PySATModel, model)
 
-        #Do some basic calculations to speedup the rest
+        # Do some basic calculations to speedup the rest: one backbone computation gives the
+        # core and the dead features; the configurations are enumerated at most once per run.
         self._features = self.model.features
-        self._common_features = sat_operations.PySATCoreFeatures().execute(self.model).get_result()
-        self._dead_features = sat_operations.PySATDeadFeatures().execute(self.model).get_result()
+        backbone = sat_operations.PySATBackbone().execute(self.model).get_result()
+        self._common_features = backbone['core']
+        self._dead_features = backbone['dead']
+        self._configurations = None
         # Get all methods that are marked with the metric_method decorator
         metric_methods = [getattr(self, method_name) for method_name in dir(self)
                           if callable(getattr(self, method_name)) and
@@ -61,6 +66,15 @@ class PySATMetrics(Metrics):
                               if method.__name__ in self.filter]
 
         return [method() for method in metric_methods]
+
+    def _all_configurations(self) -> list[Configuration]:
+        """Every configuration, enumerated once per run (an exponential operation)."""
+        if self._configurations is None:
+            if self.model is None:
+                raise FlamaException('Model not initialized.')
+            self._configurations = (
+                sat_operations.PySATConfigurations().execute(self.model).get_result())
+        return self._configurations
 
     @metric_method
     def satisfiable(self) -> dict[str, Any]:
@@ -105,7 +119,7 @@ class PySATMetrics(Metrics):
         if self.model is None:
             raise FlamaException('Model not initialized.')
         name = "Dead features"
-        _dead_features = sat_operations.PySATDeadFeatures().execute(self.model).get_result()
+        _dead_features = self._dead_features
         result = self.construct_result(name=name,
                                        doc=self.dead_features.__doc__,
                                        result=_dead_features,
@@ -122,7 +136,7 @@ class PySATMetrics(Metrics):
         seen_multiple = set()
 
         # Step 2: Iterate through each configuration
-        for config in self.configurations()["result"]:
+        for config in self._all_configurations():
             for feature in config:
                 if feature in seen_once:
                     seen_multiple.add(feature)
@@ -163,7 +177,7 @@ class PySATMetrics(Metrics):
         if self.model is None:
             raise FlamaException('Model not initialized.')
         name = "Configurations"
-        _configurations = sat_operations.PySATConfigurations().execute(self.model).get_result()
+        _configurations = self._all_configurations()
         result = self.construct_result(name=name,
                                        doc=self.configurations.__doc__,
                                        result=_configurations,
