@@ -25,6 +25,12 @@ dev = [
     "coverage",
 ]
 
+# The attribute-optimization test cross-checks the MaxSAT optimum with the z3 plugin.
+test = [
+    "pytest",
+    "flamapy-z3~=2.9.0.dev0",
+]
+
 [project.entry-points."flamapy.plugins"]
 pysat = "flamapy.metamodels.pysat_metamodel"
 pysat_diagnosis = "flamapy.metamodels.pysat_diagnosis_metamodel"
