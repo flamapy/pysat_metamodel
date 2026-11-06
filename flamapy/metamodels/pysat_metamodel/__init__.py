@@ -21,6 +21,9 @@ MANIFEST = PluginManifest(
         'dead_features': OperationCapability(cost_curve=_IMPLICATION_QUERIES),
         'false_optional_features': OperationCapability(
             cost_curve=((500, 2), (1000, 6), (2000, 34), (5000, 110), (10000, 300))),
+        # Atomic sets: the classes of features with the same value in every configuration,
+        # proved with grouped implication queries like the backbone.
+        'atomic_sets': OperationCapability(cost_curve=_IMPLICATION_QUERIES),
         'minimum_configuration': OperationCapability(
             cost_curve=((200, 2), (1000, 5), (2000, 30), (5000, 38), (10000, 110))),
         # Pairwise sampling (the only t-wise implementation): 1.2 s at 200 features, 56 s at
@@ -36,5 +39,6 @@ MANIFEST = PluginManifest(
         # configurations rather than in the features (6 ms on the 20-feature calibration model).
         'configurations_number': OperationCapability(max_features=30, cost=400),
         'configurations': OperationCapability(max_features=30, cost=400),
+        'commonality': OperationCapability(max_features=30, cost=400),
     },
 )

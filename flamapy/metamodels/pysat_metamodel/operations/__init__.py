@@ -3,6 +3,7 @@ from .pysat_satisfiable_configuration import PySATSatisfiableConfiguration
 from .pysat_configurations import PySATConfigurations
 from .pysat_configurations_number import PySATConfigurationsNumber
 from .pysat_commonality import PySATCommonality
+from .pysat_atomic_sets import PySATAtomicSets
 from .pysat_filter import PySATFilter
 from .pysat_backbone import PySATBackbone
 from .pysat_core_features import PySATCoreFeatures
@@ -21,6 +22,7 @@ from .pysat_testing import (
 
 
 __all__ = [
+    'PySATAtomicSets',
     'PySATAttributeOptimization',
     'PySATBackbone',
     'PySATCommonality',
