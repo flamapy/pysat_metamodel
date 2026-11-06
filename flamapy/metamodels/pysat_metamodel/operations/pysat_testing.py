@@ -8,12 +8,9 @@ configuration suite covers, and ``sample_reduction`` shrinks a suite while prese
 t-wise coverage it already has. The two directions verify each other: a covering array
 must measure 100% coverage.
 """
-import random
 import threading
 from pathlib import Path
 from typing import Any, Optional, cast
-
-from pysat.solvers import Solver
 
 from flamapy.core.exceptions import FlamaException
 from flamapy.core.models import VariabilityModel
@@ -22,12 +19,7 @@ from flamapy.core.operations.descriptor import OperationDescriptor, Input
 from flamapy.metamodels.configuration_metamodel.models.configuration import Configuration
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
-from .pysat_twise_sampling import _satisfiable_targets, _to_configuration
-
-
-def _feature_vars(model: PySATModel) -> list[int]:
-    return (model.feature_variables() if hasattr(model, 'feature_variables')
-            else list(model.features.keys()))
+from .pysat_twise_sampling import _twise_sample, satisfiable_targets
 
 
 def _configuration_literals(model: PySATModel, configuration: Configuration) -> set[int]:
@@ -110,32 +102,10 @@ class PySATCoveringArray(Operation):
 
     def execute(self, model: VariabilityModel) -> 'PySATCoveringArray':
         sat_model = cast(PySATModel, model)
-        clauses = list(sat_model.get_all_clauses().clauses)
-        solver = Solver(name='glucose3', bootstrap_with=clauses)
-        try:
-            uncovered = _satisfiable_targets(solver, _feature_vars(sat_model), self.t)
-            if self.seed is not None:
-                random.Random(self.seed).shuffle(uncovered)
-
-            configurations: list[Configuration] = []
-            while uncovered:
-                if self._interrupt_event is not None and self._interrupt_event.is_set():
-                    break  # cooperative cancellation: return the partial array
-                current: set[int] = set(uncovered[0])
-                for target in uncovered[1:]:
-                    if any(-literal in current for literal in target):
-                        continue
-                    tentative = current | set(target)
-                    if solver.solve(assumptions=list(tentative)):
-                        current = tentative
-                solver.solve(assumptions=list(current))
-                assignment = solver.get_model() or []
-                configurations.append(_to_configuration(sat_model, assignment))
-                satisfied = set(assignment)
-                uncovered = [tg for tg in uncovered if not set(tg).issubset(satisfied)]
-            self.result = configurations
-        finally:
-            solver.delete()
+        # The same covering as the t-wise sampling; the seed permutes the targets (and, for
+        # t = 2, the literal order and the random seed models). Cooperative cancellation
+        # returns the partial array.
+        self.result = _twise_sample(sat_model, self.t, self.seed, self._interrupt_event)
         return self
 
 
@@ -177,12 +147,7 @@ class PySATCoverage(Operation):
 
     def execute(self, model: VariabilityModel) -> 'PySATCoverage':
         sat_model = cast(PySATModel, model)
-        solver = Solver(name='glucose3',
-                        bootstrap_with=list(sat_model.get_all_clauses().clauses))
-        try:
-            targets = _satisfiable_targets(solver, _feature_vars(sat_model), self.t)
-        finally:
-            solver.delete()
+        targets = satisfiable_targets(sat_model, self.t)
         if not targets:
             self.result = 1.0
             return self
@@ -230,12 +195,7 @@ class PySATSampleReduction(Operation):
 
     def execute(self, model: VariabilityModel) -> 'PySATSampleReduction':
         sat_model = cast(PySATModel, model)
-        solver = Solver(name='glucose3',
-                        bootstrap_with=list(sat_model.get_all_clauses().clauses))
-        try:
-            targets = _satisfiable_targets(solver, _feature_vars(sat_model), self.t)
-        finally:
-            solver.delete()
+        targets = satisfiable_targets(sat_model, self.t)
         per_configuration = _covered_targets(sat_model, self.configurations, targets)
         uncovered = set().union(*per_configuration) if per_configuration else set()
 
