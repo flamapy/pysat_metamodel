@@ -99,9 +99,8 @@ def implied_pairs(solver: Solver, pairs: set[tuple[int, int]],
         solver.add_clause([auxiliary[pair] for pair in pending] + [selector])
         set_phases(solver, [auxiliary[pair] for pair in pending]
                    + [parent for parent, _ in pending] + [-feature for _, feature in pending])
-        satisfiable = solver.solve(assumptions=[-selector])
-        solver.add_clause([selector])  # retire the clause of this round
-        if not satisfiable:
+        if not solver.solve(assumptions=[-selector]):
             break
-        prune()
+        prune()  # reads the model: before adding a clause, which makes CaDiCaL drop it
+        solver.add_clause([selector])  # retire the clause of this round
     return pending

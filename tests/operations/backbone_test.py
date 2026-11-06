@@ -153,3 +153,32 @@ def test_results_keep_the_model_order():
     for operation in (PySATCoreFeatures(), PySATDeadFeatures(), PySATFalseOptionalFeatures()):
         result = operation.execute(sat).get_result()
         assert result == sorted(result, key=order.__getitem__)
+
+
+SOLVERS = ['glucose3', 'glucose4', 'minisat22', 'lingeling', 'maplesat', 'cadical153']
+
+
+@pytest.mark.parametrize('solver_name', SOLVERS)
+def test_every_pysat_solver(solver_name, monkeypatch):
+    """The operations hard-code glucose3; tools (and the benchmark) rebind `Solver` to pick another
+    PySAT solver. CaDiCaL drops the last model when a clause is added and aborts the process if
+    it is read afterwards, so the order of the calls matters."""
+    from pysat.solvers import Solver as PySATSolver
+    from flamapy.metamodels.pysat_metamodel.operations import (
+        pysat_backbone,
+        pysat_false_optional_features,
+    )
+
+    def factory(*args, **kwargs):
+        kwargs['name'] = solver_name
+        return PySATSolver(*args, **kwargs)
+
+    monkeypatch.setattr(pysat_backbone, 'Solver', factory)
+    monkeypatch.setattr(pysat_false_optional_features, 'Solver', factory)
+    for seed in range(6):
+        _check(_random_model(seed), 'distributive')
+    _check(SMARTWATCH, 'tseytin')
+    void = FmToPysat(_read(VOID)).transform()
+    assert PySATCoreFeatures().execute(void).get_result() == []
+    assert PySATDeadFeatures().execute(void).get_result() == ['Root', 'A', 'B', 'C']
+    assert PySATFalseOptionalFeatures().execute(void).get_result() == ['B', 'C']

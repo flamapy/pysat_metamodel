@@ -82,9 +82,9 @@ def _backbone_literals(solver: Solver, candidates: set[int], top_variable: int) 
         selector = top_variable
         solver.add_clause([-lit for lit in candidates] + [selector])
         set_phases(solver, [-lit for lit in candidates])
-        satisfiable = solver.solve(assumptions=[-selector])
-        solver.add_clause([selector])  # retire the clause of this round
-        if not satisfiable:
+        if not solver.solve(assumptions=[-selector]):
             return candidates
+        # read the model before adding a clause: some solvers (CaDiCaL) drop it on add_clause
         candidates &= set(solver.get_model())
+        solver.add_clause([selector])  # retire the clause of this round
     return candidates
