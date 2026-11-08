@@ -10,6 +10,10 @@ from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
 class PySATSampling(Sampling):
+    # The configurations are valid but come in the solver's fixed order, not uniformly at
+    # random: reported in the OperationResult provenance envelope.
+    exact = False
+
 
     def __init__(self) -> None:
         self.result: list[Configuration] = []
