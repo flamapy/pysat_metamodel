@@ -25,7 +25,11 @@ def pysat_to_dimacs(model: PySATModel) -> str:
     lines = []
     features_dict = model.features
     clauses_list = model.get_all_clauses().clauses
-    lines.append(f'p cnf {len(features_dict)} {len(clauses_list)}')
+    # The header counts every variable the clauses use, Tseytin auxiliaries included; only
+    # the features get a name comment.
+    n_variables = max([model.top_variable(), *(abs(literal) for clause in clauses_list
+                                               for literal in clause)], default=0)
+    lines.append(f'p cnf {n_variables} {len(clauses_list)}')
     for identification, name in features_dict.items():
         lines.append(f'c {identification} {name}')
     for clause in clauses_list:

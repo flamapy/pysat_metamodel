@@ -40,7 +40,13 @@ class DimacsReader(TextToModel):
         sat_model = PySATModel()
         sat_model.features = features
         sat_model.variables = variables
+        sat_model.cnf_method = None  # read from a file, not encoded by flamapy
         self._parse_clauses(sat_model, clauses_lines)
+        if features:
+            # The file names its features: the other variables are auxiliary (e.g. Tseytin).
+            sat_model.auxiliary_variables = {
+                abs(literal) for clause in sat_model.get_all_clauses() for literal in clause
+                if abs(literal) not in features}
         return sat_model
 
     def _parse_features_variables(self, lines: list[str]) -> tuple[dict[int, str], dict[str, int]]:

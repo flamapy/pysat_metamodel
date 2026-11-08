@@ -20,6 +20,7 @@ from flamapy.core.reasoning.hsdag.labeler.fastdiag_labeler import (
     FastDiagLabeler,
     FastDiagParameters,
 )
+from flamapy.metamodels.fm_metamodel.models import DEFAULT_CNF_METHOD
 from flamapy.metamodels.configuration_metamodel.models import Configuration
 
 from ..models.explanation import Explanation, ExplanationItem
@@ -45,7 +46,7 @@ def _prepared_model(
     input model is never prepared directly: we re-encode from ``original_model``.
     """
     original = getattr(model, 'original_model', None)
-    cnf_method = getattr(model, 'cnf_method', 'distributive')
+    cnf_method = getattr(model, 'cnf_method', None) or DEFAULT_CNF_METHOD
     working = (FmToDiagPysat(original, cnf_method=cnf_method).transform()
                if original is not None else model)
     working.prepare_diagnosis_task(test_case=test_case)

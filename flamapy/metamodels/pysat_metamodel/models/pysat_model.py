@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import Iterable, Iterator
+from typing import Iterable, Iterator, Optional
 
 from pysat.formula import CNF
 from pysat.solvers import Solver
@@ -20,9 +20,10 @@ class PySATModel(VariabilityModel):
         # Auxiliary (Tseytin) variable ids that are not features. They must be excluded
         # from feature enumeration/counting; models over the features are unaffected.
         self.auxiliary_variables: set[int] = set()
-        # The ClauseSet encoding the clauses come from ('auto', 'distributive' or 'tseytin').
-        # Operations that re-encode the feature model use it to keep the same encoding.
-        self.cnf_method: str = 'auto'
+        # The ClauseSet encoding the clauses come from ('auto', 'distributive' or 'tseytin'),
+        # or None when flamapy did not encode them (e.g. a model read from DIMACS). Operations
+        # that re-encode the feature model use it to keep the same encoding.
+        self.cnf_method: Optional[str] = None
         self.original_model: VariabilityModel
 
     def add_clause(self, clause: list[int]) -> None:
