@@ -11,6 +11,7 @@ _IMPLICATION_QUERIES = ((1000, 2), (2000, 4), (5000, 40), (10000, 70))
 
 MANIFEST = PluginManifest(
     name='pysat',
+    calibration='2026-11-06',
     extension='pysat',
     supported_level=LanguageLevel(MajorLevel.BOOLEAN, {MinorLevel.GROUP_CARDINALITY}),
     transformation_cost_curve=((200, 1), (1000, 4), (2000, 12), (5000, 19), (10000, 46)),
@@ -31,10 +32,10 @@ MANIFEST = PluginManifest(
         't_wise_sampling': OperationCapability(
             cost_curve=((50, 100), (100, 310), (200, 1200), (500, 56000), (1000, 390000),
                         (2000, 600000))),
-        # PySATSampling is a deterministic enumerator, not the random sample the operation
-        # promises (BDD sampling is uniform): the planner only takes it on allow_approximate.
-        'sampling': OperationCapability(
-            exact=False, cost_curve=((1000, 1), (5000, 9), (10000, 15))),
+        # PySATSampling returns valid configurations, so its results are exact; it enumerates
+        # them deterministically rather than uniformly (BDD sampling, the default backend, is
+        # uniform), which the cost and the default-backend bonus already account for.
+        'sampling': OperationCapability(cost_curve=((1000, 1), (5000, 9), (10000, 15))),
         # Counting and listing enumerate every configuration: exponential in the number of
         # configurations rather than in the features (6 ms on the 20-feature calibration model).
         'configurations_number': OperationCapability(max_features=30, cost=400),
