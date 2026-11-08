@@ -1,5 +1,5 @@
 from flamapy.core.transformations import ModelToModel
-from flamapy.metamodels.fm_metamodel.models import FeatureModel, ClauseSet
+from flamapy.metamodels.fm_metamodel.models import DEFAULT_CNF_METHOD, ClauseSet, FeatureModel
 from flamapy.metamodels.pysat_metamodel.models.pysat_model import PySATModel
 
 
@@ -19,7 +19,7 @@ class FmToPysat(ModelToModel):
     def get_destination_extension() -> str:
         return 'pysat'
 
-    def __init__(self, source_model: FeatureModel, cnf_method: str = 'auto') -> None:
+    def __init__(self, source_model: FeatureModel, cnf_method: str = DEFAULT_CNF_METHOD) -> None:
         self.source_model = source_model
         # 'auto' (default since 2.9), 'distributive' or 'tseytin'; forwarded to the shared CNF
         # encoder (ClauseSet).

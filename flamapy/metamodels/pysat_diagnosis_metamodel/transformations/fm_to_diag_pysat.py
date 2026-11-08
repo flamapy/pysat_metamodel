@@ -1,4 +1,4 @@
-from flamapy.metamodels.fm_metamodel.models import FeatureModel, ClauseSet
+from flamapy.metamodels.fm_metamodel.models import DEFAULT_CNF_METHOD, ClauseSet, FeatureModel
 from flamapy.metamodels.pysat_metamodel.transformations.fm_to_pysat import FmToPysat
 from ..models.pysat_diagnosis_model import DiagnosisModel
 
@@ -18,7 +18,7 @@ class FmToDiagPysat(FmToPysat):
     def get_destination_extension() -> str:
         return 'pysat_diagnosis'
 
-    def __init__(self, source_model: FeatureModel, cnf_method: str = 'auto') -> None:
+    def __init__(self, source_model: FeatureModel, cnf_method: str = DEFAULT_CNF_METHOD) -> None:
         super().__init__(source_model, cnf_method)
         self.destination_model = DiagnosisModel()
 
